@@ -28,6 +28,7 @@ see [`src/config/env.ts`](src/config/env.ts).
 
 ```
 src/
+├── contract/        Zod schemas — the source of truth for the API shape
 ├── config/          environment schema, validated at boot
 ├── common/          Prisma, guards, filters, audit — shared across modules
 ├── modules/
@@ -44,19 +45,29 @@ exported service, never by importing another module's internals.
 
 ## The API contract
 
-Request and response types live in
-[`campuspulse-contract`](https://github.com/CampusPulse-dev/campuspulse-contract)
-and are consumed by both this repo and the frontend, so a contract change
-breaks the build rather than a door scanner.
+The Zod schemas in [`src/contract`](src/contract) are the single source of
+truth for every shape this API accepts and returns. The API validates
+requests with them via `ZodValidationPipe`, and
+[`src/openapi.ts`](src/openapi.ts) converts them into the
+`components.schemas` of [`openapi.json`](openapi.json), which is committed.
 
-Changing the contract is deliberately three steps:
+`campuspulse-frontend` generates its TypeScript types from that file, so a
+schema change that breaks the frontend fails the frontend's build.
 
-1. PR to `campuspulse-contract`, then tag it (`v0.2.0`).
-2. Bump the dependency here and use the new type.
-3. Bump it in `campuspulse-frontend`.
+**If you change a schema or a route, regenerate the spec:**
 
-Validation uses the contract's Zod schemas directly via `ZodValidationPipe`,
-so the runtime check and the frontend's compile-time type are one object.
+```bash
+npm run openapi        # rewrites openapi.json
+```
+
+CI runs `npm run openapi:check`, which regenerates and fails if the result
+differs from what you committed. Forgetting this is the one way to leave
+the frontend building against a stale contract.
+
+New shapes must be exported from `src/contract` to appear in the spec —
+[`src/contract/registry.ts`](src/contract/registry.ts) collects them. A
+schema that is not registered does not exist as far as the frontend is
+concerned.
 
 ## Commands
 

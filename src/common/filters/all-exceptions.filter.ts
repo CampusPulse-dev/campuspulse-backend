@@ -11,7 +11,8 @@ import { ZodError } from 'zod';
 
 /**
  * Every non-2xx response leaves the API in the ApiError shape declared
- * in @campuspulse/contract, so the frontend has exactly one error path.
+ * in src/contract and published in the OpenAPI spec, so the frontend
+ * has exactly one error path.
  */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {

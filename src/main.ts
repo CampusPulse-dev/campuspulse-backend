@@ -1,12 +1,13 @@
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import helmet from 'helmet';
 import type { NextFunction, Request, Response } from 'express';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { buildOpenApiDocument } from './openapi';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -31,13 +32,7 @@ async function bootstrap(): Promise<void> {
   });
 
   if (process.env.NODE_ENV !== 'production') {
-    const config = new DocumentBuilder()
-      .setTitle('CampusPulse API')
-      .setDescription('Events, identity, attendance and admin.')
-      .setVersion('0.1.0')
-      .addBearerAuth()
-      .build();
-    SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
+    SwaggerModule.setup('docs', app, buildOpenApiDocument(app));
   }
 
   app.enableShutdownHooks();

@@ -1,5 +1,5 @@
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
-import type { UserRole } from '@campuspulse/contract';
+import type { UserRole } from '../../contract';
 
 export interface AuthenticatedUser {
   id: string;

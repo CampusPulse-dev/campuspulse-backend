@@ -32,6 +32,12 @@ jobs:
       - name: TypeScript
         run: npm run typecheck
 
+      - name: OpenAPI spec is up to date
+        # The frontend generates its types from the committed openapi.json.
+        # If a schema or route changed without regenerating it, the frontend
+        # would build against a stale contract — so fail here instead.
+        run: npm run openapi:check
+
   test:
     name: Tests
     runs-on: ubuntu-latest

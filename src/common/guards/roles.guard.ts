@@ -1,6 +1,6 @@
 import { Injectable, type CanActivate, type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import type { UserRole } from '@campuspulse/contract';
+import type { UserRole } from '../../contract';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import type { AuthenticatedUser } from '../decorators/current-user.decorator';
 

@@ -70,7 +70,7 @@ with the PRD's acknowledged iOS caveats.
 The domain is relational — the campus social graph, RSVP uniqueness,
 capacity checks. RSVP against capacity is a transaction, not an eventual
 consistency problem. Prisma gives typed queries and a real migration
-history, and its schema sits next to the contract package as a second
+history, and its schema sits next to the contract schemas as a second
 source of truth that CI checks for drift.
 
 Redis alongside it for BullMQ notification queues and rate limiting.
@@ -87,44 +87,55 @@ is no dedicated ops person on a six-person roster.
 Render keeps API, database and Redis on one platform with one bill, which
 is the lowest-ops option available.
 
-### Repository structure — split, with an extracted contract
+### Repository structure — two repos, contract shared via OpenAPI
 
-Three repositories:
+Two repositories:
 
 - `campuspulse-backend` — this repo.
 - `campuspulse-frontend` — Next.js.
-- `campuspulse-contract` — shared API types, no runtime logic.
 
-A monorepo was recommended and rejected by the team in favour of a clean
-backend/frontend ownership split. The split's real cost is contract drift,
-so the contract was extracted into its own small repository rather than
-duplicated. Both sides consume it as a **git dependency on a public repo**:
+A monorepo was recommended and rejected in favour of a clean
+backend/frontend ownership split. A third `campuspulse-contract` package
+was then built and also rejected: it kept types in sync but cost three PRs
+per contract change (contract, tag, then a bump on each side).
 
-```
-"@campuspulse/contract": "github:CampusPulse-dev/campuspulse-contract#v0.1.0"
-```
+The chosen answer keeps two repos and still catches drift. The Zod schemas
+live here in [`src/contract`](../../src/contract) and are the single source
+of truth — the API validates with them, and
+[`src/openapi.ts`](../../src/openapi.ts) converts them into the
+`components.schemas` of a generated `openapi.json`, which is committed.
+The frontend runs `openapi-typescript` against that file to generate its
+types.
 
-Git dependency rather than GitHub Packages because Packages requires an
-auth token even for public repositories, which would mean provisioning
-PATs into both Vercel and Render builds. A git dependency needs no auth
-anywhere.
+Two checks make this trustworthy:
 
-The trade-off accepted: a contract change is now three PRs (contract, tag,
-then a version bump on each side) instead of one. That friction is
-deliberate — it makes contract changes visible.
+- **Backend CI** regenerates `openapi.json` and fails if it differs from
+  the committed copy, so a schema change cannot land unpublished.
+- **Frontend CI** regenerates its types from the spec and fails if they
+  differ from the committed copy, so a backend change that breaks the
+  frontend fails the frontend's build.
+
+**What this costs.** The frontend gets compile-time types but not runtime
+schemas, so it can no longer validate responses at the boundary the way a
+shared Zod package allowed. Generated types are also less pleasant to read
+than the hand-written schemas. Both were judged acceptable against removing
+a whole repository and a release cycle from every contract change.
 
 ## Consequences
 
-**Good.** Parallel work across three backend domains from day one. Contract
-mismatches fail at compile time rather than at a door on launch night. One
-hosting platform for all stateful infrastructure. Docker means local, CI
-and production run the same image.
+**Good.** Parallel work across three backend domains from day one. A
+schema change that breaks the frontend fails the frontend's build rather
+than a scanner at a door on launch night, with no extra repository and no
+version bumps. One hosting platform for all stateful infrastructure.
+Docker means local, CI and production run the same image.
 
-**Bad.** Three repositories to keep in step, and a contract change costs a
-release cycle. Frankfurt latency is a permanent tax on write paths. Prisma
-adds a generate step to every install and CI job.
+**Bad.** The frontend has compile-time types but no runtime response
+validation. `openapi.json` is a generated file in version control, so it
+shows up in diffs and can conflict on merge. Frankfurt latency is a
+permanent tax on write paths. Prisma adds a generate step to every install
+and CI job.
 
 **Revisit if:** check-in latency at a real event proves unacceptable (move
-the API to Fly.io Johannesburg), or the three-repo overhead visibly slows
-the team down (collapse into a monorepo, which is easier to do later than
-to undo).
+the API to Fly.io Johannesburg), or the two-repo overhead visibly slows the
+team down (collapse into a monorepo, which is easier to do later than to
+undo).

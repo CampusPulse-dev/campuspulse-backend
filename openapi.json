@@ -1,0 +1,1794 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Health Check is successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {},
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Health Check is not successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        },
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["health"]
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "HealthController_live",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["health"]
+      }
+    },
+    "/events/feed": {
+      "get": {
+        "operationId": "EventsController_feed",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A page of published events, soonest first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Public event feed, filterable by category",
+        "tags": ["events"]
+      }
+    },
+    "/events/{slug}": {
+      "get": {
+        "operationId": "EventsController_findOne",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The event, including its organizer.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Public event page by slug",
+        "tags": ["events"]
+      }
+    }
+  },
+  "info": {
+    "title": "CampusPulse API",
+    "description": "Events, identity, attendance and admin. Schemas are generated from the Zod definitions in src/contract; this document is what campuspulse-frontend generates its types from.",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CheckInMethod": {
+        "type": "string",
+        "enum": ["QR_SCAN", "MANUAL"]
+      },
+      "EventCategory": {
+        "type": "string",
+        "enum": [
+          "SOCIAL_PARTY",
+          "PERFORMANCE_ARTS",
+          "ACADEMIC_CONFERENCE",
+          "SPORTS_RECREATION",
+          "CLUB_SOCIETY"
+        ]
+      },
+      "EventStatus": {
+        "type": "string",
+        "enum": ["DRAFT", "PUBLISHED", "CANCELLED", "COMPLETED"]
+      },
+      "NotificationChannel": {
+        "type": "string",
+        "enum": ["PUSH", "IN_APP", "EMAIL"]
+      },
+      "RsvpStatus": {
+        "type": "string",
+        "enum": ["CONFIRMED", "WAITLISTED", "CANCELLED"]
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+      },
+      "VerificationStatus": {
+        "type": "string",
+        "enum": ["PENDING", "IN_REVIEW", "APPROVED", "REJECTED", "INFO_REQUESTED"]
+      },
+      "VerificationSubject": {
+        "type": "string",
+        "enum": ["ORGANIZER_CLUB", "STUDENT_ID"]
+      },
+      "AuditLogEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "targetType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "targetId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "actorId", "action", "targetType", "targetId", "metadata", "createdAt"]
+      },
+      "CheckIn": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rsvpId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "method": {
+            "type": "string",
+            "enum": ["QR_SCAN", "MANUAL"]
+          },
+          "checkedInAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "checkedInBy": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isDuplicate": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "eventId",
+          "rsvpId",
+          "method",
+          "checkedInAt",
+          "checkedInBy",
+          "isDuplicate"
+        ]
+      },
+      "EventPublic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 140
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "SOCIAL_PARTY",
+              "PERFORMANCE_ARTS",
+              "ACADEMIC_CONFERENCE",
+              "SPORTS_RECREATION",
+              "CLUB_SOCIETY"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["DRAFT", "PUBLISHED", "CANCELLED", "COMPLETED"]
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "venueName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "venueDetail": {
+            "type": "string",
+            "maxLength": 500,
+            "nullable": true
+          },
+          "coverImageUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "nullable": true
+          },
+          "rsvpCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "organizer": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "bio": {
+                "type": "string",
+                "maxLength": 500,
+                "nullable": true
+              },
+              "logoUrl": {
+                "type": "string",
+                "format": "uri",
+                "nullable": true
+              },
+              "isVerified": {
+                "type": "boolean"
+              },
+              "followerCount": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": false
+              }
+            },
+            "required": ["id", "slug", "name", "bio", "logoUrl", "isVerified", "followerCount"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "description",
+          "category",
+          "status",
+          "startsAt",
+          "endsAt",
+          "venueName",
+          "venueDetail",
+          "coverImageUrl",
+          "capacity",
+          "rsvpCount",
+          "organizer",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "OrganizerPublic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "bio": {
+            "type": "string",
+            "maxLength": 500,
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "followerCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          }
+        },
+        "required": ["id", "slug", "name", "bio", "logoUrl", "isVerified", "followerCount"]
+      },
+      "Rsvp": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["CONFIRMED", "WAITLISTED", "CANCELLED"]
+          },
+          "qrToken": {
+            "type": "string",
+            "minLength": 16
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "eventId", "userId", "status", "qrToken", "createdAt"]
+      },
+      "Story": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "organizer": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "bio": {
+                "type": "string",
+                "maxLength": 500,
+                "nullable": true
+              },
+              "logoUrl": {
+                "type": "string",
+                "format": "uri",
+                "nullable": true
+              },
+              "isVerified": {
+                "type": "boolean"
+              },
+              "followerCount": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": false
+              }
+            },
+            "required": ["id", "slug", "name", "bio", "logoUrl", "isVerified", "followerCount"]
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "mediaUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mediaType": {
+            "type": "string",
+            "enum": ["IMAGE", "VIDEO"]
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 280,
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "organizer",
+          "eventId",
+          "mediaUrl",
+          "mediaType",
+          "caption",
+          "createdAt",
+          "expiresAt"
+        ]
+      },
+      "UserPublic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+          },
+          "isVerifiedStudent": {
+            "type": "boolean"
+          }
+        },
+        "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"]
+      },
+      "VerificationRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subject": {
+            "type": "string",
+            "enum": ["ORGANIZER_CLUB", "STUDENT_ID"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "IN_REVIEW", "APPROVED", "REJECTED", "INFO_REQUESTED"]
+          },
+          "submittedBy": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "avatarUrl": {
+                "type": "string",
+                "format": "uri",
+                "nullable": true
+              },
+              "role": {
+                "type": "string",
+                "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+              },
+              "isVerifiedStudent": {
+                "type": "boolean"
+              }
+            },
+            "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"]
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "claimedBy": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "avatarUrl": {
+                "type": "string",
+                "format": "uri",
+                "nullable": true
+              },
+              "role": {
+                "type": "string",
+                "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+              },
+              "isVerifiedStudent": {
+                "type": "boolean"
+              }
+            },
+            "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"],
+            "nullable": true
+          },
+          "claimedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "reviewerNote": {
+            "type": "string",
+            "maxLength": 1000,
+            "nullable": true
+          },
+          "decidedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "subject",
+          "status",
+          "submittedBy",
+          "submittedAt",
+          "claimedBy",
+          "claimedAt",
+          "reviewerNote",
+          "decidedAt"
+        ]
+      },
+      "CancelEventBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": ["reason"]
+      },
+      "CreateEventBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 140
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "SOCIAL_PARTY",
+              "PERFORMANCE_ARTS",
+              "ACADEMIC_CONFERENCE",
+              "SPORTS_RECREATION",
+              "CLUB_SOCIETY"
+            ]
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "venueName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "venueDetail": {
+            "type": "string",
+            "maxLength": 500,
+            "nullable": true,
+            "default": null
+          },
+          "coverImageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "nullable": true,
+            "default": null
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "category",
+          "startsAt",
+          "endsAt",
+          "venueName",
+          "coverImageUrl"
+        ]
+      },
+      "CreateStoryBody": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "default": null
+          },
+          "mediaUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mediaType": {
+            "type": "string",
+            "enum": ["IMAGE", "VIDEO"]
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 280,
+            "nullable": true,
+            "default": null
+          }
+        },
+        "required": ["mediaUrl", "mediaType"]
+      },
+      "FeedQuery": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 50,
+            "exclusiveMaximum": false,
+            "default": 20
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "SOCIAL_PARTY",
+              "PERFORMANCE_ARTS",
+              "ACADEMIC_CONFERENCE",
+              "SPORTS_RECREATION",
+              "CLUB_SOCIETY"
+            ]
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "FeedResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 140
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 5000
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "SOCIAL_PARTY",
+                    "PERFORMANCE_ARTS",
+                    "ACADEMIC_CONFERENCE",
+                    "SPORTS_RECREATION",
+                    "CLUB_SOCIETY"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["DRAFT", "PUBLISHED", "CANCELLED", "COMPLETED"]
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "venueName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "venueDetail": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "nullable": true
+                },
+                "coverImageUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                },
+                "capacity": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "nullable": true
+                },
+                "rsvpCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "nullable": true
+                    },
+                    "logoUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "title",
+                "description",
+                "category",
+                "status",
+                "startsAt",
+                "endsAt",
+                "venueName",
+                "venueDetail",
+                "coverImageUrl",
+                "capacity",
+                "rsvpCount",
+                "organizer",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["items", "nextCursor"]
+      },
+      "StoriesResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "nullable": true
+                    },
+                    "logoUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ]
+                },
+                "eventId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true
+                },
+                "mediaUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "mediaType": {
+                  "type": "string",
+                  "enum": ["IMAGE", "VIDEO"]
+                },
+                "caption": {
+                  "type": "string",
+                  "maxLength": 280,
+                  "nullable": true
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "expiresAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "organizer",
+                "eventId",
+                "mediaUrl",
+                "mediaType",
+                "caption",
+                "createdAt",
+                "expiresAt"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["items", "nextCursor"]
+      },
+      "UpdateEventBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 140
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "SOCIAL_PARTY",
+              "PERFORMANCE_ARTS",
+              "ACADEMIC_CONFERENCE",
+              "SPORTS_RECREATION",
+              "CLUB_SOCIETY"
+            ]
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "venueName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "venueDetail": {
+            "type": "string",
+            "maxLength": 500,
+            "nullable": true,
+            "default": null
+          },
+          "coverImageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "nullable": true,
+            "default": null
+          }
+        }
+      },
+      "CheckInBatchBody": {
+        "type": "object",
+        "properties": {
+          "checkIns": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "properties": {
+                "eventId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "qrToken": {
+                  "type": "string",
+                  "minLength": 16
+                },
+                "rsvpId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "method": {
+                  "type": "string",
+                  "enum": ["QR_SCAN", "MANUAL"]
+                },
+                "scannedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": ["eventId", "method", "scannedAt"]
+            }
+          }
+        },
+        "required": ["checkIns"]
+      },
+      "CheckInBody": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "qrToken": {
+            "type": "string",
+            "minLength": 16
+          },
+          "rsvpId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "method": {
+            "type": "string",
+            "enum": ["QR_SCAN", "MANUAL"]
+          },
+          "scannedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["eventId", "method", "scannedAt"]
+      },
+      "CheckInResponse": {
+        "type": "object",
+        "properties": {
+          "checkIn": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "rsvpId": {
+                "type": "string",
+                "format": "uuid",
+                "nullable": true
+              },
+              "method": {
+                "type": "string",
+                "enum": ["QR_SCAN", "MANUAL"]
+              },
+              "checkedInAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "checkedInBy": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "isDuplicate": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "eventId",
+              "rsvpId",
+              "method",
+              "checkedInAt",
+              "checkedInBy",
+              "isDuplicate"
+            ]
+          },
+          "attendeeName": {
+            "type": "string"
+          },
+          "duplicate": {
+            "type": "boolean"
+          }
+        },
+        "required": ["checkIn", "attendeeName", "duplicate"]
+      },
+      "CreateRsvpBody": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["eventId"]
+      },
+      "CreateRsvpResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["CONFIRMED", "WAITLISTED", "CANCELLED"]
+          },
+          "qrToken": {
+            "type": "string",
+            "minLength": 16
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "eventId", "userId", "status", "qrToken", "createdAt"]
+      },
+      "EventStatsResponse": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rsvpCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "checkInCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "conversionRate": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "maximum": 1,
+            "exclusiveMaximum": false
+          },
+          "duplicateScanCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "manualCheckInCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          }
+        },
+        "required": [
+          "eventId",
+          "rsvpCount",
+          "checkInCount",
+          "conversionRate",
+          "duplicateScanCount",
+          "manualCheckInCount"
+        ]
+      },
+      "DecideVerificationBody": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": ["APPROVED", "REJECTED", "INFO_REQUESTED"]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "nullable": true,
+            "default": null
+          }
+        },
+        "required": ["decision"]
+      },
+      "FollowOrganizerResponse": {
+        "type": "object",
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "following": {
+            "type": "boolean"
+          },
+          "followerCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          }
+        },
+        "required": ["organizerId", "following", "followerCount"]
+      },
+      "OrganizerListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "bio": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "nullable": true
+                },
+                "logoUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                },
+                "isVerified": {
+                  "type": "boolean"
+                },
+                "followerCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                }
+              },
+              "required": ["id", "slug", "name", "bio", "logoUrl", "isVerified", "followerCount"]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["items", "nextCursor"]
+      },
+      "SessionResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "avatarUrl": {
+                "type": "string",
+                "format": "uri",
+                "nullable": true
+              },
+              "role": {
+                "type": "string",
+                "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+              },
+              "isVerifiedStudent": {
+                "type": "boolean"
+              }
+            },
+            "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"]
+          },
+          "accessToken": {
+            "type": "string"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": ["user", "accessToken", "expiresIn"]
+      },
+      "SignInBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "SignUpBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 200
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "required": ["email", "password", "displayName"]
+      },
+      "SubmitOrganizerVerificationBody": {
+        "type": "object",
+        "properties": {
+          "organizerName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "evidenceUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "nullable": true,
+            "default": null
+          }
+        },
+        "required": ["organizerName", "slug", "evidenceUrl"]
+      },
+      "SubmitStudentVerificationBody": {
+        "type": "object",
+        "properties": {
+          "studentEmail": {
+            "type": "string",
+            "format": "email"
+          },
+          "documentUploadId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["studentEmail", "documentUploadId"]
+      },
+      "VerificationQueueQuery": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false,
+            "maximum": 50,
+            "exclusiveMaximum": false,
+            "default": 20
+          },
+          "subject": {
+            "type": "string",
+            "enum": ["ORGANIZER_CLUB", "STUDENT_ID"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "IN_REVIEW", "APPROVED", "REJECTED", "INFO_REQUESTED"]
+          }
+        }
+      },
+      "VerificationQueueResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject": {
+                  "type": "string",
+                  "enum": ["ORGANIZER_CLUB", "STUDENT_ID"]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["PENDING", "IN_REVIEW", "APPROVED", "REJECTED", "INFO_REQUESTED"]
+                },
+                "submittedBy": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "avatarUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+                    },
+                    "isVerifiedStudent": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"]
+                },
+                "submittedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "claimedBy": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "avatarUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+                    },
+                    "isVerifiedStudent": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"],
+                  "nullable": true
+                },
+                "claimedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "reviewerNote": {
+                  "type": "string",
+                  "maxLength": 1000,
+                  "nullable": true
+                },
+                "decidedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "subject",
+                "status",
+                "submittedBy",
+                "submittedAt",
+                "claimedBy",
+                "claimedAt",
+                "reviewerNote",
+                "decidedAt"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["items", "nextCursor"]
+      },
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": ["path", "message"]
+            }
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "required": ["statusCode", "code", "message", "requestId"]
+      }
+    }
+  }
+}

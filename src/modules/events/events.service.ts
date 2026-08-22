@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { FeedQuery } from '@campuspulse/contract';
+import type { FeedQuery } from '../../contract';
 import { PrismaService } from '../../common/prisma.service';
 
 @Injectable()

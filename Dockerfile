@@ -1,13 +1,16 @@
 # syntax=docker/dockerfile:1.7
 
+# --ignore-scripts throughout: husky is a devDependency and its `prepare`
+# script would fail the production install. Prisma's client is generated
+# explicitly instead of relying on a postinstall hook.
+
 # ---------- deps ----------
 FROM node:22-alpine AS deps
 WORKDIR /app
-# git: @campuspulse/contract is a git dependency.
-RUN apk add --no-cache git openssl
+RUN apk add --no-cache openssl
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 # ---------- build ----------
 FROM node:22-alpine AS build
@@ -20,10 +23,12 @@ RUN npx prisma generate && npm run build
 # ---------- production deps ----------
 FROM node:22-alpine AS prod-deps
 WORKDIR /app
-RUN apk add --no-cache git openssl
+RUN apk add --no-cache openssl
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma
-RUN npm ci --omit=dev && npx prisma generate
+# prisma is a runtime dependency: Render runs `prisma migrate deploy` as
+# its pre-deploy command, inside this image.
+RUN npm ci --omit=dev --ignore-scripts && npx prisma generate
 
 # ---------- runtime ----------
 FROM node:22-alpine AS runtime

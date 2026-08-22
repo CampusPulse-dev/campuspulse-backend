@@ -6,3 +6,5 @@ openapi.json
 dist/
 coverage/
 node_modules/
+prisma/migrations/
+*.tsbuildinfo

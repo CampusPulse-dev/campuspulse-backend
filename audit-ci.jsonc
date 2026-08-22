@@ -1,0 +1,15 @@
+{
+  // Fails CI on high or critical advisories. New problems block; the
+  // entries below are known, reviewed, and currently unfixable upstream.
+  "high": true,
+  "critical": true,
+  "allowlist": [
+    // GHSA-ggr8-5vv4-36mx — stack exhaustion in deepmerge-ts, reached only
+    // through @prisma/config, which the Prisma CLI uses to read its own
+    // config at build and migrate time. Not reachable from request
+    // handling. No fixed Prisma release exists as of 2026-08-22 (latest
+    // is 7.9.1 and the advisory covers it). Re-check on the next Prisma
+    // major and remove this entry when a fix ships.
+    "GHSA-ggr8-5vv4-36mx",
+  ],
+}

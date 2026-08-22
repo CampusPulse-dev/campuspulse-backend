@@ -29,9 +29,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # gitleaks needs history to scan the whole diff
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # The gitleaks *Action* requires a paid licence for organisations.
+      # The CLI itself is MIT-licensed, so run that directly instead.
+      - name: Run gitleaks
+        run: |
+          docker run --rm -v "$PWD:/repo" \
+            zricethezav/gitleaks:latest detect \
+            --source=/repo --redact --verbose --no-banner
 
   audit:
     name: Dependency audit
@@ -43,5 +47,6 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      # Advisory on lows; blocks on high and critical.
-      - run: npm audit --audit-level=high
+      # Blocks on high and critical. Known, reviewed, currently-unfixable
+      # advisories are documented in audit-ci.jsonc.
+      - run: npx audit-ci --config audit-ci.jsonc

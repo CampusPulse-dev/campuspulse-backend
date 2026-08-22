@@ -1,19 +1,39 @@
 version: 2
+
+# Tuned for the launch window (to Sep 20). The goal is security patches
+# without a review queue nobody has time to read. Revisit after launch:
+# lift the major-version ignores and raise the limits.
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
       day: monday
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     groups:
-      # One PR per ecosystem rather than twenty: nobody reviews twenty.
+      # One PR per ecosystem rather than twenty — nobody reviews twenty.
       nest:
         patterns: ['@nestjs/*']
       prisma:
         patterns: ['prisma', '@prisma/*']
       dev-tooling:
-        patterns: ['eslint*', '@typescript-eslint/*', 'prettier', 'jest', 'ts-jest', '@types/*']
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+          - 'typescript-eslint'
+          - 'prettier'
+          - 'jest'
+          - 'ts-jest'
+          - '@types/*'
+          - 'lint-staged'
+          - 'husky'
+          - '@commitlint/*'
+    ignore:
+      # Majors are breaking by definition and there is no runway to absorb
+      # one before launch. Security patches still come through as patch and
+      # minor bumps. Remove this block after Sep 20.
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     commit-message:
       prefix: 'chore(deps)'
 
@@ -21,6 +41,11 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    open-pull-requests-limit: 2
+    groups:
+      # Action bumps are low-risk and high-volume: one PR for all of them.
+      actions:
+        patterns: ['*']
     commit-message:
       prefix: 'chore(ci)'
 
@@ -28,5 +53,10 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    open-pull-requests-limit: 1
+    ignore:
+      # The Node major is pinned deliberately and matches .nvmrc and CI.
+      - dependency-name: 'node'
+        update-types: ['version-update:semver-major']
     commit-message:
       prefix: 'chore(docker)'

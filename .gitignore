@@ -14,3 +14,6 @@ prisma/generated/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# TypeScript incremental build cache
+*.tsbuildinfo

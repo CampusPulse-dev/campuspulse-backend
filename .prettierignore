@@ -1,0 +1,8 @@
+# Generated — written by scripts/generate-openapi.ts, which owns its
+# formatting. Letting Prettier reformat it would make openapi:check fail
+# on every run.
+openapi.json
+
+dist/
+coverage/
+node_modules/

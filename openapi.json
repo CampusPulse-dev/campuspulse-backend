@@ -26,7 +26,9 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": ["status"],
+                        "required": [
+                          "status"
+                        ],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -41,7 +43,9 @@
                       "example": {},
                       "additionalProperties": {
                         "type": "object",
-                        "required": ["status"],
+                        "required": [
+                          "status"
+                        ],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -60,7 +64,9 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": ["status"],
+                        "required": [
+                          "status"
+                        ],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -94,7 +100,9 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": ["status"],
+                        "required": [
+                          "status"
+                        ],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -114,7 +122,9 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": ["status"],
+                        "required": [
+                          "status"
+                        ],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -137,7 +147,9 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": ["status"],
+                        "required": [
+                          "status"
+                        ],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -152,7 +164,9 @@
             }
           }
         },
-        "tags": ["health"]
+        "tags": [
+          "health"
+        ]
       }
     },
     "/health/live": {
@@ -164,7 +178,9 @@
             "description": ""
           }
         },
-        "tags": ["health"]
+        "tags": [
+          "health"
+        ]
       }
     },
     "/events/feed": {
@@ -184,7 +200,9 @@
           }
         },
         "summary": "Public event feed, filterable by category",
-        "tags": ["events"]
+        "tags": [
+          "events"
+        ]
       }
     },
     "/events/{slug}": {
@@ -204,7 +222,9 @@
           }
         },
         "summary": "Public event page by slug",
-        "tags": ["events"]
+        "tags": [
+          "events"
+        ]
       }
     }
   },
@@ -232,7 +252,10 @@
     "schemas": {
       "CheckInMethod": {
         "type": "string",
-        "enum": ["QR_SCAN", "MANUAL"]
+        "enum": [
+          "QR_SCAN",
+          "MANUAL"
+        ]
       },
       "EventCategory": {
         "type": "string",
@@ -246,27 +269,53 @@
       },
       "EventStatus": {
         "type": "string",
-        "enum": ["DRAFT", "PUBLISHED", "CANCELLED", "COMPLETED"]
+        "enum": [
+          "DRAFT",
+          "PUBLISHED",
+          "CANCELLED",
+          "COMPLETED"
+        ]
       },
       "NotificationChannel": {
         "type": "string",
-        "enum": ["PUSH", "IN_APP", "EMAIL"]
+        "enum": [
+          "PUSH",
+          "IN_APP",
+          "EMAIL"
+        ]
       },
       "RsvpStatus": {
         "type": "string",
-        "enum": ["CONFIRMED", "WAITLISTED", "CANCELLED"]
+        "enum": [
+          "CONFIRMED",
+          "WAITLISTED",
+          "CANCELLED"
+        ]
       },
       "UserRole": {
         "type": "string",
-        "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+        "enum": [
+          "ATTENDEE",
+          "ORGANIZER",
+          "SUPER_ADMIN"
+        ]
       },
       "VerificationStatus": {
         "type": "string",
-        "enum": ["PENDING", "IN_REVIEW", "APPROVED", "REJECTED", "INFO_REQUESTED"]
+        "enum": [
+          "PENDING",
+          "IN_REVIEW",
+          "APPROVED",
+          "REJECTED",
+          "INFO_REQUESTED"
+        ]
       },
       "VerificationSubject": {
         "type": "string",
-        "enum": ["ORGANIZER_CLUB", "STUDENT_ID"]
+        "enum": [
+          "ORGANIZER_CLUB",
+          "STUDENT_ID"
+        ]
       },
       "AuditLogEntry": {
         "type": "object",
@@ -302,7 +351,15 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "actorId", "action", "targetType", "targetId", "metadata", "createdAt"]
+        "required": [
+          "id",
+          "actorId",
+          "action",
+          "targetType",
+          "targetId",
+          "metadata",
+          "createdAt"
+        ]
       },
       "CheckIn": {
         "type": "object",
@@ -322,7 +379,10 @@
           },
           "method": {
             "type": "string",
-            "enum": ["QR_SCAN", "MANUAL"]
+            "enum": [
+              "QR_SCAN",
+              "MANUAL"
+            ]
           },
           "checkedInAt": {
             "type": "string",
@@ -380,7 +440,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["DRAFT", "PUBLISHED", "CANCELLED", "COMPLETED"]
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CANCELLED",
+              "COMPLETED"
+            ]
           },
           "startsAt": {
             "type": "string",
@@ -453,7 +518,15 @@
                 "exclusiveMinimum": false
               }
             },
-            "required": ["id", "slug", "name", "bio", "logoUrl", "isVerified", "followerCount"]
+            "required": [
+              "id",
+              "slug",
+              "name",
+              "bio",
+              "logoUrl",
+              "isVerified",
+              "followerCount"
+            ]
           },
           "createdAt": {
             "type": "string",
@@ -520,7 +593,15 @@
             "exclusiveMinimum": false
           }
         },
-        "required": ["id", "slug", "name", "bio", "logoUrl", "isVerified", "followerCount"]
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "bio",
+          "logoUrl",
+          "isVerified",
+          "followerCount"
+        ]
       },
       "Rsvp": {
         "type": "object",
@@ -539,7 +620,11 @@
           },
           "status": {
             "type": "string",
-            "enum": ["CONFIRMED", "WAITLISTED", "CANCELLED"]
+            "enum": [
+              "CONFIRMED",
+              "WAITLISTED",
+              "CANCELLED"
+            ]
           },
           "qrToken": {
             "type": "string",
@@ -550,7 +635,14 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "eventId", "userId", "status", "qrToken", "createdAt"]
+        "required": [
+          "id",
+          "eventId",
+          "userId",
+          "status",
+          "qrToken",
+          "createdAt"
+        ]
       },
       "Story": {
         "type": "object",
@@ -596,7 +688,15 @@
                 "exclusiveMinimum": false
               }
             },
-            "required": ["id", "slug", "name", "bio", "logoUrl", "isVerified", "followerCount"]
+            "required": [
+              "id",
+              "slug",
+              "name",
+              "bio",
+              "logoUrl",
+              "isVerified",
+              "followerCount"
+            ]
           },
           "eventId": {
             "type": "string",
@@ -609,7 +709,10 @@
           },
           "mediaType": {
             "type": "string",
-            "enum": ["IMAGE", "VIDEO"]
+            "enum": [
+              "IMAGE",
+              "VIDEO"
+            ]
           },
           "caption": {
             "type": "string",
@@ -655,13 +758,23 @@
           },
           "role": {
             "type": "string",
-            "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+            "enum": [
+              "ATTENDEE",
+              "ORGANIZER",
+              "SUPER_ADMIN"
+            ]
           },
           "isVerifiedStudent": {
             "type": "boolean"
           }
         },
-        "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"]
+        "required": [
+          "id",
+          "displayName",
+          "avatarUrl",
+          "role",
+          "isVerifiedStudent"
+        ]
       },
       "VerificationRequest": {
         "type": "object",
@@ -672,11 +785,20 @@
           },
           "subject": {
             "type": "string",
-            "enum": ["ORGANIZER_CLUB", "STUDENT_ID"]
+            "enum": [
+              "ORGANIZER_CLUB",
+              "STUDENT_ID"
+            ]
           },
           "status": {
             "type": "string",
-            "enum": ["PENDING", "IN_REVIEW", "APPROVED", "REJECTED", "INFO_REQUESTED"]
+            "enum": [
+              "PENDING",
+              "IN_REVIEW",
+              "APPROVED",
+              "REJECTED",
+              "INFO_REQUESTED"
+            ]
           },
           "submittedBy": {
             "type": "object",
@@ -697,13 +819,23 @@
               },
               "role": {
                 "type": "string",
-                "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+                "enum": [
+                  "ATTENDEE",
+                  "ORGANIZER",
+                  "SUPER_ADMIN"
+                ]
               },
               "isVerifiedStudent": {
                 "type": "boolean"
               }
             },
-            "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"]
+            "required": [
+              "id",
+              "displayName",
+              "avatarUrl",
+              "role",
+              "isVerifiedStudent"
+            ]
           },
           "submittedAt": {
             "type": "string",
@@ -728,13 +860,23 @@
               },
               "role": {
                 "type": "string",
-                "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+                "enum": [
+                  "ATTENDEE",
+                  "ORGANIZER",
+                  "SUPER_ADMIN"
+                ]
               },
               "isVerifiedStudent": {
                 "type": "boolean"
               }
             },
-            "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"],
+            "required": [
+              "id",
+              "displayName",
+              "avatarUrl",
+              "role",
+              "isVerifiedStudent"
+            ],
             "nullable": true
           },
           "claimedAt": {
@@ -774,7 +916,9 @@
             "maxLength": 500
           }
         },
-        "required": ["reason"]
+        "required": [
+          "reason"
+        ]
       },
       "CreateEventBody": {
         "type": "object",
@@ -855,7 +999,10 @@
           },
           "mediaType": {
             "type": "string",
-            "enum": ["IMAGE", "VIDEO"]
+            "enum": [
+              "IMAGE",
+              "VIDEO"
+            ]
           },
           "caption": {
             "type": "string",
@@ -864,7 +1011,10 @@
             "default": null
           }
         },
-        "required": ["mediaUrl", "mediaType"]
+        "required": [
+          "mediaUrl",
+          "mediaType"
+        ]
       },
       "FeedQuery": {
         "type": "object",
@@ -935,7 +1085,12 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["DRAFT", "PUBLISHED", "CANCELLED", "COMPLETED"]
+                  "enum": [
+                    "DRAFT",
+                    "PUBLISHED",
+                    "CANCELLED",
+                    "COMPLETED"
+                  ]
                 },
                 "startsAt": {
                   "type": "string",
@@ -1052,7 +1207,10 @@
             "nullable": true
           }
         },
-        "required": ["items", "nextCursor"]
+        "required": [
+          "items",
+          "nextCursor"
+        ]
       },
       "StoriesResponse": {
         "type": "object",
@@ -1124,7 +1282,10 @@
                 },
                 "mediaType": {
                   "type": "string",
-                  "enum": ["IMAGE", "VIDEO"]
+                  "enum": [
+                    "IMAGE",
+                    "VIDEO"
+                  ]
                 },
                 "caption": {
                   "type": "string",
@@ -1157,7 +1318,10 @@
             "nullable": true
           }
         },
-        "required": ["items", "nextCursor"]
+        "required": [
+          "items",
+          "nextCursor"
+        ]
       },
       "UpdateEventBody": {
         "type": "object",
@@ -1238,18 +1402,27 @@
                 },
                 "method": {
                   "type": "string",
-                  "enum": ["QR_SCAN", "MANUAL"]
+                  "enum": [
+                    "QR_SCAN",
+                    "MANUAL"
+                  ]
                 },
                 "scannedAt": {
                   "type": "string",
                   "format": "date-time"
                 }
               },
-              "required": ["eventId", "method", "scannedAt"]
+              "required": [
+                "eventId",
+                "method",
+                "scannedAt"
+              ]
             }
           }
         },
-        "required": ["checkIns"]
+        "required": [
+          "checkIns"
+        ]
       },
       "CheckInBody": {
         "type": "object",
@@ -1268,14 +1441,21 @@
           },
           "method": {
             "type": "string",
-            "enum": ["QR_SCAN", "MANUAL"]
+            "enum": [
+              "QR_SCAN",
+              "MANUAL"
+            ]
           },
           "scannedAt": {
             "type": "string",
             "format": "date-time"
           }
         },
-        "required": ["eventId", "method", "scannedAt"]
+        "required": [
+          "eventId",
+          "method",
+          "scannedAt"
+        ]
       },
       "CheckInResponse": {
         "type": "object",
@@ -1298,7 +1478,10 @@
               },
               "method": {
                 "type": "string",
-                "enum": ["QR_SCAN", "MANUAL"]
+                "enum": [
+                  "QR_SCAN",
+                  "MANUAL"
+                ]
               },
               "checkedInAt": {
                 "type": "string",
@@ -1329,7 +1512,11 @@
             "type": "boolean"
           }
         },
-        "required": ["checkIn", "attendeeName", "duplicate"]
+        "required": [
+          "checkIn",
+          "attendeeName",
+          "duplicate"
+        ]
       },
       "CreateRsvpBody": {
         "type": "object",
@@ -1339,7 +1526,9 @@
             "format": "uuid"
           }
         },
-        "required": ["eventId"]
+        "required": [
+          "eventId"
+        ]
       },
       "CreateRsvpResponse": {
         "type": "object",
@@ -1358,7 +1547,11 @@
           },
           "status": {
             "type": "string",
-            "enum": ["CONFIRMED", "WAITLISTED", "CANCELLED"]
+            "enum": [
+              "CONFIRMED",
+              "WAITLISTED",
+              "CANCELLED"
+            ]
           },
           "qrToken": {
             "type": "string",
@@ -1369,7 +1562,14 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "eventId", "userId", "status", "qrToken", "createdAt"]
+        "required": [
+          "id",
+          "eventId",
+          "userId",
+          "status",
+          "qrToken",
+          "createdAt"
+        ]
       },
       "EventStatsResponse": {
         "type": "object",
@@ -1420,7 +1620,11 @@
         "properties": {
           "decision": {
             "type": "string",
-            "enum": ["APPROVED", "REJECTED", "INFO_REQUESTED"]
+            "enum": [
+              "APPROVED",
+              "REJECTED",
+              "INFO_REQUESTED"
+            ]
           },
           "note": {
             "type": "string",
@@ -1429,7 +1633,9 @@
             "default": null
           }
         },
-        "required": ["decision"]
+        "required": [
+          "decision"
+        ]
       },
       "FollowOrganizerResponse": {
         "type": "object",
@@ -1447,7 +1653,11 @@
             "exclusiveMinimum": false
           }
         },
-        "required": ["organizerId", "following", "followerCount"]
+        "required": [
+          "organizerId",
+          "following",
+          "followerCount"
+        ]
       },
       "OrganizerListResponse": {
         "type": "object",
@@ -1491,7 +1701,15 @@
                   "exclusiveMinimum": false
                 }
               },
-              "required": ["id", "slug", "name", "bio", "logoUrl", "isVerified", "followerCount"]
+              "required": [
+                "id",
+                "slug",
+                "name",
+                "bio",
+                "logoUrl",
+                "isVerified",
+                "followerCount"
+              ]
             }
           },
           "nextCursor": {
@@ -1499,7 +1717,10 @@
             "nullable": true
           }
         },
-        "required": ["items", "nextCursor"]
+        "required": [
+          "items",
+          "nextCursor"
+        ]
       },
       "SessionResponse": {
         "type": "object",
@@ -1523,13 +1744,23 @@
               },
               "role": {
                 "type": "string",
-                "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+                "enum": [
+                  "ATTENDEE",
+                  "ORGANIZER",
+                  "SUPER_ADMIN"
+                ]
               },
               "isVerifiedStudent": {
                 "type": "boolean"
               }
             },
-            "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"]
+            "required": [
+              "id",
+              "displayName",
+              "avatarUrl",
+              "role",
+              "isVerifiedStudent"
+            ]
           },
           "accessToken": {
             "type": "string"
@@ -1540,7 +1771,11 @@
             "exclusiveMinimum": true
           }
         },
-        "required": ["user", "accessToken", "expiresIn"]
+        "required": [
+          "user",
+          "accessToken",
+          "expiresIn"
+        ]
       },
       "SignInBody": {
         "type": "object",
@@ -1554,7 +1789,10 @@
             "minLength": 1
           }
         },
-        "required": ["email", "password"]
+        "required": [
+          "email",
+          "password"
+        ]
       },
       "SignUpBody": {
         "type": "object",
@@ -1574,7 +1812,11 @@
             "maxLength": 80
           }
         },
-        "required": ["email", "password", "displayName"]
+        "required": [
+          "email",
+          "password",
+          "displayName"
+        ]
       },
       "SubmitOrganizerVerificationBody": {
         "type": "object",
@@ -1601,7 +1843,11 @@
             "default": null
           }
         },
-        "required": ["organizerName", "slug", "evidenceUrl"]
+        "required": [
+          "organizerName",
+          "slug",
+          "evidenceUrl"
+        ]
       },
       "SubmitStudentVerificationBody": {
         "type": "object",
@@ -1615,7 +1861,10 @@
             "minLength": 1
           }
         },
-        "required": ["studentEmail", "documentUploadId"]
+        "required": [
+          "studentEmail",
+          "documentUploadId"
+        ]
       },
       "VerificationQueueQuery": {
         "type": "object",
@@ -1633,11 +1882,20 @@
           },
           "subject": {
             "type": "string",
-            "enum": ["ORGANIZER_CLUB", "STUDENT_ID"]
+            "enum": [
+              "ORGANIZER_CLUB",
+              "STUDENT_ID"
+            ]
           },
           "status": {
             "type": "string",
-            "enum": ["PENDING", "IN_REVIEW", "APPROVED", "REJECTED", "INFO_REQUESTED"]
+            "enum": [
+              "PENDING",
+              "IN_REVIEW",
+              "APPROVED",
+              "REJECTED",
+              "INFO_REQUESTED"
+            ]
           }
         }
       },
@@ -1655,11 +1913,20 @@
                 },
                 "subject": {
                   "type": "string",
-                  "enum": ["ORGANIZER_CLUB", "STUDENT_ID"]
+                  "enum": [
+                    "ORGANIZER_CLUB",
+                    "STUDENT_ID"
+                  ]
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["PENDING", "IN_REVIEW", "APPROVED", "REJECTED", "INFO_REQUESTED"]
+                  "enum": [
+                    "PENDING",
+                    "IN_REVIEW",
+                    "APPROVED",
+                    "REJECTED",
+                    "INFO_REQUESTED"
+                  ]
                 },
                 "submittedBy": {
                   "type": "object",
@@ -1680,13 +1947,23 @@
                     },
                     "role": {
                       "type": "string",
-                      "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+                      "enum": [
+                        "ATTENDEE",
+                        "ORGANIZER",
+                        "SUPER_ADMIN"
+                      ]
                     },
                     "isVerifiedStudent": {
                       "type": "boolean"
                     }
                   },
-                  "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"]
+                  "required": [
+                    "id",
+                    "displayName",
+                    "avatarUrl",
+                    "role",
+                    "isVerifiedStudent"
+                  ]
                 },
                 "submittedAt": {
                   "type": "string",
@@ -1711,13 +1988,23 @@
                     },
                     "role": {
                       "type": "string",
-                      "enum": ["ATTENDEE", "ORGANIZER", "SUPER_ADMIN"]
+                      "enum": [
+                        "ATTENDEE",
+                        "ORGANIZER",
+                        "SUPER_ADMIN"
+                      ]
                     },
                     "isVerifiedStudent": {
                       "type": "boolean"
                     }
                   },
-                  "required": ["id", "displayName", "avatarUrl", "role", "isVerifiedStudent"],
+                  "required": [
+                    "id",
+                    "displayName",
+                    "avatarUrl",
+                    "role",
+                    "isVerifiedStudent"
+                  ],
                   "nullable": true
                 },
                 "claimedAt": {
@@ -1754,7 +2041,10 @@
             "nullable": true
           }
         },
-        "required": ["items", "nextCursor"]
+        "required": [
+          "items",
+          "nextCursor"
+        ]
       },
       "ApiError": {
         "type": "object",
@@ -1780,14 +2070,22 @@
                   "type": "string"
                 }
               },
-              "required": ["path", "message"]
+              "required": [
+                "path",
+                "message"
+              ]
             }
           },
           "requestId": {
             "type": "string"
           }
         },
-        "required": ["statusCode", "code", "message", "requestId"]
+        "required": [
+          "statusCode",
+          "code",
+          "message",
+          "requestId"
+        ]
       }
     }
   }

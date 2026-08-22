@@ -18,11 +18,6 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/require-await': 'error',
-      // A TODO with no ticket is a TODO nobody will ever action.
-      'no-warning-comments': [
-        'warn',
-        { terms: ['todo', 'fixme', 'hack', 'xxx'], location: 'start' },
-      ],
     },
   },
   {

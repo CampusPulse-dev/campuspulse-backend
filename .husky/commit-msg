@@ -1,2 +1,3 @@
 #!/bin/sh
+./scripts/strip-attribution.sh "$1"
 npx --no -- commitlint --edit "$1"

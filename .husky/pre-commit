@@ -1,0 +1,4 @@
+#!/bin/sh
+# Fast gate — anything slower than a few seconds belongs in pre-push or CI.
+npx lint-staged
+./scripts/check-debug-leftovers.sh

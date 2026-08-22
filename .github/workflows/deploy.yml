@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [staging, production]
+        required: true
+
+# Deploys are manual on purpose: render.yaml sets autoDeploy false so a
+# green main does not go straight to students mid-event.
+concurrency:
+  group: deploy-${{ github.event.inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trigger Render deploy
+        # RENDER_DEPLOY_HOOK_URL is stored per-environment so staging and
+        # production cannot be confused for one another.
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            echo "RENDER_DEPLOY_HOOK_URL is not set for this environment." >&2
+            exit 1
+          fi
+          curl --fail --silent --show-error "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
+      - name: Smoke test
+        run: |
+          url="${{ vars.API_BASE_URL }}"
+          if [ -z "$url" ]; then
+            echo "API_BASE_URL variable is not set for this environment." >&2
+            exit 1
+          fi
+          for i in $(seq 1 30); do
+            if curl --fail --silent "$url/api/v1/health" > /dev/null; then
+              echo "Health check passed after ${i} attempt(s)."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Health check never passed." >&2
+          exit 1

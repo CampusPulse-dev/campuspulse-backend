@@ -1,0 +1,25 @@
+name: Task
+description: A unit of planned work from the board
+labels: [task]
+body:
+  - type: input
+    id: ticket
+    attributes:
+      label: Ticket id
+      placeholder: 'S1-04'
+    validations: { required: true }
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+    validations: { required: true }
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+    validations: { required: true }
+  - type: input
+    id: prd
+    attributes:
+      label: PRD section
+      placeholder: '§5'

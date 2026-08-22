@@ -1,0 +1,33 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: [bug]
+body:
+  - type: input
+    id: ticket
+    attributes:
+      label: Related ticket
+      placeholder: 'S2-07'
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+    validations: { required: true }
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happens
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations: { required: true }
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Blocks launch
+        - Degrades a core flow
+        - Cosmetic
+    validations: { required: true }

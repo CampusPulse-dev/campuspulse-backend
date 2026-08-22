@@ -1,0 +1,16 @@
+# Ownership mirrors the module boundaries. Wave holds review oversight
+# across the whole repo; Bayo owns architecture and the API contract.
+
+*                               @Enochthedev
+
+/src/modules/events/            @Enochthedev
+/src/modules/identity/          @Enochthedev
+/src/modules/attendance/        @Enochthedev
+
+# Schema changes touch every domain — the tech lead reviews all of them.
+/prisma/                        @Enochthedev
+
+/.github/                       @Enochthedev
+/Dockerfile                     @Enochthedev
+/render.yaml                    @Enochthedev
+/docs/adr/                      @Enochthedev

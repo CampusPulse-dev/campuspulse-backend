@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+
+.env
+.env.*
+!.env.example
+
+# Prisma generated client
+prisma/generated/
+
+.idea/
+.vscode/*
+!.vscode/extensions.json

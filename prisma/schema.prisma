@@ -1,0 +1,242 @@
+// CampusPulse data model.
+// Mirrors @campuspulse/contract — when an enum changes here, change it there.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EventCategory {
+  SOCIAL_PARTY
+  PERFORMANCE_ARTS
+  ACADEMIC_CONFERENCE
+  SPORTS_RECREATION
+  CLUB_SOCIETY
+}
+
+enum UserRole {
+  ATTENDEE
+  ORGANIZER
+  SUPER_ADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum RsvpStatus {
+  CONFIRMED
+  WAITLISTED
+  CANCELLED
+}
+
+enum CheckInMethod {
+  QR_SCAN
+  MANUAL
+}
+
+enum VerificationStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  INFO_REQUESTED
+}
+
+enum VerificationSubject {
+  ORGANIZER_CLUB
+  STUDENT_ID
+}
+
+model User {
+  id                String   @id @default(uuid()) @db.Uuid
+  email             String   @unique
+  passwordHash      String
+  displayName       String
+  avatarUrl         String?
+  role              UserRole @default(ATTENDEE)
+  isVerifiedStudent Boolean  @default(false)
+  studentEmail      String?  @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizer              Organizer?
+  rsvps                  Rsvp[]
+  follows                Follow[]
+  submittedVerifications VerificationRequest[] @relation("SubmittedBy")
+  claimedVerifications   VerificationRequest[] @relation("ClaimedBy")
+  auditEntries           AuditLog[]
+  checkInsPerformed      CheckIn[]             @relation("CheckedInBy")
+  notifications          Notification[]
+
+  @@index([role])
+}
+
+model Organizer {
+  id            String   @id @default(uuid()) @db.Uuid
+  slug          String   @unique
+  name          String
+  bio           String?
+  logoUrl       String?
+  isVerified    Boolean  @default(false)
+  ownerId       String   @unique @db.Uuid
+  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  followerCount Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  events  Event[]
+  stories Story[]
+  follows Follow[]
+
+  @@index([isVerified])
+}
+
+model Event {
+  id            String        @id @default(uuid()) @db.Uuid
+  slug          String        @unique
+  title         String
+  description   String
+  category      EventCategory
+  status        EventStatus   @default(DRAFT)
+  startsAt      DateTime
+  endsAt        DateTime
+  venueName     String
+  venueDetail   String?
+  coverImageUrl String?
+  capacity      Int?
+  // Denormalised so the feed does not aggregate on every read.
+  rsvpCount     Int           @default(0)
+  cancelReason  String?
+  organizerId   String        @db.Uuid
+  organizer     Organizer     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  rsvps    Rsvp[]
+  checkIns CheckIn[]
+  stories  Story[]
+
+  // The feed query: published events, by category, most recent first.
+  @@index([status, category, startsAt])
+  @@index([organizerId, startsAt])
+}
+
+model Story {
+  id          String    @id @default(uuid()) @db.Uuid
+  organizerId String    @db.Uuid
+  organizer   Organizer @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  eventId     String?   @db.Uuid
+  event       Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  mediaUrl    String
+  mediaType   String
+  caption     String?
+  createdAt   DateTime  @default(now())
+  // 24-hour lifetime, enforced server-side.
+  expiresAt   DateTime
+
+  @@index([expiresAt])
+  @@index([organizerId, createdAt])
+}
+
+model Rsvp {
+  id        String     @id @default(uuid()) @db.Uuid
+  eventId   String     @db.Uuid
+  event     Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String     @db.Uuid
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    RsvpStatus @default(CONFIRMED)
+  // Signed payload handed to the client; validated locally by the scanner first.
+  qrToken   String     @unique
+  createdAt DateTime   @default(now())
+
+  checkIns CheckIn[]
+
+  // One RSVP per student per event.
+  @@unique([eventId, userId])
+  @@index([userId, createdAt])
+}
+
+model CheckIn {
+  id            String        @id @default(uuid()) @db.Uuid
+  eventId       String        @db.Uuid
+  event         Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  rsvpId        String?       @db.Uuid
+  rsvp          Rsvp?         @relation(fields: [rsvpId], references: [id], onDelete: SetNull)
+  method        CheckInMethod
+  // Client-supplied: the scanner queues offline and replays on reconnect.
+  scannedAt     DateTime
+  checkedInAt   DateTime      @default(now())
+  checkedInById String        @db.Uuid
+  checkedInBy   User          @relation("CheckedInBy", fields: [checkedInById], references: [id])
+  // Duplicates are recorded and surfaced post-event, never blocked at the door.
+  isDuplicate   Boolean       @default(false)
+
+  @@index([eventId, checkedInAt])
+  @@index([rsvpId])
+}
+
+model Follow {
+  userId      String    @db.Uuid
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizerId String    @db.Uuid
+  organizer   Organizer @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@id([userId, organizerId])
+  @@index([organizerId])
+}
+
+model VerificationRequest {
+  id            String              @id @default(uuid()) @db.Uuid
+  subject       VerificationSubject
+  status        VerificationStatus  @default(PENDING)
+  submittedById String              @db.Uuid
+  submittedBy   User                @relation("SubmittedBy", fields: [submittedById], references: [id], onDelete: Cascade)
+  submittedAt   DateTime            @default(now())
+  // Soft-lock while a reviewer holds the item.
+  claimedById   String?             @db.Uuid
+  claimedBy     User?               @relation("ClaimedBy", fields: [claimedById], references: [id], onDelete: SetNull)
+  claimedAt     DateTime?
+  reviewerNote  String?
+  decidedAt     DateTime?
+  // Storage key only. NDPA: cleared on decision, never exposed as a public URL.
+  documentKey   String?
+  evidenceUrl   String?
+
+  @@index([status, subject, submittedAt])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String   @db.Uuid
+  actor      User     @relation(fields: [actorId], references: [id])
+  action     String
+  targetType String
+  targetId   String
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId, createdAt])
+  @@index([actorId, createdAt])
+}
+
+model Notification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  linkUrl   String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, createdAt])
+}

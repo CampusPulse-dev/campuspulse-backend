@@ -226,6 +226,51 @@
           "events"
         ]
       }
+    },
+    "/auth/signup": {
+      "post": {
+        "operationId": "IdentityController_signUp",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "User created"
+          }
+        },
+        "summary": "Register a new user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "operationId": "IdentityController_signIn",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User logged in"
+          }
+        },
+        "summary": "Login an existing user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "IdentityController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User logged out"
+          }
+        },
+        "summary": "Log out user",
+        "tags": [
+          "auth"
+        ]
+      }
     }
   },
   "info": {

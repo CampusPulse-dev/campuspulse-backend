@@ -51,6 +51,60 @@ export const EventPublic = z.object({
   organizer: OrganizerPublic,
   createdAt: IsoDateTime,
   updatedAt: IsoDateTime,
+  template: z.enum(['GENERIC', 'CONCERT_PARTY', 'PLAY_CULTURAL', 'MATCH_TOURNAMENT']).optional(),
+  studentsOnly: z.boolean().optional(),
+  waitlistEnabled: z.boolean().optional(),
+  dressCode: z.string().nullable().optional(),
+  doorPolicy: z.string().nullable().optional(),
+  tonightMood: z.enum(['CHILL', 'TURN_UP', 'LEARN', 'WATCH_GAME']).optional(),
+  friendsGoing: z
+    .array(UserPublic.pick({ id: true, displayName: true, avatarUrl: true }))
+    .optional(),
+  friendsGoingCount: z.number().int().nonnegative().optional(),
+  lineup: z
+    .array(
+      z.object({
+        id: z.string(),
+        performerName: z.string(),
+        role: z.string(),
+        setTime: z.string(),
+      }),
+    )
+    .optional(),
+  castAndCrew: z.array(z.string()).optional(),
+  showtimes: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string(),
+        startsAt: IsoDateTime,
+        spotsLeft: z.number().int().nonnegative(),
+      }),
+    )
+    .optional(),
+  fixture: z
+    .object({
+      homeTeam: z.string(),
+      awayTeam: z.string(),
+      homeScore: z.number(),
+      awayScore: z.number(),
+      isLive: z.boolean(),
+      periodLabel: z.string(),
+    })
+    .optional(),
+  linkedAfterParty: z
+    .object({
+      id: Id,
+      slug: Slug,
+      title: z.string(),
+      startsAt: IsoDateTime,
+      venueName: z.string(),
+      accessRule: z.enum(['OPEN', 'PRIORITY_CHECKED_IN', 'CHECKED_IN_ONLY']),
+    })
+    .nullable()
+    .optional(),
+  parentEventSlug: Slug.nullable().optional(),
+  parentEventTitle: z.string().nullable().optional(),
 });
 export type EventPublic = z.infer<typeof EventPublic>;
 

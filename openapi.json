@@ -535,6 +535,215 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "template": {
+            "type": "string",
+            "enum": [
+              "GENERIC",
+              "CONCERT_PARTY",
+              "PLAY_CULTURAL",
+              "MATCH_TOURNAMENT"
+            ]
+          },
+          "studentsOnly": {
+            "type": "boolean"
+          },
+          "waitlistEnabled": {
+            "type": "boolean"
+          },
+          "dressCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "doorPolicy": {
+            "type": "string",
+            "nullable": true
+          },
+          "tonightMood": {
+            "type": "string",
+            "enum": [
+              "CHILL",
+              "TURN_UP",
+              "LEARN",
+              "WATCH_GAME"
+            ]
+          },
+          "friendsGoing": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "displayName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "displayName",
+                "avatarUrl"
+              ]
+            }
+          },
+          "friendsGoingCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "lineup": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "performerName": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "setTime": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "performerName",
+                "role",
+                "setTime"
+              ]
+            }
+          },
+          "castAndCrew": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "showtimes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "spotsLeft": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "startsAt",
+                "spotsLeft"
+              ]
+            }
+          },
+          "fixture": {
+            "type": "object",
+            "properties": {
+              "homeTeam": {
+                "type": "string"
+              },
+              "awayTeam": {
+                "type": "string"
+              },
+              "homeScore": {
+                "type": "number"
+              },
+              "awayScore": {
+                "type": "number"
+              },
+              "isLive": {
+                "type": "boolean"
+              },
+              "periodLabel": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "homeTeam",
+              "awayTeam",
+              "homeScore",
+              "awayScore",
+              "isLive",
+              "periodLabel"
+            ]
+          },
+          "linkedAfterParty": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string"
+              },
+              "startsAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "venueName": {
+                "type": "string"
+              },
+              "accessRule": {
+                "type": "string",
+                "enum": [
+                  "OPEN",
+                  "PRIORITY_CHECKED_IN",
+                  "CHECKED_IN_ONLY"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "title",
+              "startsAt",
+              "venueName",
+              "accessRule"
+            ],
+            "nullable": true
+          },
+          "parentEventSlug": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "nullable": true
+          },
+          "parentEventTitle": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
@@ -1180,6 +1389,215 @@
                 "updatedAt": {
                   "type": "string",
                   "format": "date-time"
+                },
+                "template": {
+                  "type": "string",
+                  "enum": [
+                    "GENERIC",
+                    "CONCERT_PARTY",
+                    "PLAY_CULTURAL",
+                    "MATCH_TOURNAMENT"
+                  ]
+                },
+                "studentsOnly": {
+                  "type": "boolean"
+                },
+                "waitlistEnabled": {
+                  "type": "boolean"
+                },
+                "dressCode": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "doorPolicy": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "tonightMood": {
+                  "type": "string",
+                  "enum": [
+                    "CHILL",
+                    "TURN_UP",
+                    "LEARN",
+                    "WATCH_GAME"
+                  ]
+                },
+                "friendsGoing": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "displayName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "avatarUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "displayName",
+                      "avatarUrl"
+                    ]
+                  }
+                },
+                "friendsGoingCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                },
+                "lineup": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "performerName": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      },
+                      "setTime": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "performerName",
+                      "role",
+                      "setTime"
+                    ]
+                  }
+                },
+                "castAndCrew": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "showtimes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "startsAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "spotsLeft": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "exclusiveMinimum": false
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label",
+                      "startsAt",
+                      "spotsLeft"
+                    ]
+                  }
+                },
+                "fixture": {
+                  "type": "object",
+                  "properties": {
+                    "homeTeam": {
+                      "type": "string"
+                    },
+                    "awayTeam": {
+                      "type": "string"
+                    },
+                    "homeScore": {
+                      "type": "number"
+                    },
+                    "awayScore": {
+                      "type": "number"
+                    },
+                    "isLive": {
+                      "type": "boolean"
+                    },
+                    "periodLabel": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "homeTeam",
+                    "awayTeam",
+                    "homeScore",
+                    "awayScore",
+                    "isLive",
+                    "periodLabel"
+                  ]
+                },
+                "linkedAfterParty": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "venueName": {
+                      "type": "string"
+                    },
+                    "accessRule": {
+                      "type": "string",
+                      "enum": [
+                        "OPEN",
+                        "PRIORITY_CHECKED_IN",
+                        "CHECKED_IN_ONLY"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "startsAt",
+                    "venueName",
+                    "accessRule"
+                  ],
+                  "nullable": true
+                },
+                "parentEventSlug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                  "nullable": true
+                },
+                "parentEventTitle": {
+                  "type": "string",
+                  "nullable": true
                 }
               },
               "required": [
@@ -1524,6 +1942,18 @@
           "eventId": {
             "type": "string",
             "format": "uuid"
+          },
+          "showtimeId": {
+            "type": "string"
+          },
+          "ambassadorCode": {
+            "type": "string"
+          },
+          "inviteCode": {
+            "type": "string"
+          },
+          "hideFromFriends": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -2085,6 +2515,2268 @@
           "code",
           "message",
           "requestId"
+        ]
+      },
+      "AttendeeNotification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "body",
+          "href",
+          "createdAt",
+          "readAt"
+        ]
+      },
+      "AttendeePersona": {
+        "type": "object",
+        "properties": {
+          "skipped": {
+            "type": "boolean"
+          },
+          "vibes": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "string"
+            }
+          },
+          "hall": {
+            "type": "string"
+          },
+          "faculty": {
+            "type": "string"
+          },
+          "level": {
+            "type": "string"
+          },
+          "rhythm": {
+            "type": "string",
+            "enum": [
+              "WEEKNIGHTS",
+              "WEEKENDS",
+              "BOTH"
+            ]
+          },
+          "freeEventsOnly": {
+            "type": "boolean"
+          },
+          "personaBadge": {
+            "type": "string"
+          },
+          "followedClubIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "skipped",
+          "vibes",
+          "hall",
+          "faculty",
+          "level",
+          "rhythm",
+          "freeEventsOnly",
+          "personaBadge",
+          "followedClubIds"
+        ]
+      },
+      "AttendeePreferences": {
+        "type": "object",
+        "properties": {
+          "persona": {
+            "type": "object",
+            "properties": {
+              "skipped": {
+                "type": "boolean"
+              },
+              "vibes": {
+                "type": "array",
+                "maxItems": 5,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "hall": {
+                "type": "string"
+              },
+              "faculty": {
+                "type": "string"
+              },
+              "level": {
+                "type": "string"
+              },
+              "rhythm": {
+                "type": "string",
+                "enum": [
+                  "WEEKNIGHTS",
+                  "WEEKENDS",
+                  "BOTH"
+                ]
+              },
+              "freeEventsOnly": {
+                "type": "boolean"
+              },
+              "personaBadge": {
+                "type": "string"
+              },
+              "followedClubIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "required": [
+              "skipped",
+              "vibes",
+              "hall",
+              "faculty",
+              "level",
+              "rhythm",
+              "freeEventsOnly",
+              "personaBadge",
+              "followedClubIds"
+            ],
+            "nullable": true
+          },
+          "privacy": {
+            "type": "object",
+            "properties": {
+              "stealthRsvp": {
+                "type": "boolean"
+              },
+              "hideFromFriends": {
+                "type": "boolean"
+              },
+              "mutedCategories": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "theme": {
+                "type": "string",
+                "enum": [
+                  "system",
+                  "dark",
+                  "light"
+                ]
+              }
+            },
+            "required": [
+              "stealthRsvp",
+              "hideFromFriends",
+              "mutedCategories",
+              "theme"
+            ]
+          }
+        },
+        "required": [
+          "persona",
+          "privacy"
+        ]
+      },
+      "AttendeePrivacy": {
+        "type": "object",
+        "properties": {
+          "stealthRsvp": {
+            "type": "boolean"
+          },
+          "hideFromFriends": {
+            "type": "boolean"
+          },
+          "mutedCategories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "system",
+              "dark",
+              "light"
+            ]
+          }
+        },
+        "required": [
+          "stealthRsvp",
+          "hideFromFriends",
+          "mutedCategories",
+          "theme"
+        ]
+      },
+      "AttendeeSearchResponse": {
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 140
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 5000
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "SOCIAL_PARTY",
+                    "PERFORMANCE_ARTS",
+                    "ACADEMIC_CONFERENCE",
+                    "SPORTS_RECREATION",
+                    "CLUB_SOCIETY"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "DRAFT",
+                    "PUBLISHED",
+                    "CANCELLED",
+                    "COMPLETED"
+                  ]
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "venueName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "venueDetail": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "nullable": true
+                },
+                "coverImageUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                },
+                "capacity": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "nullable": true
+                },
+                "rsvpCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "nullable": true
+                    },
+                    "logoUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "template": {
+                  "type": "string",
+                  "enum": [
+                    "GENERIC",
+                    "CONCERT_PARTY",
+                    "PLAY_CULTURAL",
+                    "MATCH_TOURNAMENT"
+                  ]
+                },
+                "studentsOnly": {
+                  "type": "boolean"
+                },
+                "waitlistEnabled": {
+                  "type": "boolean"
+                },
+                "dressCode": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "doorPolicy": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "tonightMood": {
+                  "type": "string",
+                  "enum": [
+                    "CHILL",
+                    "TURN_UP",
+                    "LEARN",
+                    "WATCH_GAME"
+                  ]
+                },
+                "friendsGoing": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "displayName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "avatarUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "displayName",
+                      "avatarUrl"
+                    ]
+                  }
+                },
+                "friendsGoingCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                },
+                "lineup": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "performerName": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      },
+                      "setTime": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "performerName",
+                      "role",
+                      "setTime"
+                    ]
+                  }
+                },
+                "castAndCrew": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "showtimes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "startsAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "spotsLeft": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "exclusiveMinimum": false
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label",
+                      "startsAt",
+                      "spotsLeft"
+                    ]
+                  }
+                },
+                "fixture": {
+                  "type": "object",
+                  "properties": {
+                    "homeTeam": {
+                      "type": "string"
+                    },
+                    "awayTeam": {
+                      "type": "string"
+                    },
+                    "homeScore": {
+                      "type": "number"
+                    },
+                    "awayScore": {
+                      "type": "number"
+                    },
+                    "isLive": {
+                      "type": "boolean"
+                    },
+                    "periodLabel": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "homeTeam",
+                    "awayTeam",
+                    "homeScore",
+                    "awayScore",
+                    "isLive",
+                    "periodLabel"
+                  ]
+                },
+                "linkedAfterParty": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "venueName": {
+                      "type": "string"
+                    },
+                    "accessRule": {
+                      "type": "string",
+                      "enum": [
+                        "OPEN",
+                        "PRIORITY_CHECKED_IN",
+                        "CHECKED_IN_ONLY"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "startsAt",
+                    "venueName",
+                    "accessRule"
+                  ],
+                  "nullable": true
+                },
+                "parentEventSlug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                  "nullable": true
+                },
+                "parentEventTitle": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "title",
+                "description",
+                "category",
+                "status",
+                "startsAt",
+                "endsAt",
+                "venueName",
+                "venueDetail",
+                "coverImageUrl",
+                "capacity",
+                "rsvpCount",
+                "organizer",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          },
+          "organizers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "bio": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "nullable": true
+                },
+                "logoUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                },
+                "isVerified": {
+                  "type": "boolean"
+                },
+                "followerCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "name",
+                "bio",
+                "logoUrl",
+                "isVerified",
+                "followerCount"
+              ]
+            }
+          }
+        },
+        "required": [
+          "events",
+          "organizers"
+        ]
+      },
+      "AttendeeTicket": {
+        "type": "object",
+        "properties": {
+          "rsvp": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "userId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "CONFIRMED",
+                  "WAITLISTED",
+                  "CANCELLED"
+                ]
+              },
+              "qrToken": {
+                "type": "string",
+                "minLength": 16
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "eventId",
+              "userId",
+              "status",
+              "qrToken",
+              "createdAt"
+            ]
+          },
+          "event": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 140
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 5000
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "SOCIAL_PARTY",
+                  "PERFORMANCE_ARTS",
+                  "ACADEMIC_CONFERENCE",
+                  "SPORTS_RECREATION",
+                  "CLUB_SOCIETY"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "PUBLISHED",
+                  "CANCELLED",
+                  "COMPLETED"
+                ]
+              },
+              "startsAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endsAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "venueName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "venueDetail": {
+                "type": "string",
+                "maxLength": 500,
+                "nullable": true
+              },
+              "coverImageUrl": {
+                "type": "string",
+                "format": "uri",
+                "nullable": true
+              },
+              "capacity": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "nullable": true
+              },
+              "rsvpCount": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": false
+              },
+              "organizer": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 120,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "bio": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "nullable": true
+                  },
+                  "logoUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "nullable": true
+                  },
+                  "isVerified": {
+                    "type": "boolean"
+                  },
+                  "followerCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "slug",
+                  "name",
+                  "bio",
+                  "logoUrl",
+                  "isVerified",
+                  "followerCount"
+                ]
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "template": {
+                "type": "string",
+                "enum": [
+                  "GENERIC",
+                  "CONCERT_PARTY",
+                  "PLAY_CULTURAL",
+                  "MATCH_TOURNAMENT"
+                ]
+              },
+              "studentsOnly": {
+                "type": "boolean"
+              },
+              "waitlistEnabled": {
+                "type": "boolean"
+              },
+              "dressCode": {
+                "type": "string",
+                "nullable": true
+              },
+              "doorPolicy": {
+                "type": "string",
+                "nullable": true
+              },
+              "tonightMood": {
+                "type": "string",
+                "enum": [
+                  "CHILL",
+                  "TURN_UP",
+                  "LEARN",
+                  "WATCH_GAME"
+                ]
+              },
+              "friendsGoing": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "avatarUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "displayName",
+                    "avatarUrl"
+                  ]
+                }
+              },
+              "friendsGoingCount": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": false
+              },
+              "lineup": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "performerName": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "setTime": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "performerName",
+                    "role",
+                    "setTime"
+                  ]
+                }
+              },
+              "castAndCrew": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "showtimes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "spotsLeft": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "label",
+                    "startsAt",
+                    "spotsLeft"
+                  ]
+                }
+              },
+              "fixture": {
+                "type": "object",
+                "properties": {
+                  "homeTeam": {
+                    "type": "string"
+                  },
+                  "awayTeam": {
+                    "type": "string"
+                  },
+                  "homeScore": {
+                    "type": "number"
+                  },
+                  "awayScore": {
+                    "type": "number"
+                  },
+                  "isLive": {
+                    "type": "boolean"
+                  },
+                  "periodLabel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "homeTeam",
+                  "awayTeam",
+                  "homeScore",
+                  "awayScore",
+                  "isLive",
+                  "periodLabel"
+                ]
+              },
+              "linkedAfterParty": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 120,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "startsAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "venueName": {
+                    "type": "string"
+                  },
+                  "accessRule": {
+                    "type": "string",
+                    "enum": [
+                      "OPEN",
+                      "PRIORITY_CHECKED_IN",
+                      "CHECKED_IN_ONLY"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "slug",
+                  "title",
+                  "startsAt",
+                  "venueName",
+                  "accessRule"
+                ],
+                "nullable": true
+              },
+              "parentEventSlug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                "nullable": true
+              },
+              "parentEventTitle": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "title",
+              "description",
+              "category",
+              "status",
+              "startsAt",
+              "endsAt",
+              "venueName",
+              "venueDetail",
+              "coverImageUrl",
+              "capacity",
+              "rsvpCount",
+              "organizer",
+              "createdAt",
+              "updatedAt"
+            ]
+          }
+        },
+        "required": [
+          "rsvp",
+          "event"
+        ]
+      },
+      "AttendeeTicketsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "rsvp": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "CONFIRMED",
+                        "WAITLISTED",
+                        "CANCELLED"
+                      ]
+                    },
+                    "qrToken": {
+                      "type": "string",
+                      "minLength": 16
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "eventId",
+                    "userId",
+                    "status",
+                    "qrToken",
+                    "createdAt"
+                  ]
+                },
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 140
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 5000
+                    },
+                    "category": {
+                      "type": "string",
+                      "enum": [
+                        "SOCIAL_PARTY",
+                        "PERFORMANCE_ARTS",
+                        "ACADEMIC_CONFERENCE",
+                        "SPORTS_RECREATION",
+                        "CLUB_SOCIETY"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "DRAFT",
+                        "PUBLISHED",
+                        "CANCELLED",
+                        "COMPLETED"
+                      ]
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "endsAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "venueName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "venueDetail": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "nullable": true
+                    },
+                    "coverImageUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "capacity": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true,
+                      "nullable": true
+                    },
+                    "rsvpCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": false
+                    },
+                    "organizer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "slug": {
+                          "type": "string",
+                          "minLength": 3,
+                          "maxLength": 120,
+                          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "bio": {
+                          "type": "string",
+                          "maxLength": 500,
+                          "nullable": true
+                        },
+                        "logoUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true
+                        },
+                        "isVerified": {
+                          "type": "boolean"
+                        },
+                        "followerCount": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "slug",
+                        "name",
+                        "bio",
+                        "logoUrl",
+                        "isVerified",
+                        "followerCount"
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "template": {
+                      "type": "string",
+                      "enum": [
+                        "GENERIC",
+                        "CONCERT_PARTY",
+                        "PLAY_CULTURAL",
+                        "MATCH_TOURNAMENT"
+                      ]
+                    },
+                    "studentsOnly": {
+                      "type": "boolean"
+                    },
+                    "waitlistEnabled": {
+                      "type": "boolean"
+                    },
+                    "dressCode": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "doorPolicy": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "tonightMood": {
+                      "type": "string",
+                      "enum": [
+                        "CHILL",
+                        "TURN_UP",
+                        "LEARN",
+                        "WATCH_GAME"
+                      ]
+                    },
+                    "friendsGoing": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 80
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "displayName",
+                          "avatarUrl"
+                        ]
+                      }
+                    },
+                    "friendsGoingCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": false
+                    },
+                    "lineup": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "performerName": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "type": "string"
+                          },
+                          "setTime": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "performerName",
+                          "role",
+                          "setTime"
+                        ]
+                      }
+                    },
+                    "castAndCrew": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "showtimes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "startsAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "spotsLeft": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "label",
+                          "startsAt",
+                          "spotsLeft"
+                        ]
+                      }
+                    },
+                    "fixture": {
+                      "type": "object",
+                      "properties": {
+                        "homeTeam": {
+                          "type": "string"
+                        },
+                        "awayTeam": {
+                          "type": "string"
+                        },
+                        "homeScore": {
+                          "type": "number"
+                        },
+                        "awayScore": {
+                          "type": "number"
+                        },
+                        "isLive": {
+                          "type": "boolean"
+                        },
+                        "periodLabel": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "homeTeam",
+                        "awayTeam",
+                        "homeScore",
+                        "awayScore",
+                        "isLive",
+                        "periodLabel"
+                      ]
+                    },
+                    "linkedAfterParty": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "slug": {
+                          "type": "string",
+                          "minLength": 3,
+                          "maxLength": 120,
+                          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "startsAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "venueName": {
+                          "type": "string"
+                        },
+                        "accessRule": {
+                          "type": "string",
+                          "enum": [
+                            "OPEN",
+                            "PRIORITY_CHECKED_IN",
+                            "CHECKED_IN_ONLY"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "slug",
+                        "title",
+                        "startsAt",
+                        "venueName",
+                        "accessRule"
+                      ],
+                      "nullable": true
+                    },
+                    "parentEventSlug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                      "nullable": true
+                    },
+                    "parentEventTitle": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "description",
+                    "category",
+                    "status",
+                    "startsAt",
+                    "endsAt",
+                    "venueName",
+                    "venueDetail",
+                    "coverImageUrl",
+                    "capacity",
+                    "rsvpCount",
+                    "organizer",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              "required": [
+                "rsvp",
+                "event"
+              ]
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "ConfirmStudentOtpBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$"
+          }
+        },
+        "required": [
+          "email",
+          "code"
+        ]
+      },
+      "CreatorPublic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "followerCount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": false
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 140
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 5000
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "SOCIAL_PARTY",
+                    "PERFORMANCE_ARTS",
+                    "ACADEMIC_CONFERENCE",
+                    "SPORTS_RECREATION",
+                    "CLUB_SOCIETY"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "DRAFT",
+                    "PUBLISHED",
+                    "CANCELLED",
+                    "COMPLETED"
+                  ]
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endsAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "venueName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "venueDetail": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "nullable": true
+                },
+                "coverImageUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                },
+                "capacity": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "nullable": true
+                },
+                "rsvpCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "nullable": true
+                    },
+                    "logoUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "template": {
+                  "type": "string",
+                  "enum": [
+                    "GENERIC",
+                    "CONCERT_PARTY",
+                    "PLAY_CULTURAL",
+                    "MATCH_TOURNAMENT"
+                  ]
+                },
+                "studentsOnly": {
+                  "type": "boolean"
+                },
+                "waitlistEnabled": {
+                  "type": "boolean"
+                },
+                "dressCode": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "doorPolicy": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "tonightMood": {
+                  "type": "string",
+                  "enum": [
+                    "CHILL",
+                    "TURN_UP",
+                    "LEARN",
+                    "WATCH_GAME"
+                  ]
+                },
+                "friendsGoing": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "displayName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "avatarUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "displayName",
+                      "avatarUrl"
+                    ]
+                  }
+                },
+                "friendsGoingCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": false
+                },
+                "lineup": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "performerName": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      },
+                      "setTime": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "performerName",
+                      "role",
+                      "setTime"
+                    ]
+                  }
+                },
+                "castAndCrew": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "showtimes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "startsAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "spotsLeft": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "exclusiveMinimum": false
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label",
+                      "startsAt",
+                      "spotsLeft"
+                    ]
+                  }
+                },
+                "fixture": {
+                  "type": "object",
+                  "properties": {
+                    "homeTeam": {
+                      "type": "string"
+                    },
+                    "awayTeam": {
+                      "type": "string"
+                    },
+                    "homeScore": {
+                      "type": "number"
+                    },
+                    "awayScore": {
+                      "type": "number"
+                    },
+                    "isLive": {
+                      "type": "boolean"
+                    },
+                    "periodLabel": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "homeTeam",
+                    "awayTeam",
+                    "homeScore",
+                    "awayScore",
+                    "isLive",
+                    "periodLabel"
+                  ]
+                },
+                "linkedAfterParty": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "venueName": {
+                      "type": "string"
+                    },
+                    "accessRule": {
+                      "type": "string",
+                      "enum": [
+                        "OPEN",
+                        "PRIORITY_CHECKED_IN",
+                        "CHECKED_IN_ONLY"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "startsAt",
+                    "venueName",
+                    "accessRule"
+                  ],
+                  "nullable": true
+                },
+                "parentEventSlug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                  "nullable": true
+                },
+                "parentEventTitle": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "title",
+                "description",
+                "category",
+                "status",
+                "startsAt",
+                "endsAt",
+                "venueName",
+                "venueDetail",
+                "coverImageUrl",
+                "capacity",
+                "rsvpCount",
+                "organizer",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "handle",
+          "displayName",
+          "bio",
+          "avatarUrl",
+          "isVerified",
+          "followerCount",
+          "events"
+        ]
+      },
+      "FriendActionBody": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "REQUEST",
+              "ACCEPT",
+              "DECLINE",
+              "BLOCK"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "FriendEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "avatarUrl": {
+                "type": "string",
+                "format": "uri",
+                "nullable": true
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "ATTENDEE",
+                  "ORGANIZER",
+                  "SUPER_ADMIN"
+                ]
+              },
+              "isVerifiedStudent": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "displayName",
+              "avatarUrl",
+              "role",
+              "isVerifiedStudent"
+            ]
+          },
+          "hall": {
+            "type": "string",
+            "nullable": true
+          },
+          "faculty": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUGGESTED",
+              "INCOMING",
+              "OUTGOING",
+              "ACCEPTED",
+              "BLOCKED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "user",
+          "hall",
+          "faculty",
+          "status"
+        ]
+      },
+      "FriendRequestBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "FriendsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "avatarUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "ATTENDEE",
+                        "ORGANIZER",
+                        "SUPER_ADMIN"
+                      ]
+                    },
+                    "isVerifiedStudent": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "displayName",
+                    "avatarUrl",
+                    "role",
+                    "isVerifiedStudent"
+                  ]
+                },
+                "hall": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "faculty": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "SUGGESTED",
+                    "INCOMING",
+                    "OUTGOING",
+                    "ACCEPTED",
+                    "BLOCKED"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "user",
+                "hall",
+                "faculty",
+                "status"
+              ]
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "NotificationsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "readAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "body",
+                "href",
+                "createdAt",
+                "readAt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "PushSubscriptionBody": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "format": "uri"
+          },
+          "keys": {
+            "type": "object",
+            "properties": {
+              "p256dh": {
+                "type": "string"
+              },
+              "auth": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "p256dh",
+              "auth"
+            ]
+          }
+        },
+        "required": [
+          "endpoint",
+          "keys"
+        ]
+      },
+      "StudentIdRequestBody": {
+        "type": "object",
+        "properties": {
+          "documentUploadId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "documentUploadId"
+        ]
+      },
+      "StudentOtpBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "StudentUploadBody": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "image/jpeg",
+              "image/png"
+            ]
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 5242880,
+            "exclusiveMaximum": false
+          }
+        },
+        "required": [
+          "contentType",
+          "size"
+        ]
+      },
+      "StudentUploadResponse": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "uploadId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uploadUrl",
+          "uploadId"
+        ]
+      },
+      "StudentVerificationState": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "PENDING",
+              "APPROVED",
+              "REJECTED",
+              "INFO_REQUESTED"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "status",
+          "note"
+        ]
+      },
+      "SubmitReportBody": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "eventId",
+          "reason"
+        ]
+      },
+      "UpdateProfileBody": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "displayName"
         ]
       }
     }

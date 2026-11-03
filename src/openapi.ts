@@ -1,6 +1,7 @@
 import { DocumentBuilder, type OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import type { INestApplication } from '@nestjs/common';
-import { zodToOpenAPI } from 'nestjs-zod';
+import { z } from 'zod';
+import type { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { schemaRegistry } from './contract/registry';
 
 /**
@@ -33,7 +34,10 @@ export function buildOpenApiDocument(app: INestApplication): OpenAPIObject {
   document.components.schemas = {
     ...document.components.schemas,
     ...Object.fromEntries(
-      Object.entries(schemaRegistry).map(([name, schema]) => [name, zodToOpenAPI(schema)]),
+      Object.entries(schemaRegistry).map(([name, schema]) => [
+        name,
+        z.toJSONSchema(schema, { target: 'openapi-3.0' }) as SchemaObject,
+      ]),
     ),
   };
 

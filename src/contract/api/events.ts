@@ -22,7 +22,7 @@ export const CreateEventBody = z.object({
   endsAt: IsoDateTime,
   venueName: z.string().min(1).max(200),
   venueDetail: z.string().max(500).nullable().default(null),
-  coverImageUrl: z.string().url(),
+  coverImageUrl: z.url(),
   capacity: z.number().int().positive().nullable().default(null),
 });
 export type CreateEventBody = z.infer<typeof CreateEventBody>;
@@ -41,7 +41,7 @@ export type StoriesResponse = z.infer<typeof StoriesResponse>;
 
 export const CreateStoryBody = z.object({
   eventId: Id.nullable().default(null),
-  mediaUrl: z.string().url(),
+  mediaUrl: z.url(),
   mediaType: z.enum(['IMAGE', 'VIDEO']),
   caption: z.string().max(280).nullable().default(null),
 });

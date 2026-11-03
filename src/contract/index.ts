@@ -5,3 +5,4 @@ export * from './api/events';
 export * from './api/attendance';
 export * from './api/identity';
 export * from './api/errors';
+export * from './api/attendee';

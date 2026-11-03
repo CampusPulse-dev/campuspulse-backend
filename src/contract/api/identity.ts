@@ -4,14 +4,14 @@ import { VerificationStatus, VerificationSubject } from '../domain/enums';
 import { Id, Pagination, Slug, StudentEmail, page } from '../domain/primitives';
 
 export const SignUpBody = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(10).max(200),
   displayName: z.string().min(1).max(80),
 });
 export type SignUpBody = z.infer<typeof SignUpBody>;
 
 export const SignInBody = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(1),
 });
 export type SignInBody = z.infer<typeof SignInBody>;
@@ -33,7 +33,7 @@ export type SubmitStudentVerificationBody = z.infer<typeof SubmitStudentVerifica
 export const SubmitOrganizerVerificationBody = z.object({
   organizerName: z.string().min(1).max(120),
   slug: Slug,
-  evidenceUrl: z.string().url(),
+  evidenceUrl: z.url(),
   note: z.string().max(1000).nullable().default(null),
 });
 export type SubmitOrganizerVerificationBody = z.infer<typeof SubmitOrganizerVerificationBody>;

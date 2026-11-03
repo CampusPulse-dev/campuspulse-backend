@@ -13,7 +13,7 @@ import { Id, IsoDateTime, Slug } from './primitives';
 export const UserPublic = z.object({
   id: Id,
   displayName: z.string().min(1).max(80),
-  avatarUrl: z.string().url().nullable(),
+  avatarUrl: z.url().nullable(),
   role: UserRole,
   isVerifiedStudent: z.boolean(),
 });
@@ -24,7 +24,7 @@ export const OrganizerPublic = z.object({
   slug: Slug,
   name: z.string().min(1).max(120),
   bio: z.string().max(500).nullable(),
-  logoUrl: z.string().url().nullable(),
+  logoUrl: z.url().nullable(),
   isVerified: z.boolean(),
   followerCount: z.number().int().nonnegative(),
 });
@@ -45,7 +45,7 @@ export const EventPublic = z.object({
   endsAt: IsoDateTime,
   venueName: z.string().min(1).max(200),
   venueDetail: z.string().max(500).nullable(),
-  coverImageUrl: z.string().url().nullable(),
+  coverImageUrl: z.url().nullable(),
   capacity: z.number().int().positive().nullable(),
   rsvpCount: z.number().int().nonnegative(),
   organizer: OrganizerPublic,
@@ -113,7 +113,7 @@ export const Story = z.object({
   id: Id,
   organizer: OrganizerPublic,
   eventId: Id.nullable(),
-  mediaUrl: z.string().url(),
+  mediaUrl: z.url(),
   mediaType: z.enum(['IMAGE', 'VIDEO']),
   caption: z.string().max(280).nullable(),
   createdAt: IsoDateTime,
@@ -172,7 +172,7 @@ export const AuditLogEntry = z.object({
   action: z.string().min(1).max(120),
   targetType: z.string().min(1).max(80),
   targetId: z.string().min(1),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
   createdAt: IsoDateTime,
 });
 export type AuditLogEntry = z.infer<typeof AuditLogEntry>;

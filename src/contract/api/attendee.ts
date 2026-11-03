@@ -51,7 +51,7 @@ export const CreatorPublic = z.object({
   handle: z.string(),
   displayName: z.string(),
   bio: z.string(),
-  avatarUrl: z.string().url().nullable(),
+  avatarUrl: z.url().nullable(),
   isVerified: z.boolean(),
   followerCount: z.number().int().nonnegative(),
   events: z.array(EventPublic),
@@ -77,12 +77,12 @@ export const StudentUploadBody = z.object({
     .max(5 * 1024 * 1024),
 });
 export const StudentUploadResponse = z.object({
-  uploadUrl: z.string().url(),
+  uploadUrl: z.url(),
   uploadId: z.string(),
 });
 export const StudentIdRequestBody = z.object({ documentUploadId: z.string().min(1) });
 export const PushSubscriptionBody = z.object({
-  endpoint: z.string().url(),
+  endpoint: z.url(),
   keys: z.object({ p256dh: z.string(), auth: z.string() }),
 });
 export const SubmitReportBody = z.object({

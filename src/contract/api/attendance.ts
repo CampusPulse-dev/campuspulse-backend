@@ -3,7 +3,13 @@ import { CheckInMethod } from '../domain/enums';
 import { CheckIn, Rsvp } from '../domain/entities';
 import { Id, IsoDateTime } from '../domain/primitives';
 
-export const CreateRsvpBody = z.object({ eventId: Id });
+export const CreateRsvpBody = z.object({
+  eventId: Id,
+  showtimeId: z.string().min(1).max(64).optional(),
+  ambassadorCode: z.string().trim().min(1).max(32).optional(),
+  inviteCode: z.string().trim().min(1).max(32).optional(),
+  hideFromFriends: z.boolean().optional(),
+});
 export type CreateRsvpBody = z.infer<typeof CreateRsvpBody>;
 
 export const CreateRsvpResponse = Rsvp;

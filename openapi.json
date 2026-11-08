@@ -322,11 +322,13 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "actorId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "action": {
             "type": "string",
@@ -348,7 +350,8 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           }
         },
         "required": [
@@ -359,23 +362,27 @@
           "targetId",
           "metadata",
           "createdAt"
-        ]
+        ],
+        "additionalProperties": false
       },
       "CheckIn": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "eventId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "rsvpId": {
+            "nullable": true,
             "type": "string",
             "format": "uuid",
-            "nullable": true
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "method": {
             "type": "string",
@@ -386,11 +393,13 @@
           },
           "checkedInAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "checkedInBy": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "isDuplicate": {
             "type": "boolean"
@@ -404,14 +413,16 @@
           "checkedInAt",
           "checkedInBy",
           "isDuplicate"
-        ]
+        ],
+        "additionalProperties": false
       },
       "EventPublic": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "slug": {
             "type": "string",
@@ -449,11 +460,13 @@
           },
           "startsAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "endsAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "venueName": {
             "type": "string",
@@ -461,32 +474,34 @@
             "maxLength": 200
           },
           "venueDetail": {
+            "nullable": true,
             "type": "string",
-            "maxLength": 500,
-            "nullable": true
+            "maxLength": 500
           },
           "coverImageUrl": {
+            "nullable": true,
             "type": "string",
-            "format": "uri",
-            "nullable": true
+            "format": "uri"
           },
           "capacity": {
+            "nullable": true,
             "type": "integer",
             "minimum": 0,
             "exclusiveMinimum": true,
-            "nullable": true
+            "maximum": 9007199254740991
           },
           "rsvpCount": {
             "type": "integer",
             "minimum": 0,
-            "exclusiveMinimum": false
+            "maximum": 9007199254740991
           },
           "organizer": {
             "type": "object",
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
               "slug": {
                 "type": "string",
@@ -500,14 +515,14 @@
                 "maxLength": 120
               },
               "bio": {
+                "nullable": true,
                 "type": "string",
-                "maxLength": 500,
-                "nullable": true
+                "maxLength": 500
               },
               "logoUrl": {
+                "nullable": true,
                 "type": "string",
-                "format": "uri",
-                "nullable": true
+                "format": "uri"
               },
               "isVerified": {
                 "type": "boolean"
@@ -515,7 +530,7 @@
               "followerCount": {
                 "type": "integer",
                 "minimum": 0,
-                "exclusiveMinimum": false
+                "maximum": 9007199254740991
               }
             },
             "required": [
@@ -526,15 +541,240 @@
               "logoUrl",
               "isVerified",
               "followerCount"
-            ]
+            ],
+            "additionalProperties": false
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "template": {
+            "type": "string",
+            "enum": [
+              "GENERIC",
+              "CONCERT_PARTY",
+              "PLAY_CULTURAL",
+              "MATCH_TOURNAMENT"
+            ]
+          },
+          "studentsOnly": {
+            "type": "boolean"
+          },
+          "waitlistEnabled": {
+            "type": "boolean"
+          },
+          "dressCode": {
+            "nullable": true,
+            "type": "string"
+          },
+          "doorPolicy": {
+            "nullable": true,
+            "type": "string"
+          },
+          "tonightMood": {
+            "type": "string",
+            "enum": [
+              "CHILL",
+              "TURN_UP",
+              "LEARN",
+              "WATCH_GAME"
+            ]
+          },
+          "friendsGoing": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "displayName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "avatarUrl": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "id",
+                "displayName",
+                "avatarUrl"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "friendsGoingCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "lineup": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "performerName": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "setTime": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "performerName",
+                "role",
+                "setTime"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "castAndCrew": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "showtimes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "spotsLeft": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "startsAt",
+                "spotsLeft"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "fixture": {
+            "type": "object",
+            "properties": {
+              "homeTeam": {
+                "type": "string"
+              },
+              "awayTeam": {
+                "type": "string"
+              },
+              "homeScore": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "awayScore": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "isLive": {
+                "type": "boolean"
+              },
+              "periodLabel": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "homeTeam",
+              "awayTeam",
+              "homeScore",
+              "awayScore",
+              "isLive",
+              "periodLabel"
+            ],
+            "additionalProperties": false
+          },
+          "linkedAfterParty": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string"
+              },
+              "startsAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              "venueName": {
+                "type": "string"
+              },
+              "accessRule": {
+                "type": "string",
+                "enum": [
+                  "OPEN",
+                  "PRIORITY_CHECKED_IN",
+                  "CHECKED_IN_ONLY"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "title",
+              "startsAt",
+              "venueName",
+              "accessRule"
+            ],
+            "additionalProperties": false
+          },
+          "parentEventSlug": {
+            "nullable": true,
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "parentEventTitle": {
+            "nullable": true,
+            "type": "string"
           }
         },
         "required": [
@@ -554,14 +794,16 @@
           "organizer",
           "createdAt",
           "updatedAt"
-        ]
+        ],
+        "additionalProperties": false
       },
       "OrganizerPublic": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "slug": {
             "type": "string",
@@ -575,14 +817,14 @@
             "maxLength": 120
           },
           "bio": {
+            "nullable": true,
             "type": "string",
-            "maxLength": 500,
-            "nullable": true
+            "maxLength": 500
           },
           "logoUrl": {
+            "nullable": true,
             "type": "string",
-            "format": "uri",
-            "nullable": true
+            "format": "uri"
           },
           "isVerified": {
             "type": "boolean"
@@ -590,7 +832,7 @@
           "followerCount": {
             "type": "integer",
             "minimum": 0,
-            "exclusiveMinimum": false
+            "maximum": 9007199254740991
           }
         },
         "required": [
@@ -601,22 +843,26 @@
           "logoUrl",
           "isVerified",
           "followerCount"
-        ]
+        ],
+        "additionalProperties": false
       },
       "Rsvp": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "eventId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "userId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "status": {
             "type": "string",
@@ -632,7 +878,8 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           }
         },
         "required": [
@@ -642,21 +889,24 @@
           "status",
           "qrToken",
           "createdAt"
-        ]
+        ],
+        "additionalProperties": false
       },
       "Story": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "organizer": {
             "type": "object",
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
               "slug": {
                 "type": "string",
@@ -670,14 +920,14 @@
                 "maxLength": 120
               },
               "bio": {
+                "nullable": true,
                 "type": "string",
-                "maxLength": 500,
-                "nullable": true
+                "maxLength": 500
               },
               "logoUrl": {
+                "nullable": true,
                 "type": "string",
-                "format": "uri",
-                "nullable": true
+                "format": "uri"
               },
               "isVerified": {
                 "type": "boolean"
@@ -685,7 +935,7 @@
               "followerCount": {
                 "type": "integer",
                 "minimum": 0,
-                "exclusiveMinimum": false
+                "maximum": 9007199254740991
               }
             },
             "required": [
@@ -696,12 +946,14 @@
               "logoUrl",
               "isVerified",
               "followerCount"
-            ]
+            ],
+            "additionalProperties": false
           },
           "eventId": {
+            "nullable": true,
             "type": "string",
             "format": "uuid",
-            "nullable": true
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "mediaUrl": {
             "type": "string",
@@ -715,17 +967,19 @@
             ]
           },
           "caption": {
+            "nullable": true,
             "type": "string",
-            "maxLength": 280,
-            "nullable": true
+            "maxLength": 280
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "expiresAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           }
         },
         "required": [
@@ -737,14 +991,16 @@
           "caption",
           "createdAt",
           "expiresAt"
-        ]
+        ],
+        "additionalProperties": false
       },
       "UserPublic": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "displayName": {
             "type": "string",
@@ -752,9 +1008,9 @@
             "maxLength": 80
           },
           "avatarUrl": {
+            "nullable": true,
             "type": "string",
-            "format": "uri",
-            "nullable": true
+            "format": "uri"
           },
           "role": {
             "type": "string",
@@ -774,14 +1030,16 @@
           "avatarUrl",
           "role",
           "isVerifiedStudent"
-        ]
+        ],
+        "additionalProperties": false
       },
       "VerificationRequest": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "subject": {
             "type": "string",
@@ -805,7 +1063,8 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
               "displayName": {
                 "type": "string",
@@ -813,50 +1072,9 @@
                 "maxLength": 80
               },
               "avatarUrl": {
+                "nullable": true,
                 "type": "string",
-                "format": "uri",
-                "nullable": true
-              },
-              "role": {
-                "type": "string",
-                "enum": [
-                  "ATTENDEE",
-                  "ORGANIZER",
-                  "SUPER_ADMIN"
-                ]
-              },
-              "isVerifiedStudent": {
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "id",
-              "displayName",
-              "avatarUrl",
-              "role",
-              "isVerifiedStudent"
-            ]
-          },
-          "submittedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "claimedBy": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "format": "uuid"
-              },
-              "displayName": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 80
-              },
-              "avatarUrl": {
-                "type": "string",
-                "format": "uri",
-                "nullable": true
+                "format": "uri"
               },
               "role": {
                 "type": "string",
@@ -877,22 +1095,69 @@
               "role",
               "isVerifiedStudent"
             ],
-            "nullable": true
+            "additionalProperties": false
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "claimedBy": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "avatarUrl": {
+                "nullable": true,
+                "type": "string",
+                "format": "uri"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "ATTENDEE",
+                  "ORGANIZER",
+                  "SUPER_ADMIN"
+                ]
+              },
+              "isVerifiedStudent": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "displayName",
+              "avatarUrl",
+              "role",
+              "isVerifiedStudent"
+            ],
+            "additionalProperties": false
           },
           "claimedAt": {
+            "nullable": true,
             "type": "string",
             "format": "date-time",
-            "nullable": true
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "reviewerNote": {
+            "nullable": true,
             "type": "string",
-            "maxLength": 1000,
-            "nullable": true
+            "maxLength": 1000
           },
           "decidedAt": {
+            "nullable": true,
             "type": "string",
             "format": "date-time",
-            "nullable": true
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           }
         },
         "required": [
@@ -905,7 +1170,8 @@
           "claimedAt",
           "reviewerNote",
           "decidedAt"
-        ]
+        ],
+        "additionalProperties": false
       },
       "CancelEventBody": {
         "type": "object",
@@ -918,7 +1184,8 @@
         },
         "required": [
           "reason"
-        ]
+        ],
+        "additionalProperties": false
       },
       "CreateEventBody": {
         "type": "object",
@@ -945,11 +1212,13 @@
           },
           "startsAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "endsAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "venueName": {
             "type": "string",
@@ -957,21 +1226,22 @@
             "maxLength": 200
           },
           "venueDetail": {
-            "type": "string",
-            "maxLength": 500,
+            "default": null,
             "nullable": true,
-            "default": null
+            "type": "string",
+            "maxLength": 500
           },
           "coverImageUrl": {
             "type": "string",
             "format": "uri"
           },
           "capacity": {
+            "default": null,
+            "nullable": true,
             "type": "integer",
             "minimum": 0,
             "exclusiveMinimum": true,
-            "nullable": true,
-            "default": null
+            "maximum": 9007199254740991
           }
         },
         "required": [
@@ -981,17 +1251,21 @@
           "startsAt",
           "endsAt",
           "venueName",
-          "coverImageUrl"
-        ]
+          "venueDetail",
+          "coverImageUrl",
+          "capacity"
+        ],
+        "additionalProperties": false
       },
       "CreateStoryBody": {
         "type": "object",
         "properties": {
           "eventId": {
+            "default": null,
+            "nullable": true,
             "type": "string",
             "format": "uuid",
-            "nullable": true,
-            "default": null
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "mediaUrl": {
             "type": "string",
@@ -1005,16 +1279,19 @@
             ]
           },
           "caption": {
-            "type": "string",
-            "maxLength": 280,
+            "default": null,
             "nullable": true,
-            "default": null
+            "type": "string",
+            "maxLength": 280
           }
         },
         "required": [
+          "eventId",
           "mediaUrl",
-          "mediaType"
-        ]
+          "mediaType",
+          "caption"
+        ],
+        "additionalProperties": false
       },
       "FeedQuery": {
         "type": "object",
@@ -1023,12 +1300,10 @@
             "type": "string"
           },
           "limit": {
+            "default": 20,
             "type": "integer",
             "minimum": 1,
-            "exclusiveMinimum": false,
-            "maximum": 50,
-            "exclusiveMaximum": false,
-            "default": 20
+            "maximum": 50
           },
           "category": {
             "type": "string",
@@ -1042,9 +1317,14 @@
           },
           "from": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           }
-        }
+        },
+        "required": [
+          "limit"
+        ],
+        "additionalProperties": false
       },
       "FeedResponse": {
         "type": "object",
@@ -1056,7 +1336,8 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid"
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
                 "slug": {
                   "type": "string",
@@ -1094,11 +1375,13 @@
                 },
                 "startsAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 },
                 "endsAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 },
                 "venueName": {
                   "type": "string",
@@ -1106,32 +1389,34 @@
                   "maxLength": 200
                 },
                 "venueDetail": {
+                  "nullable": true,
                   "type": "string",
-                  "maxLength": 500,
-                  "nullable": true
+                  "maxLength": 500
                 },
                 "coverImageUrl": {
+                  "nullable": true,
                   "type": "string",
-                  "format": "uri",
-                  "nullable": true
+                  "format": "uri"
                 },
                 "capacity": {
+                  "nullable": true,
                   "type": "integer",
                   "minimum": 0,
                   "exclusiveMinimum": true,
-                  "nullable": true
+                  "maximum": 9007199254740991
                 },
                 "rsvpCount": {
                   "type": "integer",
                   "minimum": 0,
-                  "exclusiveMinimum": false
+                  "maximum": 9007199254740991
                 },
                 "organizer": {
                   "type": "object",
                   "properties": {
                     "id": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     },
                     "slug": {
                       "type": "string",
@@ -1145,14 +1430,14 @@
                       "maxLength": 120
                     },
                     "bio": {
+                      "nullable": true,
                       "type": "string",
-                      "maxLength": 500,
-                      "nullable": true
+                      "maxLength": 500
                     },
                     "logoUrl": {
+                      "nullable": true,
                       "type": "string",
-                      "format": "uri",
-                      "nullable": true
+                      "format": "uri"
                     },
                     "isVerified": {
                       "type": "boolean"
@@ -1160,7 +1445,7 @@
                     "followerCount": {
                       "type": "integer",
                       "minimum": 0,
-                      "exclusiveMinimum": false
+                      "maximum": 9007199254740991
                     }
                   },
                   "required": [
@@ -1171,15 +1456,240 @@
                     "logoUrl",
                     "isVerified",
                     "followerCount"
-                  ]
+                  ],
+                  "additionalProperties": false
                 },
                 "createdAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 },
                 "updatedAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "template": {
+                  "type": "string",
+                  "enum": [
+                    "GENERIC",
+                    "CONCERT_PARTY",
+                    "PLAY_CULTURAL",
+                    "MATCH_TOURNAMENT"
+                  ]
+                },
+                "studentsOnly": {
+                  "type": "boolean"
+                },
+                "waitlistEnabled": {
+                  "type": "boolean"
+                },
+                "dressCode": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "doorPolicy": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "tonightMood": {
+                  "type": "string",
+                  "enum": [
+                    "CHILL",
+                    "TURN_UP",
+                    "LEARN",
+                    "WATCH_GAME"
+                  ]
+                },
+                "friendsGoing": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "displayName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "avatarUrl": {
+                        "nullable": true,
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "displayName",
+                      "avatarUrl"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "friendsGoingCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "lineup": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "performerName": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      },
+                      "setTime": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "performerName",
+                      "role",
+                      "setTime"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "castAndCrew": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "showtimes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "startsAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      "spotsLeft": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label",
+                      "startsAt",
+                      "spotsLeft"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "fixture": {
+                  "type": "object",
+                  "properties": {
+                    "homeTeam": {
+                      "type": "string"
+                    },
+                    "awayTeam": {
+                      "type": "string"
+                    },
+                    "homeScore": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "awayScore": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "isLive": {
+                      "type": "boolean"
+                    },
+                    "periodLabel": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "homeTeam",
+                    "awayTeam",
+                    "homeScore",
+                    "awayScore",
+                    "isLive",
+                    "periodLabel"
+                  ],
+                  "additionalProperties": false
+                },
+                "linkedAfterParty": {
+                  "nullable": true,
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "venueName": {
+                      "type": "string"
+                    },
+                    "accessRule": {
+                      "type": "string",
+                      "enum": [
+                        "OPEN",
+                        "PRIORITY_CHECKED_IN",
+                        "CHECKED_IN_ONLY"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "startsAt",
+                    "venueName",
+                    "accessRule"
+                  ],
+                  "additionalProperties": false
+                },
+                "parentEventSlug": {
+                  "nullable": true,
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "parentEventTitle": {
+                  "nullable": true,
+                  "type": "string"
                 }
               },
               "required": [
@@ -1199,18 +1709,20 @@
                 "organizer",
                 "createdAt",
                 "updatedAt"
-              ]
+              ],
+              "additionalProperties": false
             }
           },
           "nextCursor": {
-            "type": "string",
-            "nullable": true
+            "nullable": true,
+            "type": "string"
           }
         },
         "required": [
           "items",
           "nextCursor"
-        ]
+        ],
+        "additionalProperties": false
       },
       "StoriesResponse": {
         "type": "object",
@@ -1222,14 +1734,16 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid"
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
                 "organizer": {
                   "type": "object",
                   "properties": {
                     "id": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     },
                     "slug": {
                       "type": "string",
@@ -1243,14 +1757,14 @@
                       "maxLength": 120
                     },
                     "bio": {
+                      "nullable": true,
                       "type": "string",
-                      "maxLength": 500,
-                      "nullable": true
+                      "maxLength": 500
                     },
                     "logoUrl": {
+                      "nullable": true,
                       "type": "string",
-                      "format": "uri",
-                      "nullable": true
+                      "format": "uri"
                     },
                     "isVerified": {
                       "type": "boolean"
@@ -1258,7 +1772,7 @@
                     "followerCount": {
                       "type": "integer",
                       "minimum": 0,
-                      "exclusiveMinimum": false
+                      "maximum": 9007199254740991
                     }
                   },
                   "required": [
@@ -1269,12 +1783,14 @@
                     "logoUrl",
                     "isVerified",
                     "followerCount"
-                  ]
+                  ],
+                  "additionalProperties": false
                 },
                 "eventId": {
+                  "nullable": true,
                   "type": "string",
                   "format": "uuid",
-                  "nullable": true
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
                 "mediaUrl": {
                   "type": "string",
@@ -1288,17 +1804,19 @@
                   ]
                 },
                 "caption": {
+                  "nullable": true,
                   "type": "string",
-                  "maxLength": 280,
-                  "nullable": true
+                  "maxLength": 280
                 },
                 "createdAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 },
                 "expiresAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 }
               },
               "required": [
@@ -1310,18 +1828,20 @@
                 "caption",
                 "createdAt",
                 "expiresAt"
-              ]
+              ],
+              "additionalProperties": false
             }
           },
           "nextCursor": {
-            "type": "string",
-            "nullable": true
+            "nullable": true,
+            "type": "string"
           }
         },
         "required": [
           "items",
           "nextCursor"
-        ]
+        ],
+        "additionalProperties": false
       },
       "UpdateEventBody": {
         "type": "object",
@@ -1348,11 +1868,13 @@
           },
           "startsAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "endsAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "venueName": {
             "type": "string",
@@ -1360,37 +1882,40 @@
             "maxLength": 200
           },
           "venueDetail": {
-            "type": "string",
-            "maxLength": 500,
+            "default": null,
             "nullable": true,
-            "default": null
+            "type": "string",
+            "maxLength": 500
           },
           "coverImageUrl": {
             "type": "string",
             "format": "uri"
           },
           "capacity": {
+            "default": null,
+            "nullable": true,
             "type": "integer",
             "minimum": 0,
             "exclusiveMinimum": true,
-            "nullable": true,
-            "default": null
+            "maximum": 9007199254740991
           }
-        }
+        },
+        "additionalProperties": false
       },
       "CheckInBatchBody": {
         "type": "object",
         "properties": {
           "checkIns": {
-            "type": "array",
             "minItems": 1,
             "maxItems": 500,
+            "type": "array",
             "items": {
               "type": "object",
               "properties": {
                 "eventId": {
                   "type": "string",
-                  "format": "uuid"
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
                 "qrToken": {
                   "type": "string",
@@ -1398,7 +1923,8 @@
                 },
                 "rsvpId": {
                   "type": "string",
-                  "format": "uuid"
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
                 "method": {
                   "type": "string",
@@ -1409,27 +1935,31 @@
                 },
                 "scannedAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 }
               },
               "required": [
                 "eventId",
                 "method",
                 "scannedAt"
-              ]
+              ],
+              "additionalProperties": false
             }
           }
         },
         "required": [
           "checkIns"
-        ]
+        ],
+        "additionalProperties": false
       },
       "CheckInBody": {
         "type": "object",
         "properties": {
           "eventId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "qrToken": {
             "type": "string",
@@ -1437,7 +1967,8 @@
           },
           "rsvpId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "method": {
             "type": "string",
@@ -1448,14 +1979,16 @@
           },
           "scannedAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           }
         },
         "required": [
           "eventId",
           "method",
           "scannedAt"
-        ]
+        ],
+        "additionalProperties": false
       },
       "CheckInResponse": {
         "type": "object",
@@ -1465,16 +1998,19 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
               "eventId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
               "rsvpId": {
+                "nullable": true,
                 "type": "string",
                 "format": "uuid",
-                "nullable": true
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
               "method": {
                 "type": "string",
@@ -1485,11 +2021,13 @@
               },
               "checkedInAt": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
               },
               "checkedInBy": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
               "isDuplicate": {
                 "type": "boolean"
@@ -1503,7 +2041,8 @@
               "checkedInAt",
               "checkedInBy",
               "isDuplicate"
-            ]
+            ],
+            "additionalProperties": false
           },
           "attendeeName": {
             "type": "string"
@@ -1516,34 +2055,58 @@
           "checkIn",
           "attendeeName",
           "duplicate"
-        ]
+        ],
+        "additionalProperties": false
       },
       "CreateRsvpBody": {
         "type": "object",
         "properties": {
           "eventId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "showtimeId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "ambassadorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "inviteCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "hideFromFriends": {
+            "type": "boolean"
           }
         },
         "required": [
           "eventId"
-        ]
+        ],
+        "additionalProperties": false
       },
       "CreateRsvpResponse": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "eventId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "userId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "status": {
             "type": "string",
@@ -1559,7 +2122,8 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           }
         },
         "required": [
@@ -1569,41 +2133,41 @@
           "status",
           "qrToken",
           "createdAt"
-        ]
+        ],
+        "additionalProperties": false
       },
       "EventStatsResponse": {
         "type": "object",
         "properties": {
           "eventId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "rsvpCount": {
             "type": "integer",
             "minimum": 0,
-            "exclusiveMinimum": false
+            "maximum": 9007199254740991
           },
           "checkInCount": {
             "type": "integer",
             "minimum": 0,
-            "exclusiveMinimum": false
+            "maximum": 9007199254740991
           },
           "conversionRate": {
             "type": "number",
             "minimum": 0,
-            "exclusiveMinimum": false,
-            "maximum": 1,
-            "exclusiveMaximum": false
+            "maximum": 1
           },
           "duplicateScanCount": {
             "type": "integer",
             "minimum": 0,
-            "exclusiveMinimum": false
+            "maximum": 9007199254740991
           },
           "manualCheckInCount": {
             "type": "integer",
             "minimum": 0,
-            "exclusiveMinimum": false
+            "maximum": 9007199254740991
           }
         },
         "required": [
@@ -1613,7 +2177,8 @@
           "conversionRate",
           "duplicateScanCount",
           "manualCheckInCount"
-        ]
+        ],
+        "additionalProperties": false
       },
       "DecideVerificationBody": {
         "type": "object",
@@ -1627,22 +2192,25 @@
             ]
           },
           "note": {
-            "type": "string",
-            "maxLength": 1000,
+            "default": null,
             "nullable": true,
-            "default": null
+            "type": "string",
+            "maxLength": 1000
           }
         },
         "required": [
-          "decision"
-        ]
+          "decision",
+          "note"
+        ],
+        "additionalProperties": false
       },
       "FollowOrganizerResponse": {
         "type": "object",
         "properties": {
           "organizerId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "following": {
             "type": "boolean"
@@ -1650,14 +2218,15 @@
           "followerCount": {
             "type": "integer",
             "minimum": 0,
-            "exclusiveMinimum": false
+            "maximum": 9007199254740991
           }
         },
         "required": [
           "organizerId",
           "following",
           "followerCount"
-        ]
+        ],
+        "additionalProperties": false
       },
       "OrganizerListResponse": {
         "type": "object",
@@ -1669,7 +2238,8 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid"
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
                 "slug": {
                   "type": "string",
@@ -1683,14 +2253,14 @@
                   "maxLength": 120
                 },
                 "bio": {
+                  "nullable": true,
                   "type": "string",
-                  "maxLength": 500,
-                  "nullable": true
+                  "maxLength": 500
                 },
                 "logoUrl": {
+                  "nullable": true,
                   "type": "string",
-                  "format": "uri",
-                  "nullable": true
+                  "format": "uri"
                 },
                 "isVerified": {
                   "type": "boolean"
@@ -1698,7 +2268,7 @@
                 "followerCount": {
                   "type": "integer",
                   "minimum": 0,
-                  "exclusiveMinimum": false
+                  "maximum": 9007199254740991
                 }
               },
               "required": [
@@ -1709,18 +2279,20 @@
                 "logoUrl",
                 "isVerified",
                 "followerCount"
-              ]
+              ],
+              "additionalProperties": false
             }
           },
           "nextCursor": {
-            "type": "string",
-            "nullable": true
+            "nullable": true,
+            "type": "string"
           }
         },
         "required": [
           "items",
           "nextCursor"
-        ]
+        ],
+        "additionalProperties": false
       },
       "SessionResponse": {
         "type": "object",
@@ -1730,7 +2302,8 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
               "displayName": {
                 "type": "string",
@@ -1738,9 +2311,9 @@
                 "maxLength": 80
               },
               "avatarUrl": {
+                "nullable": true,
                 "type": "string",
-                "format": "uri",
-                "nullable": true
+                "format": "uri"
               },
               "role": {
                 "type": "string",
@@ -1760,7 +2333,8 @@
               "avatarUrl",
               "role",
               "isVerifiedStudent"
-            ]
+            ],
+            "additionalProperties": false
           },
           "accessToken": {
             "type": "string"
@@ -1768,21 +2342,24 @@
           "expiresIn": {
             "type": "integer",
             "minimum": 0,
-            "exclusiveMinimum": true
+            "exclusiveMinimum": true,
+            "maximum": 9007199254740991
           }
         },
         "required": [
           "user",
           "accessToken",
           "expiresIn"
-        ]
+        ],
+        "additionalProperties": false
       },
       "SignInBody": {
         "type": "object",
         "properties": {
           "email": {
             "type": "string",
-            "format": "email"
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
           },
           "password": {
             "type": "string",
@@ -1792,14 +2369,16 @@
         "required": [
           "email",
           "password"
-        ]
+        ],
+        "additionalProperties": false
       },
       "SignUpBody": {
         "type": "object",
         "properties": {
           "email": {
             "type": "string",
-            "format": "email"
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
           },
           "password": {
             "type": "string",
@@ -1816,7 +2395,8 @@
           "email",
           "password",
           "displayName"
-        ]
+        ],
+        "additionalProperties": false
       },
       "SubmitOrganizerVerificationBody": {
         "type": "object",
@@ -1837,24 +2417,27 @@
             "format": "uri"
           },
           "note": {
-            "type": "string",
-            "maxLength": 1000,
+            "default": null,
             "nullable": true,
-            "default": null
+            "type": "string",
+            "maxLength": 1000
           }
         },
         "required": [
           "organizerName",
           "slug",
-          "evidenceUrl"
-        ]
+          "evidenceUrl",
+          "note"
+        ],
+        "additionalProperties": false
       },
       "SubmitStudentVerificationBody": {
         "type": "object",
         "properties": {
           "studentEmail": {
             "type": "string",
-            "format": "email"
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
           },
           "documentUploadId": {
             "type": "string",
@@ -1864,7 +2447,8 @@
         "required": [
           "studentEmail",
           "documentUploadId"
-        ]
+        ],
+        "additionalProperties": false
       },
       "VerificationQueueQuery": {
         "type": "object",
@@ -1873,12 +2457,10 @@
             "type": "string"
           },
           "limit": {
+            "default": 20,
             "type": "integer",
             "minimum": 1,
-            "exclusiveMinimum": false,
-            "maximum": 50,
-            "exclusiveMaximum": false,
-            "default": 20
+            "maximum": 50
           },
           "subject": {
             "type": "string",
@@ -1897,7 +2479,11 @@
               "INFO_REQUESTED"
             ]
           }
-        }
+        },
+        "required": [
+          "limit"
+        ],
+        "additionalProperties": false
       },
       "VerificationQueueResponse": {
         "type": "object",
@@ -1909,7 +2495,8 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "uuid"
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
                 "subject": {
                   "type": "string",
@@ -1933,7 +2520,8 @@
                   "properties": {
                     "id": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     },
                     "displayName": {
                       "type": "string",
@@ -1941,50 +2529,9 @@
                       "maxLength": 80
                     },
                     "avatarUrl": {
+                      "nullable": true,
                       "type": "string",
-                      "format": "uri",
-                      "nullable": true
-                    },
-                    "role": {
-                      "type": "string",
-                      "enum": [
-                        "ATTENDEE",
-                        "ORGANIZER",
-                        "SUPER_ADMIN"
-                      ]
-                    },
-                    "isVerifiedStudent": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "displayName",
-                    "avatarUrl",
-                    "role",
-                    "isVerifiedStudent"
-                  ]
-                },
-                "submittedAt": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "claimedBy": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "displayName": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 80
-                    },
-                    "avatarUrl": {
-                      "type": "string",
-                      "format": "uri",
-                      "nullable": true
+                      "format": "uri"
                     },
                     "role": {
                       "type": "string",
@@ -2005,22 +2552,69 @@
                     "role",
                     "isVerifiedStudent"
                   ],
-                  "nullable": true
+                  "additionalProperties": false
+                },
+                "submittedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "claimedBy": {
+                  "nullable": true,
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "avatarUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "ATTENDEE",
+                        "ORGANIZER",
+                        "SUPER_ADMIN"
+                      ]
+                    },
+                    "isVerifiedStudent": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "displayName",
+                    "avatarUrl",
+                    "role",
+                    "isVerifiedStudent"
+                  ],
+                  "additionalProperties": false
                 },
                 "claimedAt": {
+                  "nullable": true,
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 },
                 "reviewerNote": {
+                  "nullable": true,
                   "type": "string",
-                  "maxLength": 1000,
-                  "nullable": true
+                  "maxLength": 1000
                 },
                 "decidedAt": {
+                  "nullable": true,
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 }
               },
               "required": [
@@ -2033,24 +2627,28 @@
                 "claimedAt",
                 "reviewerNote",
                 "decidedAt"
-              ]
+              ],
+              "additionalProperties": false
             }
           },
           "nextCursor": {
-            "type": "string",
-            "nullable": true
+            "nullable": true,
+            "type": "string"
           }
         },
         "required": [
           "items",
           "nextCursor"
-        ]
+        ],
+        "additionalProperties": false
       },
       "ApiError": {
         "type": "object",
         "properties": {
           "statusCode": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
           },
           "code": {
             "type": "string"
@@ -2073,7 +2671,8 @@
               "required": [
                 "path",
                 "message"
-              ]
+              ],
+              "additionalProperties": false
             }
           },
           "requestId": {
@@ -2085,7 +2684,2443 @@
           "code",
           "message",
           "requestId"
-        ]
+        ],
+        "additionalProperties": false
+      },
+      "AttendeeNotification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "maxLength": 500,
+            "pattern": "^\\/(?![/\\\\])"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "readAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "body",
+          "href",
+          "createdAt",
+          "readAt"
+        ],
+        "additionalProperties": false
+      },
+      "AttendeePersona": {
+        "type": "object",
+        "properties": {
+          "skipped": {
+            "type": "boolean"
+          },
+          "vibes": {
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            }
+          },
+          "hall": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "faculty": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "level": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "rhythm": {
+            "type": "string",
+            "enum": [
+              "WEEKNIGHTS",
+              "WEEKENDS",
+              "BOTH"
+            ]
+          },
+          "freeEventsOnly": {
+            "type": "boolean"
+          },
+          "personaBadge": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "followedClubIds": {
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        },
+        "required": [
+          "skipped",
+          "vibes",
+          "hall",
+          "faculty",
+          "level",
+          "rhythm",
+          "freeEventsOnly",
+          "personaBadge",
+          "followedClubIds"
+        ],
+        "additionalProperties": false
+      },
+      "AttendeePreferences": {
+        "type": "object",
+        "properties": {
+          "persona": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "skipped": {
+                "type": "boolean"
+              },
+              "vibes": {
+                "maxItems": 5,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                }
+              },
+              "hall": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "faculty": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "level": {
+                "type": "string",
+                "maxLength": 20
+              },
+              "rhythm": {
+                "type": "string",
+                "enum": [
+                  "WEEKNIGHTS",
+                  "WEEKENDS",
+                  "BOTH"
+                ]
+              },
+              "freeEventsOnly": {
+                "type": "boolean"
+              },
+              "personaBadge": {
+                "type": "string",
+                "maxLength": 40
+              },
+              "followedClubIds": {
+                "maxItems": 200,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                }
+              }
+            },
+            "required": [
+              "skipped",
+              "vibes",
+              "hall",
+              "faculty",
+              "level",
+              "rhythm",
+              "freeEventsOnly",
+              "personaBadge",
+              "followedClubIds"
+            ],
+            "additionalProperties": false
+          },
+          "privacy": {
+            "type": "object",
+            "properties": {
+              "stealthRsvp": {
+                "type": "boolean"
+              },
+              "hideFromFriends": {
+                "type": "boolean"
+              },
+              "mutedCategories": {
+                "maxItems": 20,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 40
+                }
+              },
+              "theme": {
+                "type": "string",
+                "enum": [
+                  "system",
+                  "dark",
+                  "light"
+                ]
+              }
+            },
+            "required": [
+              "stealthRsvp",
+              "hideFromFriends",
+              "mutedCategories",
+              "theme"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "persona",
+          "privacy"
+        ],
+        "additionalProperties": false
+      },
+      "AttendeePrivacy": {
+        "type": "object",
+        "properties": {
+          "stealthRsvp": {
+            "type": "boolean"
+          },
+          "hideFromFriends": {
+            "type": "boolean"
+          },
+          "mutedCategories": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 40
+            }
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "system",
+              "dark",
+              "light"
+            ]
+          }
+        },
+        "required": [
+          "stealthRsvp",
+          "hideFromFriends",
+          "mutedCategories",
+          "theme"
+        ],
+        "additionalProperties": false
+      },
+      "AttendeeSearchResponse": {
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 140
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 5000
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "SOCIAL_PARTY",
+                    "PERFORMANCE_ARTS",
+                    "ACADEMIC_CONFERENCE",
+                    "SPORTS_RECREATION",
+                    "CLUB_SOCIETY"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "DRAFT",
+                    "PUBLISHED",
+                    "CANCELLED",
+                    "COMPLETED"
+                  ]
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "endsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "venueName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "venueDetail": {
+                  "nullable": true,
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "coverImageUrl": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "uri"
+                },
+                "capacity": {
+                  "nullable": true,
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "maximum": 9007199254740991
+                },
+                "rsvpCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "nullable": true,
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    "logoUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ],
+                  "additionalProperties": false
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "template": {
+                  "type": "string",
+                  "enum": [
+                    "GENERIC",
+                    "CONCERT_PARTY",
+                    "PLAY_CULTURAL",
+                    "MATCH_TOURNAMENT"
+                  ]
+                },
+                "studentsOnly": {
+                  "type": "boolean"
+                },
+                "waitlistEnabled": {
+                  "type": "boolean"
+                },
+                "dressCode": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "doorPolicy": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "tonightMood": {
+                  "type": "string",
+                  "enum": [
+                    "CHILL",
+                    "TURN_UP",
+                    "LEARN",
+                    "WATCH_GAME"
+                  ]
+                },
+                "friendsGoing": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "displayName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "avatarUrl": {
+                        "nullable": true,
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "displayName",
+                      "avatarUrl"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "friendsGoingCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "lineup": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "performerName": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      },
+                      "setTime": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "performerName",
+                      "role",
+                      "setTime"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "castAndCrew": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "showtimes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "startsAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      "spotsLeft": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label",
+                      "startsAt",
+                      "spotsLeft"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "fixture": {
+                  "type": "object",
+                  "properties": {
+                    "homeTeam": {
+                      "type": "string"
+                    },
+                    "awayTeam": {
+                      "type": "string"
+                    },
+                    "homeScore": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "awayScore": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "isLive": {
+                      "type": "boolean"
+                    },
+                    "periodLabel": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "homeTeam",
+                    "awayTeam",
+                    "homeScore",
+                    "awayScore",
+                    "isLive",
+                    "periodLabel"
+                  ],
+                  "additionalProperties": false
+                },
+                "linkedAfterParty": {
+                  "nullable": true,
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "venueName": {
+                      "type": "string"
+                    },
+                    "accessRule": {
+                      "type": "string",
+                      "enum": [
+                        "OPEN",
+                        "PRIORITY_CHECKED_IN",
+                        "CHECKED_IN_ONLY"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "startsAt",
+                    "venueName",
+                    "accessRule"
+                  ],
+                  "additionalProperties": false
+                },
+                "parentEventSlug": {
+                  "nullable": true,
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "parentEventTitle": {
+                  "nullable": true,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "title",
+                "description",
+                "category",
+                "status",
+                "startsAt",
+                "endsAt",
+                "venueName",
+                "venueDetail",
+                "coverImageUrl",
+                "capacity",
+                "rsvpCount",
+                "organizer",
+                "createdAt",
+                "updatedAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "organizers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "bio": {
+                  "nullable": true,
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "logoUrl": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "uri"
+                },
+                "isVerified": {
+                  "type": "boolean"
+                },
+                "followerCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "name",
+                "bio",
+                "logoUrl",
+                "isVerified",
+                "followerCount"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "events",
+          "organizers"
+        ],
+        "additionalProperties": false
+      },
+      "AttendeeTicket": {
+        "type": "object",
+        "properties": {
+          "rsvp": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "userId": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "CONFIRMED",
+                  "WAITLISTED",
+                  "CANCELLED"
+                ]
+              },
+              "qrToken": {
+                "type": "string",
+                "minLength": 16
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              }
+            },
+            "required": [
+              "id",
+              "eventId",
+              "userId",
+              "status",
+              "qrToken",
+              "createdAt"
+            ],
+            "additionalProperties": false
+          },
+          "event": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 140
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 5000
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "SOCIAL_PARTY",
+                  "PERFORMANCE_ARTS",
+                  "ACADEMIC_CONFERENCE",
+                  "SPORTS_RECREATION",
+                  "CLUB_SOCIETY"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "PUBLISHED",
+                  "CANCELLED",
+                  "COMPLETED"
+                ]
+              },
+              "startsAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              "endsAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              "venueName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "venueDetail": {
+                "nullable": true,
+                "type": "string",
+                "maxLength": 500
+              },
+              "coverImageUrl": {
+                "nullable": true,
+                "type": "string",
+                "format": "uri"
+              },
+              "capacity": {
+                "nullable": true,
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "maximum": 9007199254740991
+              },
+              "rsvpCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "organizer": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 120,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "bio": {
+                    "nullable": true,
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "logoUrl": {
+                    "nullable": true,
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "isVerified": {
+                    "type": "boolean"
+                  },
+                  "followerCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "id",
+                  "slug",
+                  "name",
+                  "bio",
+                  "logoUrl",
+                  "isVerified",
+                  "followerCount"
+                ],
+                "additionalProperties": false
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              "template": {
+                "type": "string",
+                "enum": [
+                  "GENERIC",
+                  "CONCERT_PARTY",
+                  "PLAY_CULTURAL",
+                  "MATCH_TOURNAMENT"
+                ]
+              },
+              "studentsOnly": {
+                "type": "boolean"
+              },
+              "waitlistEnabled": {
+                "type": "boolean"
+              },
+              "dressCode": {
+                "nullable": true,
+                "type": "string"
+              },
+              "doorPolicy": {
+                "nullable": true,
+                "type": "string"
+              },
+              "tonightMood": {
+                "type": "string",
+                "enum": [
+                  "CHILL",
+                  "TURN_UP",
+                  "LEARN",
+                  "WATCH_GAME"
+                ]
+              },
+              "friendsGoing": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "avatarUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "displayName",
+                    "avatarUrl"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "friendsGoingCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "lineup": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "performerName": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "setTime": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "performerName",
+                    "role",
+                    "setTime"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "castAndCrew": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "showtimes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "spotsLeft": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "label",
+                    "startsAt",
+                    "spotsLeft"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "fixture": {
+                "type": "object",
+                "properties": {
+                  "homeTeam": {
+                    "type": "string"
+                  },
+                  "awayTeam": {
+                    "type": "string"
+                  },
+                  "homeScore": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "awayScore": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "isLive": {
+                    "type": "boolean"
+                  },
+                  "periodLabel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "homeTeam",
+                  "awayTeam",
+                  "homeScore",
+                  "awayScore",
+                  "isLive",
+                  "periodLabel"
+                ],
+                "additionalProperties": false
+              },
+              "linkedAfterParty": {
+                "nullable": true,
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 120,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "startsAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  "venueName": {
+                    "type": "string"
+                  },
+                  "accessRule": {
+                    "type": "string",
+                    "enum": [
+                      "OPEN",
+                      "PRIORITY_CHECKED_IN",
+                      "CHECKED_IN_ONLY"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "slug",
+                  "title",
+                  "startsAt",
+                  "venueName",
+                  "accessRule"
+                ],
+                "additionalProperties": false
+              },
+              "parentEventSlug": {
+                "nullable": true,
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "parentEventTitle": {
+                "nullable": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "title",
+              "description",
+              "category",
+              "status",
+              "startsAt",
+              "endsAt",
+              "venueName",
+              "venueDetail",
+              "coverImageUrl",
+              "capacity",
+              "rsvpCount",
+              "organizer",
+              "createdAt",
+              "updatedAt"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "rsvp",
+          "event"
+        ],
+        "additionalProperties": false
+      },
+      "AttendeeTicketsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "rsvp": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "CONFIRMED",
+                        "WAITLISTED",
+                        "CANCELLED"
+                      ]
+                    },
+                    "qrToken": {
+                      "type": "string",
+                      "minLength": 16
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "eventId",
+                    "userId",
+                    "status",
+                    "qrToken",
+                    "createdAt"
+                  ],
+                  "additionalProperties": false
+                },
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 140
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 5000
+                    },
+                    "category": {
+                      "type": "string",
+                      "enum": [
+                        "SOCIAL_PARTY",
+                        "PERFORMANCE_ARTS",
+                        "ACADEMIC_CONFERENCE",
+                        "SPORTS_RECREATION",
+                        "CLUB_SOCIETY"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "DRAFT",
+                        "PUBLISHED",
+                        "CANCELLED",
+                        "COMPLETED"
+                      ]
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "endsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "venueName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "venueDetail": {
+                      "nullable": true,
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    "coverImageUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "capacity": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true,
+                      "maximum": 9007199254740991
+                    },
+                    "rsvpCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "organizer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "slug": {
+                          "type": "string",
+                          "minLength": 3,
+                          "maxLength": 120,
+                          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "bio": {
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500
+                        },
+                        "logoUrl": {
+                          "nullable": true,
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "isVerified": {
+                          "type": "boolean"
+                        },
+                        "followerCount": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "slug",
+                        "name",
+                        "bio",
+                        "logoUrl",
+                        "isVerified",
+                        "followerCount"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "template": {
+                      "type": "string",
+                      "enum": [
+                        "GENERIC",
+                        "CONCERT_PARTY",
+                        "PLAY_CULTURAL",
+                        "MATCH_TOURNAMENT"
+                      ]
+                    },
+                    "studentsOnly": {
+                      "type": "boolean"
+                    },
+                    "waitlistEnabled": {
+                      "type": "boolean"
+                    },
+                    "dressCode": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "doorPolicy": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "tonightMood": {
+                      "type": "string",
+                      "enum": [
+                        "CHILL",
+                        "TURN_UP",
+                        "LEARN",
+                        "WATCH_GAME"
+                      ]
+                    },
+                    "friendsGoing": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 80
+                          },
+                          "avatarUrl": {
+                            "nullable": true,
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "displayName",
+                          "avatarUrl"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "friendsGoingCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "lineup": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "performerName": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "type": "string"
+                          },
+                          "setTime": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "performerName",
+                          "role",
+                          "setTime"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "castAndCrew": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "showtimes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "startsAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                          },
+                          "spotsLeft": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "label",
+                          "startsAt",
+                          "spotsLeft"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "fixture": {
+                      "type": "object",
+                      "properties": {
+                        "homeTeam": {
+                          "type": "string"
+                        },
+                        "awayTeam": {
+                          "type": "string"
+                        },
+                        "homeScore": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "awayScore": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "isLive": {
+                          "type": "boolean"
+                        },
+                        "periodLabel": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "homeTeam",
+                        "awayTeam",
+                        "homeScore",
+                        "awayScore",
+                        "isLive",
+                        "periodLabel"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "linkedAfterParty": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "slug": {
+                          "type": "string",
+                          "minLength": 3,
+                          "maxLength": 120,
+                          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "startsAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        },
+                        "venueName": {
+                          "type": "string"
+                        },
+                        "accessRule": {
+                          "type": "string",
+                          "enum": [
+                            "OPEN",
+                            "PRIORITY_CHECKED_IN",
+                            "CHECKED_IN_ONLY"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "slug",
+                        "title",
+                        "startsAt",
+                        "venueName",
+                        "accessRule"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "parentEventSlug": {
+                      "nullable": true,
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "parentEventTitle": {
+                      "nullable": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "description",
+                    "category",
+                    "status",
+                    "startsAt",
+                    "endsAt",
+                    "venueName",
+                    "venueDetail",
+                    "coverImageUrl",
+                    "capacity",
+                    "rsvpCount",
+                    "organizer",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "rsvp",
+                "event"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "ConfirmStudentOtpBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$"
+          }
+        },
+        "required": [
+          "email",
+          "code"
+        ],
+        "additionalProperties": false
+      },
+      "CreatorPublic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "nullable": true,
+            "type": "string",
+            "format": "uri"
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "followerCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 140
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 5000
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "SOCIAL_PARTY",
+                    "PERFORMANCE_ARTS",
+                    "ACADEMIC_CONFERENCE",
+                    "SPORTS_RECREATION",
+                    "CLUB_SOCIETY"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "DRAFT",
+                    "PUBLISHED",
+                    "CANCELLED",
+                    "COMPLETED"
+                  ]
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "endsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "venueName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "venueDetail": {
+                  "nullable": true,
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "coverImageUrl": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "uri"
+                },
+                "capacity": {
+                  "nullable": true,
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "maximum": 9007199254740991
+                },
+                "rsvpCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "nullable": true,
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    "logoUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ],
+                  "additionalProperties": false
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "template": {
+                  "type": "string",
+                  "enum": [
+                    "GENERIC",
+                    "CONCERT_PARTY",
+                    "PLAY_CULTURAL",
+                    "MATCH_TOURNAMENT"
+                  ]
+                },
+                "studentsOnly": {
+                  "type": "boolean"
+                },
+                "waitlistEnabled": {
+                  "type": "boolean"
+                },
+                "dressCode": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "doorPolicy": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "tonightMood": {
+                  "type": "string",
+                  "enum": [
+                    "CHILL",
+                    "TURN_UP",
+                    "LEARN",
+                    "WATCH_GAME"
+                  ]
+                },
+                "friendsGoing": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "displayName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "avatarUrl": {
+                        "nullable": true,
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "displayName",
+                      "avatarUrl"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "friendsGoingCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "lineup": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "performerName": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      },
+                      "setTime": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "performerName",
+                      "role",
+                      "setTime"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "castAndCrew": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "showtimes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "startsAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      "spotsLeft": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label",
+                      "startsAt",
+                      "spotsLeft"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "fixture": {
+                  "type": "object",
+                  "properties": {
+                    "homeTeam": {
+                      "type": "string"
+                    },
+                    "awayTeam": {
+                      "type": "string"
+                    },
+                    "homeScore": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "awayScore": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "isLive": {
+                      "type": "boolean"
+                    },
+                    "periodLabel": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "homeTeam",
+                    "awayTeam",
+                    "homeScore",
+                    "awayScore",
+                    "isLive",
+                    "periodLabel"
+                  ],
+                  "additionalProperties": false
+                },
+                "linkedAfterParty": {
+                  "nullable": true,
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    "venueName": {
+                      "type": "string"
+                    },
+                    "accessRule": {
+                      "type": "string",
+                      "enum": [
+                        "OPEN",
+                        "PRIORITY_CHECKED_IN",
+                        "CHECKED_IN_ONLY"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "startsAt",
+                    "venueName",
+                    "accessRule"
+                  ],
+                  "additionalProperties": false
+                },
+                "parentEventSlug": {
+                  "nullable": true,
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "parentEventTitle": {
+                  "nullable": true,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "title",
+                "description",
+                "category",
+                "status",
+                "startsAt",
+                "endsAt",
+                "venueName",
+                "venueDetail",
+                "coverImageUrl",
+                "capacity",
+                "rsvpCount",
+                "organizer",
+                "createdAt",
+                "updatedAt"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "handle",
+          "displayName",
+          "bio",
+          "avatarUrl",
+          "isVerified",
+          "followerCount",
+          "events"
+        ],
+        "additionalProperties": false
+      },
+      "FriendActionBody": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "REQUEST",
+              "ACCEPT",
+              "DECLINE",
+              "BLOCK"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": false
+      },
+      "FriendEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "avatarUrl": {
+                "nullable": true,
+                "type": "string",
+                "format": "uri"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "ATTENDEE",
+                  "ORGANIZER",
+                  "SUPER_ADMIN"
+                ]
+              },
+              "isVerifiedStudent": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "displayName",
+              "avatarUrl",
+              "role",
+              "isVerifiedStudent"
+            ],
+            "additionalProperties": false
+          },
+          "hall": {
+            "nullable": true,
+            "type": "string"
+          },
+          "faculty": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUGGESTED",
+              "INCOMING",
+              "OUTGOING",
+              "ACCEPTED",
+              "BLOCKED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "user",
+          "hall",
+          "faculty",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "FriendRequestBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "userId"
+        ],
+        "additionalProperties": false
+      },
+      "FriendsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "avatarUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "ATTENDEE",
+                        "ORGANIZER",
+                        "SUPER_ADMIN"
+                      ]
+                    },
+                    "isVerifiedStudent": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "displayName",
+                    "avatarUrl",
+                    "role",
+                    "isVerifiedStudent"
+                  ],
+                  "additionalProperties": false
+                },
+                "hall": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "faculty": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "SUGGESTED",
+                    "INCOMING",
+                    "OUTGOING",
+                    "ACCEPTED",
+                    "BLOCKED"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "user",
+                "hall",
+                "faculty",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "NotificationsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "pattern": "^\\/(?![/\\\\])"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "readAt": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "body",
+                "href",
+                "createdAt",
+                "readAt"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "PushSubscriptionBody": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "maxLength": 2048,
+            "format": "uri"
+          },
+          "keys": {
+            "type": "object",
+            "properties": {
+              "p256dh": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "auth": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              }
+            },
+            "required": [
+              "p256dh",
+              "auth"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "endpoint",
+          "keys"
+        ],
+        "additionalProperties": false
+      },
+      "StudentIdRequestBody": {
+        "type": "object",
+        "properties": {
+          "documentUploadId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "documentUploadId"
+        ],
+        "additionalProperties": false
+      },
+      "StudentOtpBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "additionalProperties": false
+      },
+      "StudentUploadBody": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "image/jpeg",
+              "image/png"
+            ]
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 5242880
+          }
+        },
+        "required": [
+          "contentType",
+          "size"
+        ],
+        "additionalProperties": false
+      },
+      "StudentUploadResponse": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "uploadId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uploadUrl",
+          "uploadId"
+        ],
+        "additionalProperties": false
+      },
+      "StudentVerificationState": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "PENDING",
+              "APPROVED",
+              "REJECTED",
+              "INFO_REQUESTED"
+            ]
+          },
+          "note": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "note"
+        ],
+        "additionalProperties": false
+      },
+      "SubmitReportBody": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "eventId",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateProfileBody": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "displayName"
+        ],
+        "additionalProperties": false
       }
     }
   }

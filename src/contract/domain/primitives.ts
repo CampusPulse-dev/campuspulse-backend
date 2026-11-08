@@ -1,18 +1,15 @@
 import { z } from 'zod';
 
-export const Id = z.string().uuid();
+export const Id = z.uuid();
 export type Id = z.infer<typeof Id>;
 
-export const IsoDateTime = z.string().datetime({ offset: true });
+export const IsoDateTime = z.iso.datetime({ offset: true });
 export type IsoDateTime = z.infer<typeof IsoDateTime>;
 
 /** Verification at launch is scoped to UI-affiliated addresses (PRD §7). */
-export const StudentEmail = z
-  .string()
-  .email()
-  .refine((v) => v.toLowerCase().endsWith('.ui.edu.ng'), {
-    message: 'must be a University of Ibadan address',
-  });
+export const StudentEmail = z.email().refine((v) => v.toLowerCase().endsWith('.ui.edu.ng'), {
+  message: 'must be a University of Ibadan address',
+});
 export type StudentEmail = z.infer<typeof StudentEmail>;
 
 export const Slug = z

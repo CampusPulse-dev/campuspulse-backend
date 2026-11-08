@@ -30,7 +30,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         code: 'VALIDATION_FAILED',
         message: 'Request validation failed',
         details: exception.issues.map((i) => ({
-          path: i.path.join('.'),
+          path: i.path.map(String).join('.'),
           message: i.message,
         })),
         requestId,

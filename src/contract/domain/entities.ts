@@ -13,7 +13,7 @@ import { Id, IsoDateTime, Slug } from './primitives';
 export const UserPublic = z.object({
   id: Id,
   displayName: z.string().min(1).max(80),
-  avatarUrl: z.string().url().nullable(),
+  avatarUrl: z.url().nullable(),
   role: UserRole,
   isVerifiedStudent: z.boolean(),
 });
@@ -24,7 +24,7 @@ export const OrganizerPublic = z.object({
   slug: Slug,
   name: z.string().min(1).max(120),
   bio: z.string().max(500).nullable(),
-  logoUrl: z.string().url().nullable(),
+  logoUrl: z.url().nullable(),
   isVerified: z.boolean(),
   followerCount: z.number().int().nonnegative(),
 });
@@ -45,12 +45,66 @@ export const EventPublic = z.object({
   endsAt: IsoDateTime,
   venueName: z.string().min(1).max(200),
   venueDetail: z.string().max(500).nullable(),
-  coverImageUrl: z.string().url().nullable(),
+  coverImageUrl: z.url().nullable(),
   capacity: z.number().int().positive().nullable(),
   rsvpCount: z.number().int().nonnegative(),
   organizer: OrganizerPublic,
   createdAt: IsoDateTime,
   updatedAt: IsoDateTime,
+  template: z.enum(['GENERIC', 'CONCERT_PARTY', 'PLAY_CULTURAL', 'MATCH_TOURNAMENT']).optional(),
+  studentsOnly: z.boolean().optional(),
+  waitlistEnabled: z.boolean().optional(),
+  dressCode: z.string().nullable().optional(),
+  doorPolicy: z.string().nullable().optional(),
+  tonightMood: z.enum(['CHILL', 'TURN_UP', 'LEARN', 'WATCH_GAME']).optional(),
+  friendsGoing: z
+    .array(UserPublic.pick({ id: true, displayName: true, avatarUrl: true }))
+    .optional(),
+  friendsGoingCount: z.number().int().nonnegative().optional(),
+  lineup: z
+    .array(
+      z.object({
+        id: z.string(),
+        performerName: z.string(),
+        role: z.string(),
+        setTime: z.string(),
+      }),
+    )
+    .optional(),
+  castAndCrew: z.array(z.string()).optional(),
+  showtimes: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string(),
+        startsAt: IsoDateTime,
+        spotsLeft: z.number().int().nonnegative(),
+      }),
+    )
+    .optional(),
+  fixture: z
+    .object({
+      homeTeam: z.string(),
+      awayTeam: z.string(),
+      homeScore: z.number().int().nonnegative(),
+      awayScore: z.number().int().nonnegative(),
+      isLive: z.boolean(),
+      periodLabel: z.string(),
+    })
+    .optional(),
+  linkedAfterParty: z
+    .object({
+      id: Id,
+      slug: Slug,
+      title: z.string(),
+      startsAt: IsoDateTime,
+      venueName: z.string(),
+      accessRule: z.enum(['OPEN', 'PRIORITY_CHECKED_IN', 'CHECKED_IN_ONLY']),
+    })
+    .nullable()
+    .optional(),
+  parentEventSlug: Slug.nullable().optional(),
+  parentEventTitle: z.string().nullable().optional(),
 });
 export type EventPublic = z.infer<typeof EventPublic>;
 
@@ -59,7 +113,7 @@ export const Story = z.object({
   id: Id,
   organizer: OrganizerPublic,
   eventId: Id.nullable(),
-  mediaUrl: z.string().url(),
+  mediaUrl: z.url(),
   mediaType: z.enum(['IMAGE', 'VIDEO']),
   caption: z.string().max(280).nullable(),
   createdAt: IsoDateTime,
@@ -118,7 +172,7 @@ export const AuditLogEntry = z.object({
   action: z.string().min(1).max(120),
   targetType: z.string().min(1).max(80),
   targetId: z.string().min(1),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
   createdAt: IsoDateTime,
 });
 export type AuditLogEntry = z.infer<typeof AuditLogEntry>;

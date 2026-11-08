@@ -86,8 +86,8 @@ export const EventPublic = z.object({
     .object({
       homeTeam: z.string(),
       awayTeam: z.string(),
-      homeScore: z.number(),
-      awayScore: z.number(),
+      homeScore: z.number().int().nonnegative(),
+      awayScore: z.number().int().nonnegative(),
       isLive: z.boolean(),
       periodLabel: z.string(),
     })

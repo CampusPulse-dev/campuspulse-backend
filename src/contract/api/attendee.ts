@@ -5,19 +5,19 @@ import { Id, IsoDateTime, StudentEmail } from '../domain/primitives';
 /** S4 attendee interfaces; controller integration follows in S1–S3. */
 export const AttendeePersona = z.object({
   skipped: z.boolean(),
-  vibes: z.array(z.string()).max(5),
-  hall: z.string(),
-  faculty: z.string(),
-  level: z.string(),
+  vibes: z.array(z.string().trim().min(1).max(40)).max(5),
+  hall: z.string().max(80),
+  faculty: z.string().max(80),
+  level: z.string().max(20),
   rhythm: z.enum(['WEEKNIGHTS', 'WEEKENDS', 'BOTH']),
   freeEventsOnly: z.boolean(),
-  personaBadge: z.string(),
-  followedClubIds: z.array(Id),
+  personaBadge: z.string().max(40),
+  followedClubIds: z.array(Id).max(200),
 });
 export const AttendeePrivacy = z.object({
   stealthRsvp: z.boolean(),
   hideFromFriends: z.boolean(),
-  mutedCategories: z.array(z.string()),
+  mutedCategories: z.array(z.string().max(40)).max(20),
   theme: z.enum(['system', 'dark', 'light']),
 });
 export const AttendeePreferences = z.object({
@@ -41,7 +41,11 @@ export const AttendeeNotification = z.object({
   id: Id,
   title: z.string(),
   body: z.string(),
-  href: z.string(),
+  /** App-relative path only, so a notification can never point off-site or at `javascript:`. */
+  href: z
+    .string()
+    .max(500)
+    .regex(/^\/(?![/\\])/, 'must be an app-relative path'),
   createdAt: IsoDateTime,
   readAt: IsoDateTime.nullable(),
 });
@@ -82,10 +86,34 @@ export const StudentUploadResponse = z.object({
 });
 export const StudentIdRequestBody = z.object({ documentUploadId: z.string().min(1) });
 export const PushSubscriptionBody = z.object({
-  endpoint: z.url(),
-  keys: z.object({ p256dh: z.string(), auth: z.string() }),
+  /** The server POSTs to this URL, so only https push services are accepted. */
+  endpoint: z.url({ protocol: /^https$/ }).max(2048),
+  keys: z.object({ p256dh: z.string().min(1).max(256), auth: z.string().min(1).max(64) }),
 });
 export const SubmitReportBody = z.object({
   eventId: Id,
   reason: z.string().trim().min(1).max(1000),
 });
+
+export type AttendeePersona = z.infer<typeof AttendeePersona>;
+export type AttendeePrivacy = z.infer<typeof AttendeePrivacy>;
+export type AttendeePreferences = z.infer<typeof AttendeePreferences>;
+export type UpdateProfileBody = z.infer<typeof UpdateProfileBody>;
+export type FriendEntry = z.infer<typeof FriendEntry>;
+export type FriendsResponse = z.infer<typeof FriendsResponse>;
+export type FriendActionBody = z.infer<typeof FriendActionBody>;
+export type FriendRequestBody = z.infer<typeof FriendRequestBody>;
+export type AttendeeNotification = z.infer<typeof AttendeeNotification>;
+export type NotificationsResponse = z.infer<typeof NotificationsResponse>;
+export type CreatorPublic = z.infer<typeof CreatorPublic>;
+export type AttendeeSearchResponse = z.infer<typeof AttendeeSearchResponse>;
+export type AttendeeTicket = z.infer<typeof AttendeeTicket>;
+export type AttendeeTicketsResponse = z.infer<typeof AttendeeTicketsResponse>;
+export type StudentOtpBody = z.infer<typeof StudentOtpBody>;
+export type ConfirmStudentOtpBody = z.infer<typeof ConfirmStudentOtpBody>;
+export type StudentVerificationState = z.infer<typeof StudentVerificationState>;
+export type StudentUploadBody = z.infer<typeof StudentUploadBody>;
+export type StudentUploadResponse = z.infer<typeof StudentUploadResponse>;
+export type StudentIdRequestBody = z.infer<typeof StudentIdRequestBody>;
+export type PushSubscriptionBody = z.infer<typeof PushSubscriptionBody>;
+export type SubmitReportBody = z.infer<typeof SubmitReportBody>;

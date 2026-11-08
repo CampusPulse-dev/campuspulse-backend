@@ -1,6 +1,6 @@
 # AGENTS.md — campuspulse-backend (`@campuspulse/api`)
 
-Authoritative quick-reference for AI coding agents working inside `campuspulse-backend`. For full product, schema, and flow context, read `../docs/01-PRD-SYNTHESIS-AND-SCOPE-MATRIX.md` through `../docs/07-AI-AGENT-PLAYBOOK-AND-CONVENTIONS.md`.
+Authoritative quick-reference for AI coding agents working inside `campuspulse-backend`. For full product, schema, and flow context, read the product docs (PRD synthesis through the agent playbook, `01-…` to `07-…`) in the CampusPulse docs workspace — they are not checked into this repo.
 
 ## 1. Architecture & Module Boundaries
 

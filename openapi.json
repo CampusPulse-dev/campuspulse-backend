@@ -694,10 +694,14 @@
                 "type": "string"
               },
               "homeScore": {
-                "type": "number"
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
               },
               "awayScore": {
-                "type": "number"
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
               },
               "isLive": {
                 "type": "boolean"
@@ -1605,10 +1609,14 @@
                       "type": "string"
                     },
                     "homeScore": {
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
                     },
                     "awayScore": {
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
                     },
                     "isLive": {
                       "type": "boolean"
@@ -2059,13 +2067,19 @@
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
           "showtimeId": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
           },
           "ambassadorCode": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
           },
           "inviteCode": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
           },
           "hideFromFriends": {
             "type": "boolean"
@@ -2688,7 +2702,9 @@
             "type": "string"
           },
           "href": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 500,
+            "pattern": "^\\/(?![/\\\\])"
           },
           "createdAt": {
             "type": "string",
@@ -2722,17 +2738,22 @@
             "maxItems": 5,
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
             }
           },
           "hall": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 80
           },
           "faculty": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 80
           },
           "level": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 20
           },
           "rhythm": {
             "type": "string",
@@ -2746,9 +2767,11 @@
             "type": "boolean"
           },
           "personaBadge": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 40
           },
           "followedClubIds": {
+            "maxItems": 200,
             "type": "array",
             "items": {
               "type": "string",
@@ -2784,17 +2807,22 @@
                 "maxItems": 5,
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
                 }
               },
               "hall": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 80
               },
               "faculty": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 80
               },
               "level": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 20
               },
               "rhythm": {
                 "type": "string",
@@ -2808,9 +2836,11 @@
                 "type": "boolean"
               },
               "personaBadge": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 40
               },
               "followedClubIds": {
+                "maxItems": 200,
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -2842,9 +2872,11 @@
                 "type": "boolean"
               },
               "mutedCategories": {
+                "maxItems": 20,
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 40
                 }
               },
               "theme": {
@@ -2881,9 +2913,11 @@
             "type": "boolean"
           },
           "mutedCategories": {
+            "maxItems": 20,
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 40
             }
           },
           "theme": {
@@ -3186,10 +3220,14 @@
                       "type": "string"
                     },
                     "homeScore": {
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
                     },
                     "awayScore": {
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
                     },
                     "isLive": {
                       "type": "boolean"
@@ -3672,10 +3710,14 @@
                     "type": "string"
                   },
                   "homeScore": {
-                    "type": "number"
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
                   },
                   "awayScore": {
-                    "type": "number"
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
                   },
                   "isLive": {
                     "type": "boolean"
@@ -4110,10 +4152,14 @@
                           "type": "string"
                         },
                         "homeScore": {
-                          "type": "number"
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
                         },
                         "awayScore": {
-                          "type": "number"
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
                         },
                         "isLive": {
                           "type": "boolean"
@@ -4552,10 +4598,14 @@
                       "type": "string"
                     },
                     "homeScore": {
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
                     },
                     "awayScore": {
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
                     },
                     "isLive": {
                       "type": "boolean"
@@ -4879,7 +4929,9 @@
                   "type": "string"
                 },
                 "href": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 500,
+                  "pattern": "^\\/(?![/\\\\])"
                 },
                 "createdAt": {
                   "type": "string",
@@ -4915,16 +4967,21 @@
         "properties": {
           "endpoint": {
             "type": "string",
+            "maxLength": 2048,
             "format": "uri"
           },
           "keys": {
             "type": "object",
             "properties": {
               "p256dh": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
               },
               "auth": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
               }
             },
             "required": [

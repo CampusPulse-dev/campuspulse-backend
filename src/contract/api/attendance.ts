@@ -5,9 +5,9 @@ import { Id, IsoDateTime } from '../domain/primitives';
 
 export const CreateRsvpBody = z.object({
   eventId: Id,
-  showtimeId: z.string().optional(),
-  ambassadorCode: z.string().optional(),
-  inviteCode: z.string().optional(),
+  showtimeId: z.string().min(1).max(64).optional(),
+  ambassadorCode: z.string().trim().min(1).max(32).optional(),
+  inviteCode: z.string().trim().min(1).max(32).optional(),
   hideFromFriends: z.boolean().optional(),
 });
 export type CreateRsvpBody = z.infer<typeof CreateRsvpBody>;

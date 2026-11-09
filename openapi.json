@@ -250,6 +250,14 @@
       }
     },
     "schemas": {
+      "AfterPartyAccessRule": {
+        "type": "string",
+        "enum": [
+          "OPEN",
+          "PRIORITY_CHECKED_IN",
+          "CHECKED_IN_ONLY"
+        ]
+      },
       "CheckInMethod": {
         "type": "string",
         "enum": [
@@ -267,6 +275,13 @@
           "CLUB_SOCIETY"
         ]
       },
+      "EventLinkType": {
+        "type": "string",
+        "enum": [
+          "AFTER_PARTY",
+          "SERIES_CHILD"
+        ]
+      },
       "EventStatus": {
         "type": "string",
         "enum": [
@@ -274,6 +289,44 @@
           "PUBLISHED",
           "CANCELLED",
           "COMPLETED"
+        ]
+      },
+      "EventTemplate": {
+        "type": "string",
+        "enum": [
+          "GENERIC",
+          "CONCERT_PARTY",
+          "PLAY_CULTURAL",
+          "MATCH_TOURNAMENT",
+          "DINNER_GALA",
+          "TALK_WORKSHOP"
+        ]
+      },
+      "FollowTargetType": {
+        "type": "string",
+        "enum": [
+          "ORGANIZER",
+          "CREATOR",
+          "VENDOR"
+        ]
+      },
+      "FriendshipStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "ACCEPTED",
+          "BLOCKED"
+        ]
+      },
+      "NotificationCategory": {
+        "type": "string",
+        "enum": [
+          "REMINDER",
+          "EVENT_CRITICAL",
+          "FOLLOWED_POST",
+          "SOCIAL_FRIEND",
+          "RECOMMENDATION",
+          "SYSTEM_VERIFICATION"
         ]
       },
       "NotificationChannel": {
@@ -284,6 +337,13 @@
           "EMAIL"
         ]
       },
+      "OrganizerTeamRole": {
+        "type": "string",
+        "enum": [
+          "OWNER",
+          "MANAGER"
+        ]
+      },
       "RsvpStatus": {
         "type": "string",
         "enum": [
@@ -292,11 +352,23 @@
           "CANCELLED"
         ]
       },
+      "TonightMood": {
+        "type": "string",
+        "enum": [
+          "CHILL",
+          "TURN_UP",
+          "LEARN",
+          "WATCH_GAME"
+        ]
+      },
       "UserRole": {
         "type": "string",
         "enum": [
           "ATTENDEE",
           "ORGANIZER",
+          "CREATOR",
+          "VERIFIER",
+          "MODERATOR",
           "SUPER_ADMIN"
         ]
       },
@@ -314,7 +386,9 @@
         "type": "string",
         "enum": [
           "ORGANIZER_CLUB",
-          "STUDENT_ID"
+          "STUDENT_ID",
+          "CREATOR_PROFILE",
+          "VENDOR_CLAIM"
         ]
       },
       "AuditLogEntry": {
@@ -1017,6 +1091,9 @@
             "enum": [
               "ATTENDEE",
               "ORGANIZER",
+              "CREATOR",
+              "VERIFIER",
+              "MODERATOR",
               "SUPER_ADMIN"
             ]
           },
@@ -1045,7 +1122,9 @@
             "type": "string",
             "enum": [
               "ORGANIZER_CLUB",
-              "STUDENT_ID"
+              "STUDENT_ID",
+              "CREATOR_PROFILE",
+              "VENDOR_CLAIM"
             ]
           },
           "status": {
@@ -1081,6 +1160,9 @@
                 "enum": [
                   "ATTENDEE",
                   "ORGANIZER",
+                  "CREATOR",
+                  "VERIFIER",
+                  "MODERATOR",
                   "SUPER_ADMIN"
                 ]
               },
@@ -1126,6 +1208,9 @@
                 "enum": [
                   "ATTENDEE",
                   "ORGANIZER",
+                  "CREATOR",
+                  "VERIFIER",
+                  "MODERATOR",
                   "SUPER_ADMIN"
                 ]
               },
@@ -2320,6 +2405,9 @@
                 "enum": [
                   "ATTENDEE",
                   "ORGANIZER",
+                  "CREATOR",
+                  "VERIFIER",
+                  "MODERATOR",
                   "SUPER_ADMIN"
                 ]
               },
@@ -2466,7 +2554,9 @@
             "type": "string",
             "enum": [
               "ORGANIZER_CLUB",
-              "STUDENT_ID"
+              "STUDENT_ID",
+              "CREATOR_PROFILE",
+              "VENDOR_CLAIM"
             ]
           },
           "status": {
@@ -2502,7 +2592,9 @@
                   "type": "string",
                   "enum": [
                     "ORGANIZER_CLUB",
-                    "STUDENT_ID"
+                    "STUDENT_ID",
+                    "CREATOR_PROFILE",
+                    "VENDOR_CLAIM"
                   ]
                 },
                 "status": {
@@ -2538,6 +2630,9 @@
                       "enum": [
                         "ATTENDEE",
                         "ORGANIZER",
+                        "CREATOR",
+                        "VERIFIER",
+                        "MODERATOR",
                         "SUPER_ADMIN"
                       ]
                     },
@@ -2583,6 +2678,9 @@
                       "enum": [
                         "ATTENDEE",
                         "ORGANIZER",
+                        "CREATOR",
+                        "VERIFIER",
+                        "MODERATOR",
                         "SUPER_ADMIN"
                       ]
                     },
@@ -4764,6 +4862,9 @@
                 "enum": [
                   "ATTENDEE",
                   "ORGANIZER",
+                  "CREATOR",
+                  "VERIFIER",
+                  "MODERATOR",
                   "SUPER_ADMIN"
                 ]
               },
@@ -4858,6 +4959,9 @@
                       "enum": [
                         "ATTENDEE",
                         "ORGANIZER",
+                        "CREATOR",
+                        "VERIFIER",
+                        "MODERATOR",
                         "SUPER_ADMIN"
                       ]
                     },

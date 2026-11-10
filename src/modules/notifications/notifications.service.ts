@@ -153,76 +153,18 @@ export class NotificationsService {
       reschedule: true,
     });
 
-    if (payload.previousStartsAt !== payload.startsAt) {
-      const rsvps = await this.prisma.rsvp.findMany({
-        where: {
-          eventId: event.id,
-          status: { in: ['CONFIRMED', 'WAITLISTED'] },
-        },
-        include: {
-          user: { select: { id: true, email: true } },
-        },
-      });
-
-      for (const rsvp of rsvps) {
-        const subject = `Schedule Updated: ${payload.title}`;
-        const body = `${payload.title} at ${payload.venueName} has a new start time.`;
-        await this.queue.createAndDispatch({
-          userId: rsvp.user.id,
-          category: 'EVENT_CRITICAL',
-          title: subject,
-          body,
-          href: `/e/${payload.slug}`,
-          isEventDayStage: true,
-          email: {
-            userId: rsvp.user.id,
-            to: rsvp.user.email,
-            subject,
-            text: `${body}\nNew start time: ${payload.startsAt}`,
-            eventId: event.id,
-            template: 'event-updated',
-          },
-        });
-      }
+    const timeChanged = payload.previousStartsAt !== payload.startsAt;
+    const venueChanged = payload.previousVenueName !== payload.venueName;
+    if (timeChanged || venueChanged) {
+      // Per-attendee writes happen on the worker, not inside the organizer's request.
+      await this.queue.enqueueLifecycleFanout({ kind: 'EVENT_UPDATED', payload });
     }
   }
 
   @OnEvent(DOMAIN_EVENTS.EVENT_CANCELLED)
   async handleEventCancelled(payload: EventCancelledPayload): Promise<void> {
     await this.queue.removeEventReminders(payload.eventId);
-
-    const rsvps = await this.prisma.rsvp.findMany({
-      where: {
-        eventId: payload.eventId,
-        status: { in: ['CONFIRMED', 'WAITLISTED'] },
-      },
-      include: {
-        user: {
-          select: { id: true, email: true },
-        },
-      },
-    });
-
-    for (const rsvp of rsvps) {
-      const subject = `Event Cancelled: ${payload.title}`;
-      const body = `${payload.title} has been cancelled. Reason: ${payload.reason}`;
-      await this.queue.createAndDispatch({
-        userId: rsvp.user.id,
-        category: 'EVENT_CRITICAL',
-        title: subject,
-        body,
-        href: `/e/${payload.slug}`,
-        isEventDayStage: true,
-        email: {
-          userId: rsvp.user.id,
-          to: rsvp.user.email,
-          subject,
-          text: body,
-          eventId: payload.eventId,
-          template: 'event-cancelled',
-        },
-      });
-    }
+    await this.queue.enqueueLifecycleFanout({ kind: 'EVENT_CANCELLED', payload });
   }
 
   async listNotifications(userId: string): Promise<NotificationsResponse> {

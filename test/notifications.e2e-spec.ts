@@ -207,6 +207,8 @@ describe('BullMQ Reminders, Notification Center, Push Subscribe & Cancellation E
     const rescheduledIds = await queueService.getScheduledReminderJobIds(mainEvent.id);
     expect(rescheduledIds).toContain(`reminder:${mainEvent.id}:T_24H`);
 
+    // Reschedule emails are sent from the queue; let them land before clearing.
+    await queueService.waitForIdle();
     emailAdapter.clearSentMessages();
 
     // Cancel event -> pending reminders removed, EVENT_CRITICAL Notification written, email sent to EVERY RSVP

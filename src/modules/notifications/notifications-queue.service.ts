@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import type { NotificationCategory } from '@prisma/client';
 import { Queue, Worker, type Job } from 'bullmq';
 import IORedis from 'ioredis';
+import type { EventCancelledPayload, EventUpdatedPayload } from '../../common/domain-events';
 import { PrismaService } from '../../common/prisma.service';
 import type { Env } from '../../config/env';
 import { EmailAdapter, type TransactionalEmailInput } from './email.adapter';
@@ -22,6 +23,13 @@ export interface EventReminderJobData {
   eventId: string;
   stage: ReminderStage;
 }
+
+/** Tell-every-RSVP work, run on the worker so the organizer's request returns at once. */
+export type LifecycleFanoutJobData =
+  | { kind: 'EVENT_CANCELLED'; payload: EventCancelledPayload }
+  | { kind: 'EVENT_UPDATED'; payload: EventUpdatedPayload };
+
+type RemindersQueueJobData = EventReminderJobData | LifecycleFanoutJobData;
 
 export interface DispatchNotificationJobData {
   notificationId: string;
@@ -49,9 +57,9 @@ export class NotificationsQueueService implements OnModuleInit, OnModuleDestroy 
   private dispatchQueueConn?: IORedis;
   private dispatchWorkerConn?: IORedis;
 
-  private remindersQueue?: Queue<EventReminderJobData>;
+  private remindersQueue?: Queue<RemindersQueueJobData>;
   private dispatchQueue?: Queue<DispatchNotificationJobData>;
-  private remindersWorker?: Worker<EventReminderJobData>;
+  private remindersWorker?: Worker<RemindersQueueJobData>;
   private dispatchWorker?: Worker<DispatchNotificationJobData>;
   private closing = false;
 
@@ -79,7 +87,7 @@ export class NotificationsQueueService implements OnModuleInit, OnModuleDestroy 
     this.dispatchQueueConn = new IORedis(this.redisUrl, connOpts).on('error', onRedisError);
     this.dispatchWorkerConn = new IORedis(this.redisUrl, connOpts).on('error', onRedisError);
 
-    this.remindersQueue = new Queue<EventReminderJobData>('event-reminders', {
+    this.remindersQueue = new Queue<RemindersQueueJobData>('event-reminders', {
       connection: this.remindersQueueConn,
     });
     this.remindersQueue.on('error', onRedisError);
@@ -89,9 +97,12 @@ export class NotificationsQueueService implements OnModuleInit, OnModuleDestroy 
     });
     this.dispatchQueue.on('error', onRedisError);
 
-    this.remindersWorker = new Worker<EventReminderJobData>(
+    this.remindersWorker = new Worker<RemindersQueueJobData>(
       'event-reminders',
-      (job) => this.processReminderStage(job),
+      (job) =>
+        'kind' in job.data
+          ? this.processLifecycleFanout(job.data)
+          : this.processReminderStage(job.data),
       { connection: this.remindersWorkerConn },
     );
     this.remindersWorker.on('error', onRedisError);
@@ -138,6 +149,14 @@ export class NotificationsQueueService implements OnModuleInit, OnModuleDestroy 
       ...(delayMs > 0 ? { delay: delayMs } : {}),
       removeOnComplete: 100,
       removeOnFail: 100,
+    });
+  }
+
+  async enqueueLifecycleFanout(data: LifecycleFanoutJobData): Promise<void> {
+    if (!this.remindersQueue) return;
+    await this.remindersQueue.add('lifecycle-fanout', data, {
+      removeOnComplete: true,
+      removeOnFail: 50,
     });
   }
 
@@ -223,11 +242,18 @@ export class NotificationsQueueService implements OnModuleInit, OnModuleDestroy 
   }
 
   async waitForIdle(timeoutMs = 5_000): Promise<void> {
-    if (!this.dispatchQueue) return;
+    if (!this.dispatchQueue || !this.remindersQueue) return;
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
+      // Fan-out jobs first: they finish only after enqueueing their dispatches.
+      const fanout = await this.remindersQueue.getJobCounts('waiting', 'active');
       const counts = await this.dispatchQueue.getJobCounts('waiting', 'active');
-      if ((counts.waiting ?? 0) === 0 && (counts.active ?? 0) === 0) {
+      if (
+        (fanout.waiting ?? 0) === 0 &&
+        (fanout.active ?? 0) === 0 &&
+        (counts.waiting ?? 0) === 0 &&
+        (counts.active ?? 0) === 0
+      ) {
         return;
       }
       await new Promise((resolve) => setTimeout(resolve, 40));
@@ -276,8 +302,59 @@ export class NotificationsQueueService implements OnModuleInit, OnModuleDestroy 
     }
   }
 
-  private async processReminderStage(job: Job<EventReminderJobData>): Promise<void> {
-    const { eventId, stage } = job.data;
+  private async processLifecycleFanout(data: LifecycleFanoutJobData): Promise<void> {
+    const { payload } = data;
+    const rsvps = await this.prisma.rsvp.findMany({
+      where: {
+        eventId: payload.eventId,
+        status: { in: ['CONFIRMED', 'WAITLISTED'] },
+      },
+      select: { user: { select: { id: true, email: true } } },
+    });
+
+    let subject: string;
+    let body: string;
+    let emailText: string;
+    if (data.kind === 'EVENT_CANCELLED') {
+      subject = `Event Cancelled: ${data.payload.title}`;
+      body = `${data.payload.title} has been cancelled. Reason: ${data.payload.reason}`;
+      emailText = body;
+    } else {
+      const p = data.payload;
+      const timeChanged = p.previousStartsAt !== p.startsAt;
+      const venueChanged = p.previousVenueName !== p.venueName;
+      subject = `${venueChanged && !timeChanged ? 'Venue' : 'Schedule'} Updated: ${p.title}`;
+      body =
+        timeChanged && venueChanged
+          ? `${p.title} has a new start time and has moved to ${p.venueName}.`
+          : venueChanged
+            ? `${p.title} has moved from ${p.previousVenueName} to ${p.venueName}.`
+            : `${p.title} at ${p.venueName} has a new start time.`;
+      emailText = timeChanged ? `${body}\nNew start time: ${p.startsAt}` : body;
+    }
+
+    for (const rsvp of rsvps) {
+      await this.createAndDispatch({
+        userId: rsvp.user.id,
+        category: 'EVENT_CRITICAL',
+        title: subject,
+        body,
+        href: `/e/${payload.slug}`,
+        isEventDayStage: true,
+        email: {
+          userId: rsvp.user.id,
+          to: rsvp.user.email,
+          subject,
+          text: emailText,
+          eventId: payload.eventId,
+          template: data.kind === 'EVENT_CANCELLED' ? 'event-cancelled' : 'event-updated',
+        },
+      });
+    }
+  }
+
+  private async processReminderStage(data: EventReminderJobData): Promise<void> {
+    const { eventId, stage } = data;
 
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },

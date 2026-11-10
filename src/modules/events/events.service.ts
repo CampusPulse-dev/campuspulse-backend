@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -78,6 +79,9 @@ export class EventsService {
       ...(category ? { category } : {}),
       ...(mood ? { tonightMood: mood } : {}),
       ...(startsAtFilter ? { startsAt: startsAtFilter } : {}),
+      // Nothing flips events to COMPLETED yet, so finished ones are filtered by
+      // time. An explicit `from` is the caller asking for its own window.
+      ...(from ? {} : { endsAt: { gte: now } }),
       ...(search
         ? {
             OR: [
@@ -238,6 +242,7 @@ export class EventsService {
       this.prisma.event.findMany({
         where: {
           status: 'PUBLISHED',
+          endsAt: { gte: new Date() },
           OR: [
             { title: { contains: q, mode: 'insensitive' } },
             { venueName: { contains: q, mode: 'insensitive' } },
@@ -400,21 +405,19 @@ export class EventsService {
     if (nextEndsAt <= nextStartsAt) {
       throw new BadRequestException('endsAt must be after startsAt');
     }
+    if (
+      body.capacity !== undefined &&
+      body.capacity !== null &&
+      body.capacity < existing.rsvpCount
+    ) {
+      throw new BadRequestException(
+        `capacity cannot be lower than the ${existing.rsvpCount} confirmed RSVPs`,
+      );
+    }
 
     const updated = await this.prisma.$transaction(async (tx) => {
       if (body.showtimes !== undefined) {
-        await tx.eventShowtime.deleteMany({ where: { eventId } });
-        if (body.showtimes.length > 0) {
-          await tx.eventShowtime.createMany({
-            data: body.showtimes.map((st) => ({
-              eventId,
-              label: st.label.trim(),
-              startsAt: new Date(st.startsAt),
-              endsAt: st.endsAt ? new Date(st.endsAt) : null,
-              capacity: st.capacity ?? null,
-            })),
-          });
-        }
+        await this.syncShowtimes(tx, eventId, body.showtimes);
       }
 
       if (body.lineup !== undefined || body.castAndCrew !== undefined) {
@@ -500,7 +503,9 @@ export class EventsService {
       previousStartsAt: existing.startsAt.toISOString(),
       startsAt: updated.startsAt.toISOString(),
       endsAt: updated.endsAt.toISOString(),
+      previousVenueName: existing.venueName,
       venueName: updated.venueName,
+      capacityChanged: updated.capacity !== existing.capacity || body.showtimes !== undefined,
     };
     await this.eventsEmitter.emitAsync(DOMAIN_EVENTS.EVENT_UPDATED, payload);
 
@@ -543,6 +548,15 @@ export class EventsService {
     }
 
     await this.organizerAccess.assertRole(userId, existing.organizerId, ['OWNER', 'MANAGER']);
+
+    // A repeat cancel (double click, retry after a timeout) must not notify everyone again.
+    if (existing.status === 'CANCELLED') {
+      const current = await this.prisma.event.findUniqueOrThrow({
+        where: { id: eventId },
+        include: EVENT_PUBLIC_INCLUDE,
+      });
+      return toEventPublic(current);
+    }
 
     const cancelled = await this.prisma.event.update({
       where: { id: eventId },
@@ -699,6 +713,63 @@ export class EventsService {
       expiresAt: grant.expiresAt.toISOString(),
       createdAt: grant.createdAt.toISOString(),
     };
+  }
+
+  /**
+   * Reconciles showtimes in place, matched by label. Deleting and recreating
+   * them would null every `Rsvp.showtimeId` and reset the seat counts.
+   */
+  private async syncShowtimes(
+    tx: Prisma.TransactionClient,
+    eventId: string,
+    next: NonNullable<UpdateEventBody['showtimes']>,
+  ): Promise<void> {
+    const keyOf = (label: string) => label.trim().toLowerCase();
+    const seen = new Set<string>();
+    for (const st of next) {
+      const key = keyOf(st.label);
+      if (seen.has(key)) {
+        throw new BadRequestException(`Duplicate showtime label "${st.label.trim()}"`);
+      }
+      seen.add(key);
+    }
+
+    const current = await tx.eventShowtime.findMany({ where: { eventId } });
+    const currentByKey = new Map(current.map((st) => [keyOf(st.label), st]));
+
+    for (const st of next) {
+      const data = {
+        label: st.label.trim(),
+        startsAt: new Date(st.startsAt),
+        endsAt: st.endsAt ? new Date(st.endsAt) : null,
+        capacity: st.capacity ?? null,
+      };
+      const match = currentByKey.get(keyOf(st.label));
+      if (!match) {
+        await tx.eventShowtime.create({ data: { ...data, eventId } });
+        continue;
+      }
+      if (data.capacity !== null && data.capacity < match.rsvpCount) {
+        throw new BadRequestException(
+          `Showtime "${data.label}" capacity cannot be lower than its ${match.rsvpCount} confirmed RSVPs`,
+        );
+      }
+      await tx.eventShowtime.update({ where: { id: match.id }, data });
+    }
+
+    const removed = current.filter((st) => !seen.has(keyOf(st.label)));
+    if (removed.length === 0) return;
+
+    const removedIds = removed.map((st) => st.id);
+    const inUse = await tx.rsvp.count({
+      where: { showtimeId: { in: removedIds }, status: { not: 'CANCELLED' } },
+    });
+    if (inUse > 0) {
+      throw new ConflictException(
+        'A showtime with active RSVPs cannot be removed; cancel the event or keep the showtime',
+      );
+    }
+    await tx.eventShowtime.deleteMany({ where: { id: { in: removedIds } } });
   }
 
   private buildLineupCreates(

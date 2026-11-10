@@ -15,7 +15,10 @@ export interface EventUpdatedPayload {
   previousStartsAt: string;
   startsAt: string;
   endsAt: string;
+  previousVenueName: string;
   venueName: string;
+  /** True when event or showtime capacity may have grown, so the waitlist should be re-checked. */
+  capacityChanged: boolean;
 }
 
 export interface EventCancelledPayload {

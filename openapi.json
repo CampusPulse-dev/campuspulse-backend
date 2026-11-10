@@ -199,7 +199,179 @@
             }
           }
         },
-        "summary": "Public event feed, filterable by category",
+        "summary": "Public event feed, filterable by category and start time",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/events": {
+      "post": {
+        "operationId": "EventsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEventBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Newly created draft event.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a draft event for an organizer team",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/events/{id}": {
+      "patch": {
+        "operationId": "EventsController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEventBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated event.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update event details or template blocks",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/events/{id}/publish": {
+      "post": {
+        "operationId": "EventsController_publish",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Published event.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Publish a draft event (verified organizers only)",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/events/{id}/cancel": {
+      "post": {
+        "operationId": "EventsController_cancel",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelEventBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cancelled event.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Cancel an event with a mandatory attendee reason",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/events/{id}/fixture": {
+      "patch": {
+        "operationId": "EventsController_updateFixture",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFixtureBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event with updated fixture scoreboard.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update live match score and period status",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/events/{id}/approve-link": {
+      "post": {
+        "operationId": "EventsController_approveLink",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Linked child event after parent owner approval.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Approve a cross-organizer after-party link (parent OWNER only)",
         "tags": [
           "events"
         ]
@@ -211,7 +383,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "The event, including its organizer.",
+            "description": "The event, including its organizer and template blocks.",
             "content": {
               "application/json": {
                 "schema": {
@@ -224,6 +396,110 @@
         "summary": "Public event page by slug",
         "tags": [
           "events"
+        ]
+      }
+    },
+    "/users/me": {
+      "get": {
+        "operationId": "UsersController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Public profile of the signed-in user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Current signed-in user profile",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_updateMe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update display name of signed-in user",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/me/preferences": {
+      "get": {
+        "operationId": "UsersController_getPreferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Attendee persona and privacy settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendeePreferences"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Current attendee persona and privacy preferences",
+        "tags": [
+          "users"
+        ]
+      },
+      "put": {
+        "operationId": "UsersController_updatePreferences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendeePrivacy"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated attendee preferences.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendeePreferences"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update attendee privacy and notification category mutes",
+        "tags": [
+          "users"
         ]
       }
     }
@@ -1275,6 +1551,11 @@
       "CreateEventBody": {
         "type": "object",
         "properties": {
+          "organizerId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
           "title": {
             "type": "string",
             "minLength": 3,
@@ -1293,6 +1574,25 @@
               "ACADEMIC_CONFERENCE",
               "SPORTS_RECREATION",
               "CLUB_SOCIETY"
+            ]
+          },
+          "template": {
+            "type": "string",
+            "enum": [
+              "GENERIC",
+              "CONCERT_PARTY",
+              "PLAY_CULTURAL",
+              "MATCH_TOURNAMENT"
+            ]
+          },
+          "tonightMood": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "CHILL",
+              "TURN_UP",
+              "LEARN",
+              "WATCH_GAME"
             ]
           },
           "startsAt": {
@@ -1327,6 +1627,173 @@
             "minimum": 0,
             "exclusiveMinimum": true,
             "maximum": 9007199254740991
+          },
+          "studentsOnly": {
+            "type": "boolean"
+          },
+          "waitlistEnabled": {
+            "type": "boolean"
+          },
+          "dressCode": {
+            "nullable": true,
+            "type": "string",
+            "maxLength": 200
+          },
+          "doorPolicy": {
+            "nullable": true,
+            "type": "string",
+            "maxLength": 500
+          },
+          "whatsappGroupUrl": {
+            "nullable": true,
+            "type": "string",
+            "format": "uri"
+          },
+          "parentEventId": {
+            "nullable": true,
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "linkType": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "AFTER_PARTY",
+              "SERIES_CHILD"
+            ]
+          },
+          "afterPartyAccess": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "PRIORITY_CHECKED_IN",
+              "CHECKED_IN_ONLY"
+            ]
+          },
+          "lineup": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "performerName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "role": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "setTime": {
+                  "default": "",
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "creatorId": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                }
+              },
+              "required": [
+                "performerName",
+                "role",
+                "setTime"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "castAndCrew": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          },
+          "showtimes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "endsAt": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "capacity": {
+                  "nullable": true,
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "label",
+                "startsAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "fixture": {
+            "type": "object",
+            "properties": {
+              "homeTeam": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "awayTeam": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "homeScore": {
+                "default": 0,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "awayScore": {
+                "default": 0,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "isLive": {
+                "default": false,
+                "type": "boolean"
+              },
+              "periodLabel": {
+                "default": "Scheduled",
+                "type": "string",
+                "maxLength": 80
+              }
+            },
+            "required": [
+              "homeTeam",
+              "awayTeam",
+              "homeScore",
+              "awayScore",
+              "isLive",
+              "periodLabel"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -1339,6 +1806,116 @@
           "venueDetail",
           "coverImageUrl",
           "capacity"
+        ],
+        "additionalProperties": false
+      },
+      "CreateEventFixture": {
+        "type": "object",
+        "properties": {
+          "homeTeam": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "awayTeam": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "homeScore": {
+            "default": 0,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "awayScore": {
+            "default": 0,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "isLive": {
+            "default": false,
+            "type": "boolean"
+          },
+          "periodLabel": {
+            "default": "Scheduled",
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "homeTeam",
+          "awayTeam",
+          "homeScore",
+          "awayScore",
+          "isLive",
+          "periodLabel"
+        ],
+        "additionalProperties": false
+      },
+      "CreateEventLineupItem": {
+        "type": "object",
+        "properties": {
+          "performerName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "setTime": {
+            "default": "",
+            "type": "string",
+            "maxLength": 40
+          },
+          "creatorId": {
+            "nullable": true,
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "performerName",
+          "role",
+          "setTime"
+        ],
+        "additionalProperties": false
+      },
+      "CreateEventShowtime": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "endsAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "capacity": {
+            "nullable": true,
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "label",
+          "startsAt"
         ],
         "additionalProperties": false
       },
@@ -1931,6 +2508,11 @@
       "UpdateEventBody": {
         "type": "object",
         "properties": {
+          "organizerId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
           "title": {
             "type": "string",
             "minLength": 3,
@@ -1949,6 +2531,25 @@
               "ACADEMIC_CONFERENCE",
               "SPORTS_RECREATION",
               "CLUB_SOCIETY"
+            ]
+          },
+          "template": {
+            "type": "string",
+            "enum": [
+              "GENERIC",
+              "CONCERT_PARTY",
+              "PLAY_CULTURAL",
+              "MATCH_TOURNAMENT"
+            ]
+          },
+          "tonightMood": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "CHILL",
+              "TURN_UP",
+              "LEARN",
+              "WATCH_GAME"
             ]
           },
           "startsAt": {
@@ -1983,8 +2584,205 @@
             "minimum": 0,
             "exclusiveMinimum": true,
             "maximum": 9007199254740991
+          },
+          "studentsOnly": {
+            "type": "boolean"
+          },
+          "waitlistEnabled": {
+            "type": "boolean"
+          },
+          "dressCode": {
+            "nullable": true,
+            "type": "string",
+            "maxLength": 200
+          },
+          "doorPolicy": {
+            "nullable": true,
+            "type": "string",
+            "maxLength": 500
+          },
+          "whatsappGroupUrl": {
+            "nullable": true,
+            "type": "string",
+            "format": "uri"
+          },
+          "parentEventId": {
+            "nullable": true,
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "linkType": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "AFTER_PARTY",
+              "SERIES_CHILD"
+            ]
+          },
+          "afterPartyAccess": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "PRIORITY_CHECKED_IN",
+              "CHECKED_IN_ONLY"
+            ]
+          },
+          "lineup": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "performerName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "role": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "setTime": {
+                  "default": "",
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "creatorId": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                }
+              },
+              "required": [
+                "performerName",
+                "role",
+                "setTime"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "castAndCrew": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          },
+          "showtimes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "startsAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "endsAt": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "capacity": {
+                  "nullable": true,
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "label",
+                "startsAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "fixture": {
+            "type": "object",
+            "properties": {
+              "homeTeam": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "awayTeam": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "homeScore": {
+                "default": 0,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "awayScore": {
+                "default": 0,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "isLive": {
+                "default": false,
+                "type": "boolean"
+              },
+              "periodLabel": {
+                "default": "Scheduled",
+                "type": "string",
+                "maxLength": 80
+              }
+            },
+            "required": [
+              "homeTeam",
+              "awayTeam",
+              "homeScore",
+              "awayScore",
+              "isLive",
+              "periodLabel"
+            ],
+            "additionalProperties": false
           }
         },
+        "additionalProperties": false
+      },
+      "UpdateFixtureBody": {
+        "type": "object",
+        "properties": {
+          "homeScore": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "awayScore": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "isLive": {
+            "type": "boolean"
+          },
+          "periodLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "homeScore",
+          "awayScore",
+          "isLive",
+          "periodLabel"
+        ],
         "additionalProperties": false
       },
       "CheckInBatchBody": {

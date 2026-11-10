@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { IdentityModule } from '../identity/identity.module';
 import { EventsController } from './events.controller';
 import { EventsService } from './events.service';
 
@@ -7,6 +8,7 @@ import { EventsService } from './events.service';
  * Owner: Bayo (tech lead).
  */
 @Module({
+  imports: [IdentityModule],
   controllers: [EventsController],
   providers: [EventsService],
   exports: [EventsService],

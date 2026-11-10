@@ -29,6 +29,8 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: process.env.WEB_ORIGIN,
     credentials: true,
+    // TODO(S1-02): replace with JWT and drop X-Dev-User from allowedHeaders.
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Dev-User', 'X-Request-Id'],
   });
 
   if (process.env.NODE_ENV !== 'production') {

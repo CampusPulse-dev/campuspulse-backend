@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
+import { DevAuthGuard, DevAuthService, OptionalDevAuthGuard } from './dev-auth';
+import { OrganizerAccessService } from './organizer-access.service';
+import { UsersController } from './users.controller';
 
 /**
- * Authentication, accounts, organizer verification, student identity.
+ * Authentication, accounts, organizer team access, and user preferences.
  * Owner: Victor.
  *
- * Scaffold only — S1 fills in controllers, JWT strategy and the
- * verification submission flow. See docs/adr/0001-tech-stack.md.
+ * TODO(S1-02): replace DevAuthService / DevAuthGuard with real JWT strategy
+ * and add verification submission controllers.
  */
 @Module({
-  controllers: [],
-  providers: [],
-  exports: [],
+  controllers: [UsersController],
+  providers: [DevAuthService, DevAuthGuard, OptionalDevAuthGuard, OrganizerAccessService],
+  exports: [DevAuthService, DevAuthGuard, OptionalDevAuthGuard, OrganizerAccessService],
 })
 export class IdentityModule {}

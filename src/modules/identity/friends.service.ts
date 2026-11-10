@@ -23,6 +23,8 @@ const USER_FRIEND_SELECT = {
   faculty: true,
 } as const;
 
+const SUGGESTION_LIMIT = 30;
+
 @Injectable()
 export class FriendsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -84,16 +86,29 @@ export class FriendsService {
       });
     }
 
-    const candidates = await this.prisma.user.findMany({
-      where: {
-        id: { notIn: [...connectedIds] },
-        role: 'ATTENDEE',
-        hideFromFriends: false,
-      },
-      select: USER_FRIEND_SELECT,
-      orderBy: { createdAt: 'asc' },
-      take: 30,
-    });
+    // Ask for cohort matches first; a plain "first 30 accounts" query would
+    // almost never contain the viewer's hall or faculty mates on a full campus.
+    const suggestable = {
+      id: { notIn: [...connectedIds] },
+      role: 'ATTENDEE' as const,
+      hideFromFriends: false,
+    };
+    const findSuggestions = (cohort: { hall?: string; faculty?: string }) =>
+      this.prisma.user.findMany({
+        where: { ...suggestable, ...cohort },
+        select: USER_FRIEND_SELECT,
+        orderBy: { createdAt: 'asc' },
+        take: SUGGESTION_LIMIT,
+      });
+    const [hallMates, facultyMates, others] = await Promise.all([
+      viewer.hall ? findSuggestions({ hall: viewer.hall }) : [],
+      viewer.faculty ? findSuggestions({ faculty: viewer.faculty }) : [],
+      findSuggestions({}),
+    ]);
+    const candidateById = new Map(
+      [...hallMates, ...facultyMates, ...others].map((u) => [u.id, u] as const),
+    );
+    const candidates = [...candidateById.values()];
 
     candidates.sort((a, b) => {
       const score = (u: typeof a) => {
@@ -105,7 +120,7 @@ export class FriendsService {
       return score(b) - score(a) || a.displayName.localeCompare(b.displayName);
     });
 
-    for (const candidate of candidates) {
+    for (const candidate of candidates.slice(0, SUGGESTION_LIMIT)) {
       items.push({
         id: candidate.id,
         user: toUserPublic(candidate),

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CheckInMethod } from '../domain/enums';
+import { CheckInMethod, RsvpStatus } from '../domain/enums';
 import { CheckIn, Rsvp } from '../domain/entities';
 import { Id, IsoDateTime } from '../domain/primitives';
 
@@ -72,6 +72,58 @@ export const CheckInBatchBody = z.object({
   checkIns: z.array(CheckInBody).min(1).max(500),
 });
 export type CheckInBatchBody = z.infer<typeof CheckInBatchBody>;
+
+export const CheckInBatchResponse = z.object({
+  results: z.array(CheckInResponse),
+});
+export type CheckInBatchResponse = z.infer<typeof CheckInBatchResponse>;
+
+export const ScannerPackRosterItem = z.object({
+  rsvpId: Id,
+  displayName: z.string(),
+  isVerifiedStudent: z.boolean(),
+  qrTokenDigest: z.string().length(64),
+  checkedInAt: IsoDateTime.nullable(),
+});
+export type ScannerPackRosterItem = z.infer<typeof ScannerPackRosterItem>;
+
+export const ScannerPackResponse = z.object({
+  eventId: Id,
+  publicKey: z.string(),
+  syncedAt: IsoDateTime,
+  roster: z.array(ScannerPackRosterItem),
+});
+export type ScannerPackResponse = z.infer<typeof ScannerPackResponse>;
+
+export const RosterQuery = z.object({
+  format: z.enum(['json', 'csv']).default('json'),
+  status: RsvpStatus.optional(),
+  search: z.string().trim().max(120).optional(),
+});
+export type RosterQuery = z.infer<typeof RosterQuery>;
+
+export const RosterEntry = z.object({
+  rsvpId: Id,
+  userId: Id,
+  displayName: z.string(),
+  isVerifiedStudent: z.boolean(),
+  badge: z.enum(['VERIFIED_STUDENT', 'GUEST']),
+  hall: z.string().nullable(),
+  faculty: z.string().nullable(),
+  status: RsvpStatus,
+  showtimeLabel: z.string().nullable(),
+  checkedIn: z.boolean(),
+  checkedInAt: IsoDateTime.nullable(),
+  checkInMethod: CheckInMethod.nullable(),
+  createdAt: IsoDateTime,
+});
+export type RosterEntry = z.infer<typeof RosterEntry>;
+
+export const RosterResponse = z.object({
+  eventId: Id,
+  items: z.array(RosterEntry),
+});
+export type RosterResponse = z.infer<typeof RosterResponse>;
 
 export const EventStatsResponse = z.object({
   eventId: Id,

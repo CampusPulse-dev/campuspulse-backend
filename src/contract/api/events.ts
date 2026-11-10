@@ -97,6 +97,25 @@ export const CancelEventBody = z.object({
 });
 export type CancelEventBody = z.infer<typeof CancelEventBody>;
 
+export const GrantDoorStaffBody = z.object({
+  email: z.email(),
+});
+export type GrantDoorStaffBody = z.infer<typeof GrantDoorStaffBody>;
+
+export const DoorStaffGrantResponse = z.object({
+  id: Id,
+  eventId: Id,
+  eventTitle: z.string(),
+  userId: Id,
+  displayName: z.string(),
+  /** Masked email hint (NDPA: raw email is never returned). */
+  emailHint: z.string(),
+  /** Expires automatically at event endsAt + 4 hours. */
+  expiresAt: IsoDateTime,
+  createdAt: IsoDateTime,
+});
+export type DoorStaffGrantResponse = z.infer<typeof DoorStaffGrantResponse>;
+
 export const StoryGroup = z.object({
   organizer: OrganizerPublic,
   following: z.boolean(),

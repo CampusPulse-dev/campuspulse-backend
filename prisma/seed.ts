@@ -1,3 +1,4 @@
+import { createHash, createPrivateKey, sign as cryptoSign } from 'node:crypto';
 import { PrismaClient } from '@prisma/client';
 
 export const UI_HALLS = [
@@ -27,6 +28,38 @@ export const UI_FACULTIES = [
 ] as const;
 
 const SEED_PASSWORD_HASH = 'dev-seed-placeholder-hash';
+const ED25519_PKCS8_PREFIX = Buffer.from('302e020100300506032b657004220420', 'hex');
+
+function signSeedQrToken(input: { rsvpId: string; eventId: string; showtimeId?: string }): string {
+  const pkcs8Base64 = process.env.QR_SIGNING_PRIVATE_KEY?.trim();
+  const legacySecret =
+    process.env.QR_SIGNING_SECRET?.trim() || 'replace-me-with-at-least-32-characters-of-random';
+  const privateKey = pkcs8Base64
+    ? createPrivateKey({
+        key: Buffer.from(pkcs8Base64, 'base64'),
+        format: 'der',
+        type: 'pkcs8',
+      })
+    : createPrivateKey({
+        key: Buffer.concat([
+          ED25519_PKCS8_PREFIX,
+          createHash('sha256').update(legacySecret).digest(),
+        ]),
+        format: 'der',
+        type: 'pkcs8',
+      });
+
+  const payload = {
+    v: 1 as const,
+    rsvpId: input.rsvpId,
+    eventId: input.eventId,
+    ...(input.showtimeId ? { showtimeId: input.showtimeId } : {}),
+    issuedAt: Date.now(),
+  };
+  const body = Buffer.from(JSON.stringify(payload), 'utf8').toString('base64url');
+  const sig = cryptoSign(null, Buffer.from(body, 'utf8'), privateKey).toString('base64url');
+  return `${body}.${sig}`;
+}
 
 export async function seedDatabase(prisma: PrismaClient): Promise<void> {
   const webOrigin = (process.env.WEB_ORIGIN ?? 'http://localhost:3000').replace(/\/$/, '');
@@ -671,46 +704,52 @@ export async function seedDatabase(prisma: PrismaClient): Promise<void> {
   });
 
   // Seeded friend RSVPs so Tobi sees mutual friendsGoing on the feed immediately
+  const seededRsvps = [
+    {
+      id: '33333333-3333-4333-8333-333333333301',
+      eventId: havanaEvent.id,
+      userId: adaeze.id,
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333302',
+      eventId: havanaEvent.id,
+      userId: kunle.id,
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333303',
+      eventId: havanaEvent.id,
+      userId: fisayo.id,
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333304',
+      eventId: matchEvent.id,
+      userId: adaeze.id,
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333305',
+      eventId: matchEvent.id,
+      userId: kunle.id,
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333306',
+      eventId: playEvent.id,
+      userId: adaeze.id,
+      showtimeId: '22222222-2222-4222-8222-222222222301',
+    },
+  ];
   await prisma.rsvp.createMany({
-    data: [
-      {
-        eventId: havanaEvent.id,
-        userId: adaeze.id,
-        status: 'CONFIRMED',
-        qrToken: 'seed-qr-token-havana-adaeze-0001',
-      },
-      {
-        eventId: havanaEvent.id,
-        userId: kunle.id,
-        status: 'CONFIRMED',
-        qrToken: 'seed-qr-token-havana-kunle-0002',
-      },
-      {
-        eventId: havanaEvent.id,
-        userId: fisayo.id,
-        status: 'CONFIRMED',
-        qrToken: 'seed-qr-token-havana-fisayo-0003',
-      },
-      {
-        eventId: matchEvent.id,
-        userId: adaeze.id,
-        status: 'CONFIRMED',
-        qrToken: 'seed-qr-token-match-adaeze-0004',
-      },
-      {
-        eventId: matchEvent.id,
-        userId: kunle.id,
-        status: 'CONFIRMED',
-        qrToken: 'seed-qr-token-match-kunle-0005',
-      },
-      {
-        eventId: playEvent.id,
-        userId: adaeze.id,
-        showtimeId: '22222222-2222-4222-8222-222222222301',
-        status: 'CONFIRMED',
-        qrToken: 'seed-qr-token-play-adaeze-0006',
-      },
-    ],
+    data: seededRsvps.map((r) => ({
+      id: r.id,
+      eventId: r.eventId,
+      userId: r.userId,
+      showtimeId: r.showtimeId ?? null,
+      status: 'CONFIRMED',
+      qrToken: signSeedQrToken({
+        rsvpId: r.id,
+        eventId: r.eventId,
+        ...(r.showtimeId ? { showtimeId: r.showtimeId } : {}),
+      }),
+    })),
   });
 
   // Active 24h stories

@@ -22,18 +22,28 @@ import type {
   AttendeeSearchResponse,
   CancelEventBody,
   CreateEventBody,
+  DoorStaffGrantResponse,
   EventPublic,
   FeedQuery,
   FeedResponse,
   ForYouQuery,
+  GrantDoorStaffBody,
   SearchQuery,
   UpdateEventBody,
   UpdateFixtureBody,
 } from '../../contract';
+import { DevAuthService } from '../identity/dev-auth';
 import { FriendsGoingService } from '../identity/friends-going.service';
 import { OrganizerAccessService } from '../identity/organizer-access.service';
 
 const MOOD_WINDOW_MS = 6 * 60 * 60 * 1000;
+const DOOR_STAFF_GRACE_MS = 4 * 60 * 60 * 1000;
+
+function maskEmail(email: string): string {
+  const [local = '', domain = ''] = email.split('@');
+  const first = local[0] ?? '*';
+  return `${first}***@${domain}`;
+}
 
 @Injectable()
 export class EventsService {
@@ -41,6 +51,7 @@ export class EventsService {
     private readonly prisma: PrismaService,
     private readonly organizerAccess: OrganizerAccessService,
     private readonly friendsGoing: FriendsGoingService,
+    private readonly devAuth: DevAuthService,
     private readonly eventsEmitter: EventEmitter2,
   ) {}
 
@@ -610,6 +621,84 @@ export class EventsService {
     });
 
     return toEventPublic(updated);
+  }
+
+  async grantDoorStaff(
+    actorUserId: string,
+    eventId: string,
+    body: GrantDoorStaffBody,
+  ): Promise<DoorStaffGrantResponse> {
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      select: {
+        id: true,
+        title: true,
+        organizerId: true,
+        endsAt: true,
+      },
+    });
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    await this.organizerAccess.assertRole(actorUserId, event.organizerId, ['OWNER']);
+
+    const email = body.email.trim().toLowerCase();
+    let targetUser = await this.prisma.user.findUnique({
+      where: { email },
+      select: { id: true, displayName: true, email: true },
+    });
+
+    if (!targetUser) {
+      // TODO(S1-02): require registered user or send invitation email once real auth lands.
+      if (!this.devAuth.isEnabled()) {
+        throw new NotFoundException('User with this email was not found');
+      }
+      const localPart = email.split('@')[0]?.slice(0, 80) || 'Door Staff';
+      targetUser = await this.prisma.user.upsert({
+        where: { email },
+        update: {},
+        create: {
+          email,
+          passwordHash: 'dev-auth-placeholder',
+          displayName: localPart,
+          role: 'ATTENDEE',
+        },
+        select: { id: true, displayName: true, email: true },
+      });
+    }
+
+    const expiresAt = new Date(event.endsAt.getTime() + DOOR_STAFF_GRACE_MS);
+
+    const grant = await this.prisma.doorStaffGrant.upsert({
+      where: {
+        eventId_userId: {
+          eventId: event.id,
+          userId: targetUser.id,
+        },
+      },
+      create: {
+        eventId: event.id,
+        userId: targetUser.id,
+        grantedById: actorUserId,
+        expiresAt,
+      },
+      update: {
+        grantedById: actorUserId,
+        expiresAt,
+      },
+    });
+
+    return {
+      id: grant.id,
+      eventId: event.id,
+      eventTitle: event.title,
+      userId: targetUser.id,
+      displayName: targetUser.displayName,
+      emailHint: maskEmail(targetUser.email),
+      expiresAt: grant.expiresAt.toISOString(),
+      createdAt: grant.createdAt.toISOString(),
+    };
   }
 
   private buildLineupCreates(

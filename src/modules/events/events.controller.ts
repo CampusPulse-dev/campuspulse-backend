@@ -22,6 +22,7 @@ import {
   CreateEventBody,
   FeedQuery,
   ForYouQuery,
+  GrantDoorStaffBody,
   UpdateEventBody,
   UpdateFixtureBody,
 } from '../../contract';
@@ -151,6 +152,24 @@ export class EventsController {
   })
   approveLink(@CurrentUser() user: AuthenticatedUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.events.approveLink(user.id, id);
+  }
+
+  @Post(':eventId/door-staff')
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: 'Grant per-event scanner access until endsAt + 4h (Club OWNER only)',
+  })
+  @ApiBody({ schema: { $ref: '#/components/schemas/GrantDoorStaffBody' } })
+  @ApiCreatedResponse({
+    description: 'Per-event door staff grant with masked email hint.',
+    schema: { $ref: '#/components/schemas/DoorStaffGrantResponse' },
+  })
+  grantDoorStaff(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('eventId', ParseUUIDPipe) eventId: string,
+    @Body(new ZodValidationPipe(GrantDoorStaffBody)) body: GrantDoorStaffBody,
+  ) {
+    return this.events.grantDoorStaff(user.id, eventId, body);
   }
 
   /** Public event page — must render with no session (PRD §5 flow 1); drafts hidden from non-members. */

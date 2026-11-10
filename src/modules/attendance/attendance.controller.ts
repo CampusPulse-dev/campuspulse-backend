@@ -8,15 +8,25 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import type { Request, Response } from 'express';
 import {
   CurrentUser,
   type AuthenticatedUser,
 } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
-import { CreateAmbassadorLinkBody, CreateRsvpBody } from '../../contract';
+import {
+  CheckInBatchBody,
+  CheckInBody,
+  CreateAmbassadorLinkBody,
+  CreateRsvpBody,
+  RosterQuery,
+} from '../../contract';
 import { AuthGuard } from '../identity/dev-auth';
 import { AttendanceService } from './attendance.service';
 
@@ -110,5 +120,96 @@ export class AttendanceController {
     @Body(new ZodValidationPipe(CreateAmbassadorLinkBody)) body: CreateAmbassadorLinkBody,
   ) {
     return this.attendance.createAmbassadorLink(user.id, body);
+  }
+
+  @Get('events/:eventId/scanner-pack')
+  @ApiOperation({
+    summary:
+      'Pre-sync offline scanner pack (Ed25519 public key + minimal QR digest roster for Owner/Manager/Door Staff)',
+  })
+  @ApiOkResponse({
+    description: 'Ed25519 public key and minimal offline validation roster.',
+    schema: { $ref: '#/components/schemas/ScannerPackResponse' },
+  })
+  getScannerPack(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('eventId', ParseUUIDPipe) eventId: string,
+  ) {
+    return this.attendance.getScannerPack(user.id, eventId);
+  }
+
+  @Get('events/:eventId/roster')
+  @ApiOperation({
+    summary: 'Full event RSVP roster with JSON or CSV export (Club OWNER and MANAGER only)',
+  })
+  @ApiOkResponse({
+    description: 'Full RSVP roster (or text/csv attachment when format=csv / Accept: text/csv).',
+    schema: { $ref: '#/components/schemas/RosterResponse' },
+  })
+  async getRoster(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('eventId', ParseUUIDPipe) eventId: string,
+    @Query(new ZodValidationPipe(RosterQuery)) query: RosterQuery,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const roster = await this.attendance.getRoster(user.id, eventId, query);
+    const wantsCsv =
+      query.format === 'csv' ||
+      (typeof req.headers.accept === 'string' && req.headers.accept.includes('text/csv'));
+    if (wantsCsv) {
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="event-${eventId}-roster.csv"`);
+      return this.attendance.formatRosterCsv(roster);
+    }
+    return roster;
+  }
+
+  @Post('check-in')
+  @ApiOperation({
+    summary: 'Record a single online QR scan or manual check-in preserving client scannedAt',
+  })
+  @ApiBody({ schema: { $ref: '#/components/schemas/CheckInBody' } })
+  @ApiCreatedResponse({
+    description: 'Recorded check-in with duplicate indicator.',
+    schema: { $ref: '#/components/schemas/CheckInResponse' },
+  })
+  checkIn(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(CheckInBody)) body: CheckInBody,
+  ) {
+    return this.attendance.checkIn(user.id, body);
+  }
+
+  @Post('check-in/batch')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Idempotently replay up to 500 queued offline scans preserving client scannedAt',
+  })
+  @ApiBody({ schema: { $ref: '#/components/schemas/CheckInBatchBody' } })
+  @ApiOkResponse({
+    description: 'Batch replay results aligned to input order.',
+    schema: { $ref: '#/components/schemas/CheckInBatchResponse' },
+  })
+  checkInBatch(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(CheckInBatchBody)) body: CheckInBatchBody,
+  ) {
+    return this.attendance.checkInBatch(user.id, body);
+  }
+
+  @Get('events/:eventId/stats')
+  @ApiOperation({
+    summary: 'Event headcount, north-star conversion rate, duplicates, and manual check-in stats',
+  })
+  @ApiOkResponse({
+    description: 'Aggregated attendance metrics for Club OWNER and MANAGER.',
+    schema: { $ref: '#/components/schemas/EventStatsResponse' },
+  })
+  getEventStats(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('eventId', ParseUUIDPipe) eventId: string,
+  ) {
+    return this.attendance.getEventStats(user.id, eventId);
   }
 }

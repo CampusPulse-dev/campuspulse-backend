@@ -15,6 +15,36 @@ export type CreateRsvpBody = z.infer<typeof CreateRsvpBody>;
 export const CreateRsvpResponse = Rsvp;
 export type CreateRsvpResponse = z.infer<typeof CreateRsvpResponse>;
 
+export const CancelRsvpResponse = z.object({
+  cancelled: z.boolean(),
+  promotedRsvpId: Id.nullable(),
+});
+export type CancelRsvpResponse = z.infer<typeof CancelRsvpResponse>;
+
+export const InterestedResponse = z.object({
+  eventId: Id,
+  interested: z.boolean(),
+});
+export type InterestedResponse = z.infer<typeof InterestedResponse>;
+
+export const CreateAmbassadorLinkBody = z.object({
+  eventId: Id,
+});
+export type CreateAmbassadorLinkBody = z.infer<typeof CreateAmbassadorLinkBody>;
+
+export const AmbassadorLinkResponse = z.object({
+  id: Id,
+  creatorId: Id,
+  eventId: Id,
+  code: z.string(),
+  shareUrl: z.url(),
+  clickCount: z.number().int().nonnegative(),
+  rsvpCount: z.number().int().nonnegative(),
+  checkInCount: z.number().int().nonnegative(),
+  createdAt: IsoDateTime,
+});
+export type AmbassadorLinkResponse = z.infer<typeof AmbassadorLinkResponse>;
+
 /**
  * Scanner submission. `scannedAt` is client-supplied because the scanner
  * queues locally through a backend dropout and replays on reconnect —

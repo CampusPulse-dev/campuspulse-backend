@@ -1,4 +1,16 @@
+import { createPrivateKey } from 'node:crypto';
 import { z } from 'zod';
+
+function isValidEd25519Pkcs8Base64(value: string): boolean {
+  try {
+    const der = Buffer.from(value, 'base64');
+    if (der.length === 0) return false;
+    const key = createPrivateKey({ key: der, format: 'der', type: 'pkcs8' });
+    return key.asymmetricKeyType === 'ed25519';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Fail fast on boot rather than at the first request that needs a
@@ -13,8 +25,16 @@ export const EnvSchema = z
     REDIS_URL: z.url(),
     JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
     JWT_EXPIRES_IN: z.string().default('7d'),
-    /** Separate from JWT_SECRET: QR tokens outlive sessions and rotate independently. */
-    QR_SIGNING_SECRET: z.string().min(32, 'QR_SIGNING_SECRET must be at least 32 characters'),
+    /** Legacy dev/CI seed fallback when QR_SIGNING_PRIVATE_KEY is omitted outside production. */
+    QR_SIGNING_SECRET: z.string().min(32).optional(),
+    /** PKCS#8 DER base64 Ed25519 private key; public key is derived for offline scanners. */
+    QR_SIGNING_PRIVATE_KEY: z
+      .string()
+      .min(1)
+      .refine(isValidEd25519Pkcs8Base64, {
+        message: 'QR_SIGNING_PRIVATE_KEY must be a base64-encoded PKCS#8 Ed25519 private key',
+      })
+      .optional(),
     WEB_ORIGIN: z.url(),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
     // TODO(S1-02): replace with JWT and remove DEV_AUTH_ENABLED.
@@ -36,6 +56,10 @@ export const EnvSchema = z
   .refine((env) => !(env.NODE_ENV === 'production' && env.DEV_AUTH_ENABLED), {
     message: 'DEV_AUTH_ENABLED must not be true when NODE_ENV is production',
     path: ['DEV_AUTH_ENABLED'],
+  })
+  .refine((env) => !(env.NODE_ENV === 'production' && !env.QR_SIGNING_PRIVATE_KEY), {
+    message: 'QR_SIGNING_PRIVATE_KEY is required when NODE_ENV is production',
+    path: ['QR_SIGNING_PRIVATE_KEY'],
   });
 
 export type Env = z.infer<typeof EnvSchema>;

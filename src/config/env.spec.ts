@@ -1,4 +1,9 @@
+import { generateKeyPairSync } from 'node:crypto';
 import { validateEnv } from './env';
+
+const runtimeEd25519Key = generateKeyPairSync('ed25519')
+  .privateKey.export({ format: 'der', type: 'pkcs8' })
+  .toString('base64');
 
 const baseEnv = {
   NODE_ENV: 'development',
@@ -10,7 +15,7 @@ const baseEnv = {
   WEB_ORIGIN: 'http://localhost:3000',
 };
 
-describe('validateEnv (S2-01)', () => {
+describe('validateEnv (S2-01 & S3-01)', () => {
   it('defaults DEV_AUTH_ENABLED to false', () => {
     const parsed = validateEnv(baseEnv);
     expect(parsed.DEV_AUTH_ENABLED).toBe(false);
@@ -29,16 +34,26 @@ describe('validateEnv (S2-01)', () => {
       validateEnv({
         ...baseEnv,
         NODE_ENV: 'production',
+        QR_SIGNING_PRIVATE_KEY: runtimeEd25519Key,
         DEV_AUTH_ENABLED: 'true',
       }),
     ).toThrow(/DEV_AUTH_ENABLED/);
   });
 
-  it('allows NODE_ENV="production" when DEV_AUTH_ENABLED is false or omitted', () => {
-    expect(validateEnv({ ...baseEnv, NODE_ENV: 'production' }).DEV_AUTH_ENABLED).toBe(false);
-    expect(
-      validateEnv({ ...baseEnv, NODE_ENV: 'production', DEV_AUTH_ENABLED: 'false' })
-        .DEV_AUTH_ENABLED,
-    ).toBe(false);
+  it('requires a valid PKCS#8 Ed25519 QR_SIGNING_PRIVATE_KEY in production', () => {
+    expect(() => validateEnv({ ...baseEnv, NODE_ENV: 'production' })).toThrow(
+      /QR_SIGNING_PRIVATE_KEY/,
+    );
+    expect(() =>
+      validateEnv({ ...baseEnv, QR_SIGNING_PRIVATE_KEY: 'not-a-valid-pkcs8-key' }),
+    ).toThrow(/QR_SIGNING_PRIVATE_KEY/);
+
+    const prod = validateEnv({
+      ...baseEnv,
+      NODE_ENV: 'production',
+      QR_SIGNING_PRIVATE_KEY: runtimeEd25519Key,
+    });
+    expect(prod.DEV_AUTH_ENABLED).toBe(false);
+    expect(prod.QR_SIGNING_PRIVATE_KEY).toBe(runtimeEd25519Key);
   });
 });

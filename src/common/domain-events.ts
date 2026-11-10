@@ -24,3 +24,15 @@ export interface EventCancelledPayload {
   title: string;
   reason: string;
 }
+
+export interface RsvpLifecyclePayload {
+  rsvpId: string;
+  eventId: string;
+  userId: string;
+  status: 'CONFIRMED' | 'WAITLISTED' | 'CANCELLED';
+}
+
+export interface InterestLifecyclePayload {
+  eventId: string;
+  userId: string;
+}

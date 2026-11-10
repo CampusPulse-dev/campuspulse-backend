@@ -68,7 +68,14 @@ export const AttendeeSearchResponse = z.object({
   organizers: z.array(OrganizerPublic),
 });
 export const AttendeeTicket = z.object({ rsvp: Rsvp, event: EventPublic });
-export const AttendeeTicketsResponse = z.object({ items: z.array(AttendeeTicket) });
+export const YourNightGroup = z.object({
+  key: z.string(),
+  eventIds: z.array(Id),
+});
+export const AttendeeTicketsResponse = z.object({
+  items: z.array(AttendeeTicket),
+  yourNightGroups: z.array(YourNightGroup).optional(),
+});
 export const StudentOtpBody = z.object({ email: StudentEmail });
 export const ConfirmStudentOtpBody = StudentOtpBody.extend({ code: z.string().regex(/^\d{6}$/) });
 export const StudentVerificationState = z.object({
@@ -97,8 +104,15 @@ export const SubmitReportBody = z.object({
   eventId: Id,
   reason: z.string().trim().min(1).max(1000),
 });
+export const ReportSubmittedResponse = z.object({
+  id: Id,
+  status: z.string(),
+  createdAt: IsoDateTime,
+});
 
 export type AttendeePersona = z.infer<typeof AttendeePersona>;
+export type YourNightGroup = z.infer<typeof YourNightGroup>;
+export type ReportSubmittedResponse = z.infer<typeof ReportSubmittedResponse>;
 export type AttendeePrivacy = z.infer<typeof AttendeePrivacy>;
 export type AttendeePreferences = z.infer<typeof AttendeePreferences>;
 export type UpdateProfileBody = z.infer<typeof UpdateProfileBody>;

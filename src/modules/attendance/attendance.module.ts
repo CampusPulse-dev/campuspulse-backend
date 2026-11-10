@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
+import { IdentityModule } from '../identity/identity.module';
+import { AttendanceController } from './attendance.controller';
+import { AttendanceService } from './attendance.service';
 import { QrTokenService } from './qr-token.service';
+import { ReportsController } from './reports.controller';
 
 /**
- * RSVP, QR check-in, and notifications.
+ * RSVP, Ed25519 QR signing, waitlist promotion, ambassador attribution, and check-in.
  * Owner: Batman.
- *
- * Scaffold — QR signing is real; RSVP and check-in controllers land in S1.
- * The manual check-in path is not optional and ships beside the scanner.
  */
 @Module({
-  providers: [QrTokenService],
-  exports: [QrTokenService],
+  imports: [IdentityModule],
+  controllers: [AttendanceController, ReportsController],
+  providers: [QrTokenService, AttendanceService],
+  exports: [QrTokenService, AttendanceService],
 })
 export class AttendanceModule {}

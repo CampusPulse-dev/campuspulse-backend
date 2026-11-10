@@ -913,6 +913,188 @@
           "friends"
         ]
       }
+    },
+    "/attendance/rsvps": {
+      "post": {
+        "operationId": "AttendanceController_createRsvp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRsvpBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Confirmed or waitlisted RSVP with signed QR token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateRsvpResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Reserve an event pass or waitlist spot with atomic capacity locking and Ed25519 QR",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/attendance/rsvps/{eventId}": {
+      "delete": {
+        "operationId": "AttendanceController_cancelRsvp",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Cancellation result and promoted waitlist RSVP id if any.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelRsvpResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Cancel caller RSVP and atomically promote the oldest waitlisted attendee",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/attendance/me/tickets": {
+      "get": {
+        "operationId": "AttendanceController_listMyTickets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Attendee tickets and Your Night itinerary groups.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendeeTicketsResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List signed-in attendee tickets and Your Night parent/after-party groups",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/attendance/interested/{eventId}": {
+      "post": {
+        "operationId": "AttendanceController_addInterest",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Updated Interested state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestedResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Bookmark an event as Interested for reminder updates",
+        "tags": [
+          "attendance"
+        ]
+      },
+      "delete": {
+        "operationId": "AttendanceController_removeInterest",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Updated Interested state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestedResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Remove an event from Interested bookmarks",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/attendance/ambassador-links": {
+      "post": {
+        "operationId": "AttendanceController_createAmbassadorLink",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAmbassadorLinkBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Generated or existing ambassador referral link.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmbassadorLinkResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Generate a trackable ambassador referral link (verified Creators)",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/reports": {
+      "post": {
+        "operationId": "ReportsController_submit",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitReportBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recorded moderation report.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportSubmittedResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Submit an attendee moderation report for an event",
+        "tags": [
+          "moderation"
+        ]
+      }
     }
   },
   "info": {
@@ -3657,6 +3839,84 @@
         ],
         "additionalProperties": false
       },
+      "AmbassadorLinkResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "creatorId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "code": {
+            "type": "string"
+          },
+          "shareUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "clickCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "rsvpCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "checkInCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          }
+        },
+        "required": [
+          "id",
+          "creatorId",
+          "eventId",
+          "code",
+          "shareUrl",
+          "clickCount",
+          "rsvpCount",
+          "checkInCount",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "CancelRsvpResponse": {
+        "type": "object",
+        "properties": {
+          "cancelled": {
+            "type": "boolean"
+          },
+          "promotedRsvpId": {
+            "nullable": true,
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "cancelled",
+          "promotedRsvpId"
+        ],
+        "additionalProperties": false
+      },
       "CheckInBatchBody": {
         "type": "object",
         "properties": {
@@ -3813,6 +4073,20 @@
         ],
         "additionalProperties": false
       },
+      "CreateAmbassadorLinkBody": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "eventId"
+        ],
+        "additionalProperties": false
+      },
       "CreateRsvpBody": {
         "type": "object",
         "properties": {
@@ -3932,6 +4206,24 @@
           "conversionRate",
           "duplicateScanCount",
           "manualCheckInCount"
+        ],
+        "additionalProperties": false
+      },
+      "InterestedResponse": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "interested": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "eventId",
+          "interested"
         ],
         "additionalProperties": false
       },
@@ -6054,6 +6346,30 @@
               ],
               "additionalProperties": false
             }
+          },
+          "yourNightGroups": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "eventIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                }
+              },
+              "required": [
+                "key",
+                "eventIds"
+              ],
+              "additionalProperties": false
+            }
           }
         },
         "required": [
@@ -6801,6 +7117,30 @@
         ],
         "additionalProperties": false
       },
+      "ReportSubmittedResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
       "StudentIdRequestBody": {
         "type": "object",
         "properties": {
@@ -6923,6 +7263,27 @@
         },
         "required": [
           "displayName"
+        ],
+        "additionalProperties": false
+      },
+      "YourNightGroup": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "eventIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        },
+        "required": [
+          "key",
+          "eventIds"
         ],
         "additionalProperties": false
       }

@@ -3,12 +3,24 @@ import { AfterPartyAccessRule, EventCategory, EventLinkType, TonightMood } from 
 import { EventPublic, OrganizerPublic, Story } from '../domain/entities';
 import { Id, IsoDateTime, Pagination, page } from '../domain/primitives';
 
-/** Feed is ranked by recency and filterable by category (PRD §5 flow 1). */
+/** Feed is ranked by recency and filterable by category, mood (next 6h), start time, and search. */
 export const FeedQuery = Pagination.extend({
   category: EventCategory.optional(),
   from: IsoDateTime.optional(),
+  mood: TonightMood.optional(),
+  search: z.string().trim().min(1).max(120).optional(),
 });
 export type FeedQuery = z.infer<typeof FeedQuery>;
+
+export const ForYouQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(20).default(10),
+});
+export type ForYouQuery = z.infer<typeof ForYouQuery>;
+
+export const SearchQuery = z.object({
+  q: z.string().trim().max(120).default(''),
+});
+export type SearchQuery = z.infer<typeof SearchQuery>;
 
 export const FeedResponse = page(EventPublic);
 export type FeedResponse = z.infer<typeof FeedResponse>;

@@ -9,6 +9,7 @@ import { toAttendeePreferences, toUserPublic } from '../../common/mappers/entity
 import { PrismaService } from '../../common/prisma.service';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import {
+  AttendeePersona,
   AttendeePrivacy,
   NotificationCategory,
   UpdateProfileBody,
@@ -106,6 +107,79 @@ export class UsersController {
     ]);
 
     return this.loadPreferences(current.id);
+  }
+
+  @Put('me/persona')
+  @ApiOperation({
+    summary: 'Save attendee onboarding persona, UI cohort, and starter club follows',
+  })
+  @ApiBody({ schema: { $ref: '#/components/schemas/AttendeePersona' } })
+  @ApiOkResponse({
+    description: 'Saved attendee persona.',
+    schema: { $ref: '#/components/schemas/AttendeePersona' },
+  })
+  async updatePersona(
+    @CurrentUser() current: AuthenticatedUser,
+    @Body(new ZodValidationPipe(AttendeePersona)) body: AttendeePersona,
+  ): Promise<AttendeePersona> {
+    const uniqueClubIds = [...new Set(body.followedClubIds)];
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: current.id },
+        data: {
+          hall: body.hall.trim() || null,
+          faculty: body.faculty.trim() || null,
+          level: body.level.trim() || null,
+        },
+      });
+
+      await tx.personaProfile.upsert({
+        where: { userId: current.id },
+        create: {
+          userId: current.id,
+          interestTags: body.vibes,
+          goingOutRhythm: body.rhythm,
+          freeOnly: body.freeEventsOnly,
+          personaLabel: body.personaBadge.trim() || 'Campus Explorer',
+          skippedAt: body.skipped ? new Date() : null,
+        },
+        update: {
+          interestTags: body.vibes,
+          goingOutRhythm: body.rhythm,
+          freeOnly: body.freeEventsOnly,
+          personaLabel: body.personaBadge.trim() || 'Campus Explorer',
+          skippedAt: body.skipped ? new Date() : null,
+        },
+      });
+
+      if (uniqueClubIds.length > 0) {
+        const validClubs = await tx.organizer.findMany({
+          where: { id: { in: uniqueClubIds } },
+          select: { id: true },
+        });
+        for (const club of validClubs) {
+          await tx.follow.upsert({
+            where: { userId_organizerId: { userId: current.id, organizerId: club.id } },
+            create: { userId: current.id, organizerId: club.id },
+            update: {},
+          });
+          const count = await tx.follow.count({ where: { organizerId: club.id } });
+          await tx.organizer.update({
+            where: { id: club.id },
+            data: { followerCount: count },
+          });
+        }
+      }
+    });
+
+    const prefs = await this.loadPreferences(current.id);
+    return (
+      prefs.persona ?? {
+        ...body,
+        followedClubIds: uniqueClubIds,
+      }
+    );
   }
 
   private async loadPreferences(userId: string): Promise<AttendeePreferences> {

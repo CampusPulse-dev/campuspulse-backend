@@ -21,6 +21,7 @@ import {
   CancelEventBody,
   CreateEventBody,
   FeedQuery,
+  ForYouQuery,
   UpdateEventBody,
   UpdateFixtureBody,
 } from '../../contract';
@@ -33,13 +34,35 @@ export class EventsController {
   constructor(private readonly events: EventsService) {}
 
   @Get('feed')
-  @ApiOperation({ summary: 'Public event feed, filterable by category and start time' })
+  @UseGuards(OptionalAuthGuard)
+  @ApiOperation({
+    summary: 'Public event feed, filterable by category, mood (next 6h), start time, and search',
+  })
   @ApiOkResponse({
-    description: 'A page of published events, soonest first.',
+    description: 'A page of published events, soonest first, with mutual friends social proof.',
     schema: { $ref: '#/components/schemas/FeedResponse' },
   })
-  feed(@Query(new ZodValidationPipe(FeedQuery)) query: FeedQuery) {
-    return this.events.feed(query);
+  feed(
+    @Query(new ZodValidationPipe(FeedQuery)) query: FeedQuery,
+    @CurrentUser() user?: AuthenticatedUser,
+  ) {
+    return this.events.feed(query, user?.id);
+  }
+
+  @Get('for-you')
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: 'Personalized For You recommendations from follows, friends, check-ins, and persona',
+  })
+  @ApiOkResponse({
+    description: 'Ranked event recommendations.',
+    schema: { $ref: '#/components/schemas/FeedResponse' },
+  })
+  forYou(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query(new ZodValidationPipe(ForYouQuery)) query: ForYouQuery,
+  ) {
+    return this.events.forYou(user.id, query);
   }
 
   @Post()

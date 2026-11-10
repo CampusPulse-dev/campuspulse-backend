@@ -36,7 +36,10 @@ export const FriendsResponse = z.object({ items: z.array(FriendEntry) });
 export const FriendActionBody = z.object({
   action: z.enum(['REQUEST', 'ACCEPT', 'DECLINE', 'BLOCK']),
 });
-export const FriendRequestBody = z.object({ userId: Id });
+export const FriendRequestBody = z.object({
+  userId: Id,
+  action: z.literal('REQUEST').optional(),
+});
 export const AttendeeNotification = z.object({
   id: Id,
   title: z.string(),

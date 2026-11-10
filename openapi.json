@@ -189,7 +189,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "A page of published events, soonest first.",
+            "description": "A page of published events, soonest first, with mutual friends social proof.",
             "content": {
               "application/json": {
                 "schema": {
@@ -199,7 +199,29 @@
             }
           }
         },
-        "summary": "Public event feed, filterable by category and start time",
+        "summary": "Public event feed, filterable by category, mood (next 6h), start time, and search",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/events/for-you": {
+      "get": {
+        "operationId": "EventsController_forYou",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Ranked event recommendations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Personalized For You recommendations from follows, friends, check-ins, and persona",
         "tags": [
           "events"
         ]
@@ -498,6 +520,28 @@
         ]
       }
     },
+    "/search": {
+      "get": {
+        "operationId": "SearchController_search",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Matching published events and verified organizers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendeeSearchResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Search published campus events and verified clubs",
+        "tags": [
+          "search"
+        ]
+      }
+    },
     "/users/me": {
       "get": {
         "operationId": "UsersController_getMe",
@@ -597,6 +641,38 @@
           }
         },
         "summary": "Update attendee privacy and notification category mutes",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/me/persona": {
+      "put": {
+        "operationId": "UsersController_updatePersona",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendeePersona"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved attendee persona.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendeePersona"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Save attendee onboarding persona, UI cohort, and starter club follows",
         "tags": [
           "users"
         ]
@@ -749,6 +825,92 @@
         "summary": "Unfollow a campus creator (idempotent)",
         "tags": [
           "creators"
+        ]
+      }
+    },
+    "/friends": {
+      "get": {
+        "operationId": "FriendsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Friend entries and campus suggestions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendsResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List accepted friends, pending requests, and hall/faculty cohort suggestions",
+        "tags": [
+          "friends"
+        ]
+      }
+    },
+    "/friends/request": {
+      "post": {
+        "operationId": "FriendsController_requestFriendship",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FriendRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Updated or created friend entry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendEntry"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Send a mutual friend request",
+        "tags": [
+          "friends"
+        ]
+      }
+    },
+    "/friends/{id}/respond": {
+      "post": {
+        "operationId": "FriendsController_respond",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FriendActionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated friend entry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendEntry"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Accept, decline, or block a friend request or suggested peer",
+        "tags": [
+          "friends"
         ]
       }
     }
@@ -2235,6 +2397,20 @@
             "type": "string",
             "format": "date-time",
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "mood": {
+            "type": "string",
+            "enum": [
+              "CHILL",
+              "TURN_UP",
+              "LEARN",
+              "WATCH_GAME"
+            ]
+          },
+          "search": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
           }
         },
         "required": [
@@ -2640,6 +2816,21 @@
         ],
         "additionalProperties": false
       },
+      "ForYouQuery": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "default": 10,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          }
+        },
+        "required": [
+          "limit"
+        ],
+        "additionalProperties": false
+      },
       "MediaUploadPurpose": {
         "type": "string",
         "enum": [
@@ -2711,6 +2902,20 @@
           "publicUrl",
           "key",
           "expiresIn"
+        ],
+        "additionalProperties": false
+      },
+      "SearchQuery": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "default": "",
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "q"
         ],
         "additionalProperties": false
       },
@@ -6405,6 +6610,12 @@
             "type": "string",
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "REQUEST"
+            ]
           }
         },
         "required": [

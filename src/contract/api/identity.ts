@@ -69,5 +69,12 @@ export const FollowOrganizerResponse = z.object({
 });
 export type FollowOrganizerResponse = z.infer<typeof FollowOrganizerResponse>;
 
+export const FollowCreatorResponse = z.object({
+  creatorId: Id,
+  following: z.boolean(),
+  followerCount: z.number().int().nonnegative(),
+});
+export type FollowCreatorResponse = z.infer<typeof FollowCreatorResponse>;
+
 export const OrganizerListResponse = page(OrganizerPublic);
 export type OrganizerListResponse = z.infer<typeof OrganizerListResponse>;

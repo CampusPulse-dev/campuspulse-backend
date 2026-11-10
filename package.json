@@ -21,7 +21,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config test/jest-e2e.json --runInBand",
-    "db:up": "docker compose up -d postgres redis",
+    "db:up": "docker compose up -d postgres redis minio",
     "db:down": "docker compose down",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
@@ -36,6 +36,8 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1165.0",
+    "@aws-sdk/s3-request-presigner": "^3.1165.0",
     "@nestjs/common": "^11.2.8",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.2.8",

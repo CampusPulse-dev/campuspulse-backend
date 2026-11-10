@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AfterPartyAccessRule, EventCategory, EventLinkType, TonightMood } from '../domain/enums';
-import { EventPublic, Story } from '../domain/entities';
+import { EventPublic, OrganizerPublic, Story } from '../domain/entities';
 import { Id, IsoDateTime, Pagination, page } from '../domain/primitives';
 
 /** Feed is ranked by recency and filterable by category (PRD §5 flow 1). */
@@ -85,13 +85,50 @@ export const CancelEventBody = z.object({
 });
 export type CancelEventBody = z.infer<typeof CancelEventBody>;
 
-export const StoriesResponse = page(Story);
+export const StoryGroup = z.object({
+  organizer: OrganizerPublic,
+  following: z.boolean(),
+  stories: z.array(Story),
+});
+export type StoryGroup = z.infer<typeof StoryGroup>;
+
+export const StoriesResponse = page(Story).extend({
+  groups: z.array(StoryGroup).optional(),
+});
 export type StoriesResponse = z.infer<typeof StoriesResponse>;
 
 export const CreateStoryBody = z.object({
+  organizerId: Id.optional(),
   eventId: Id.nullable().default(null),
   mediaUrl: z.url(),
   mediaType: z.enum(['IMAGE', 'VIDEO']),
   caption: z.string().max(280).nullable().default(null),
 });
 export type CreateStoryBody = z.infer<typeof CreateStoryBody>;
+
+export const MediaUploadPurpose = z.enum([
+  'EVENT_COVER',
+  'STORY_MEDIA',
+  'AVATAR',
+  'ORGANIZER_LOGO',
+]);
+export type MediaUploadPurpose = z.infer<typeof MediaUploadPurpose>;
+
+export const MediaUploadUrlBody = z.object({
+  purpose: MediaUploadPurpose,
+  contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm']),
+  size: z
+    .number()
+    .int()
+    .positive()
+    .max(25 * 1024 * 1024),
+});
+export type MediaUploadUrlBody = z.infer<typeof MediaUploadUrlBody>;
+
+export const MediaUploadUrlResponse = z.object({
+  uploadUrl: z.url(),
+  publicUrl: z.url(),
+  key: z.string(),
+  expiresIn: z.number().int().positive(),
+});
+export type MediaUploadUrlResponse = z.infer<typeof MediaUploadUrlResponse>;

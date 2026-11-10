@@ -399,6 +399,105 @@
         ]
       }
     },
+    "/stories": {
+      "get": {
+        "operationId": "StoriesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Active non-expired stories.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoriesResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Active 24-hour stories grouped by organizer (followed first)",
+        "tags": [
+          "stories"
+        ]
+      },
+      "post": {
+        "operationId": "StoriesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStoryBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created story with server-assigned 24-hour expiry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Story"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Post a 24-hour story for a verified organizer",
+        "tags": [
+          "stories"
+        ]
+      }
+    },
+    "/stories/{id}": {
+      "delete": {
+        "operationId": "StoriesController_remove",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Story deleted."
+          }
+        },
+        "summary": "Delete a story (organizer team or moderator)",
+        "tags": [
+          "stories"
+        ]
+      }
+    },
+    "/media/upload-url": {
+      "post": {
+        "operationId": "MediaController_createUploadUrl",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaUploadUrlBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Presigned S3/MinIO upload URL and canonical public URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaUploadUrlResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Issue a short-lived presigned PUT URL for public media uploads",
+        "tags": [
+          "media"
+        ]
+      }
+    },
     "/users/me": {
       "get": {
         "operationId": "UsersController_getMe",
@@ -500,6 +599,156 @@
         "summary": "Update attendee privacy and notification category mutes",
         "tags": [
           "users"
+        ]
+      }
+    },
+    "/organizers/{slug}": {
+      "get": {
+        "operationId": "OrganizersController_getBySlug",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Organizer profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizerPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Public organizer club profile by slug",
+        "tags": [
+          "organizers"
+        ]
+      }
+    },
+    "/organizers/{slug}/events": {
+      "get": {
+        "operationId": "OrganizersController_getEventsBySlug",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Published events for the organizer.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Published events hosted by this organizer",
+        "tags": [
+          "organizers"
+        ]
+      }
+    },
+    "/organizers/{id}/follow": {
+      "post": {
+        "operationId": "OrganizersController_follow",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Updated follow state and follower count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowOrganizerResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Follow an organizer club (idempotent)",
+        "tags": [
+          "organizers"
+        ]
+      },
+      "delete": {
+        "operationId": "OrganizersController_unfollow",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Updated follow state and follower count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowOrganizerResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Unfollow an organizer club (idempotent)",
+        "tags": [
+          "organizers"
+        ]
+      }
+    },
+    "/creators/{handle}": {
+      "get": {
+        "operationId": "CreatorsController_getByHandle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Creator profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatorPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Public campus creator profile and featured events",
+        "tags": [
+          "creators"
+        ]
+      }
+    },
+    "/creators/{id}/follow": {
+      "post": {
+        "operationId": "CreatorsController_follow",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Updated follow state and follower count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowCreatorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Follow a campus creator (idempotent)",
+        "tags": [
+          "creators"
+        ]
+      },
+      "delete": {
+        "operationId": "CreatorsController_unfollow",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Updated follow state and follower count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowCreatorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Unfollow a campus creator (idempotent)",
+        "tags": [
+          "creators"
         ]
       }
     }
@@ -1922,6 +2171,11 @@
       "CreateStoryBody": {
         "type": "object",
         "properties": {
+          "organizerId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
           "eventId": {
             "default": null,
             "nullable": true,
@@ -2386,6 +2640,80 @@
         ],
         "additionalProperties": false
       },
+      "MediaUploadPurpose": {
+        "type": "string",
+        "enum": [
+          "EVENT_COVER",
+          "STORY_MEDIA",
+          "AVATAR",
+          "ORGANIZER_LOGO"
+        ]
+      },
+      "MediaUploadUrlBody": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "EVENT_COVER",
+              "STORY_MEDIA",
+              "AVATAR",
+              "ORGANIZER_LOGO"
+            ]
+          },
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "image/jpeg",
+              "image/png",
+              "image/webp",
+              "video/mp4",
+              "video/webm"
+            ]
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 26214400
+          }
+        },
+        "required": [
+          "purpose",
+          "contentType",
+          "size"
+        ],
+        "additionalProperties": false
+      },
+      "MediaUploadUrlResponse": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "publicUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "key": {
+            "type": "string"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "uploadUrl",
+          "publicUrl",
+          "key",
+          "expiresIn"
+        ],
+        "additionalProperties": false
+      },
       "StoriesResponse": {
         "type": "object",
         "properties": {
@@ -2497,11 +2825,350 @@
           "nextCursor": {
             "nullable": true,
             "type": "string"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "nullable": true,
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    "logoUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ],
+                  "additionalProperties": false
+                },
+                "following": {
+                  "type": "boolean"
+                },
+                "stories": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "organizer": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "slug": {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 120,
+                            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "bio": {
+                            "nullable": true,
+                            "type": "string",
+                            "maxLength": 500
+                          },
+                          "logoUrl": {
+                            "nullable": true,
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "isVerified": {
+                            "type": "boolean"
+                          },
+                          "followerCount": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "slug",
+                          "name",
+                          "bio",
+                          "logoUrl",
+                          "isVerified",
+                          "followerCount"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "eventId": {
+                        "nullable": true,
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "mediaUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "mediaType": {
+                        "type": "string",
+                        "enum": [
+                          "IMAGE",
+                          "VIDEO"
+                        ]
+                      },
+                      "caption": {
+                        "nullable": true,
+                        "type": "string",
+                        "maxLength": 280
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "organizer",
+                      "eventId",
+                      "mediaUrl",
+                      "mediaType",
+                      "caption",
+                      "createdAt",
+                      "expiresAt"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "organizer",
+                "following",
+                "stories"
+              ],
+              "additionalProperties": false
+            }
           }
         },
         "required": [
           "items",
           "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "StoryGroup": {
+        "type": "object",
+        "properties": {
+          "organizer": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "bio": {
+                "nullable": true,
+                "type": "string",
+                "maxLength": 500
+              },
+              "logoUrl": {
+                "nullable": true,
+                "type": "string",
+                "format": "uri"
+              },
+              "isVerified": {
+                "type": "boolean"
+              },
+              "followerCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "name",
+              "bio",
+              "logoUrl",
+              "isVerified",
+              "followerCount"
+            ],
+            "additionalProperties": false
+          },
+          "following": {
+            "type": "boolean"
+          },
+          "stories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "nullable": true,
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    "logoUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ],
+                  "additionalProperties": false
+                },
+                "eventId": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "mediaUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "mediaType": {
+                  "type": "string",
+                  "enum": [
+                    "IMAGE",
+                    "VIDEO"
+                  ]
+                },
+                "caption": {
+                  "nullable": true,
+                  "type": "string",
+                  "maxLength": 280
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "expiresAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                }
+              },
+              "required": [
+                "id",
+                "organizer",
+                "eventId",
+                "mediaUrl",
+                "mediaType",
+                "caption",
+                "createdAt",
+                "expiresAt"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "organizer",
+          "following",
+          "stories"
         ],
         "additionalProperties": false
       },
@@ -3084,6 +3751,30 @@
         "required": [
           "decision",
           "note"
+        ],
+        "additionalProperties": false
+      },
+      "FollowCreatorResponse": {
+        "type": "object",
+        "properties": {
+          "creatorId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "following": {
+            "type": "boolean"
+          },
+          "followerCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "creatorId",
+          "following",
+          "followerCount"
         ],
         "additionalProperties": false
       },

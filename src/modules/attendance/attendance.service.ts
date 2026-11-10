@@ -158,8 +158,9 @@ export class AttendanceService {
       throw new BadRequestException('showtimeId must be a valid UUID');
     }
 
-    const outcome = await this.prisma.$transaction(async (tx) => {
-      const lockedEvents = await tx.$queryRaw<LockedEventRow[]>`
+    const outcome = await this.prisma.$transaction(
+      async (tx) => {
+        const lockedEvents = await tx.$queryRaw<LockedEventRow[]>`
         SELECT
           id,
           slug,
@@ -176,161 +177,163 @@ export class AttendanceService {
         WHERE id = ${body.eventId}::uuid
         FOR UPDATE
       `;
-      const lockedEvent = lockedEvents[0];
-      if (!lockedEvent) {
-        throw new NotFoundException('Event not found');
-      }
-      if (lockedEvent.status !== 'PUBLISHED') {
-        throw new BadRequestException('Event is not open for RSVPs');
-      }
-      if (lockedEvent.studentsOnly && !user.isVerifiedStudent) {
-        throw new ForbiddenException('Only verified UI students can RSVP to this event');
-      }
-
-      if (
-        lockedEvent.parentEventId &&
-        lockedEvent.linkType === 'AFTER_PARTY' &&
-        lockedEvent.afterPartyAccess === 'CHECKED_IN_ONLY'
-      ) {
-        const parentCheckIn = await tx.checkIn.findFirst({
-          where: {
-            eventId: lockedEvent.parentEventId,
-            rsvp: { userId },
-          },
-          select: { id: true },
-        });
-        if (!parentCheckIn) {
-          throw new ForbiddenException(
-            'Check-in at the parent event is required before reserving this after-party',
-          );
+        const lockedEvent = lockedEvents[0];
+        if (!lockedEvent) {
+          throw new NotFoundException('Event not found');
         }
-      }
+        if (lockedEvent.status !== 'PUBLISHED') {
+          throw new BadRequestException('Event is not open for RSVPs');
+        }
+        if (lockedEvent.studentsOnly && !user.isVerifiedStudent) {
+          throw new ForbiddenException('Only verified UI students can RSVP to this event');
+        }
 
-      const existing = await tx.rsvp.findUnique({
-        where: {
-          eventId_userId: {
-            eventId: body.eventId,
-            userId,
+        if (
+          lockedEvent.parentEventId &&
+          lockedEvent.linkType === 'AFTER_PARTY' &&
+          lockedEvent.afterPartyAccess === 'CHECKED_IN_ONLY'
+        ) {
+          const parentCheckIn = await tx.checkIn.findFirst({
+            where: {
+              eventId: lockedEvent.parentEventId,
+              rsvp: { userId },
+            },
+            select: { id: true },
+          });
+          if (!parentCheckIn) {
+            throw new ForbiddenException(
+              'Check-in at the parent event is required before reserving this after-party',
+            );
+          }
+        }
+
+        const existing = await tx.rsvp.findUnique({
+          where: {
+            eventId_userId: {
+              eventId: body.eventId,
+              userId,
+            },
           },
-        },
-      });
-      if (existing && existing.status !== 'CANCELLED') {
-        return { rsvp: existing, isNew: false };
-      }
+        });
+        if (existing && existing.status !== 'CANCELLED') {
+          return { rsvp: existing, isNew: false };
+        }
 
-      let lockedShowtime: LockedShowtimeRow | undefined;
-      if (body.showtimeId) {
-        const showtimes = await tx.$queryRaw<LockedShowtimeRow[]>`
+        let lockedShowtime: LockedShowtimeRow | undefined;
+        if (body.showtimeId) {
+          const showtimes = await tx.$queryRaw<LockedShowtimeRow[]>`
           SELECT id, "eventId", capacity, "rsvpCount"
           FROM "EventShowtime"
           WHERE id = ${body.showtimeId}::uuid
             AND "eventId" = ${body.eventId}::uuid
           FOR UPDATE
         `;
-        lockedShowtime = showtimes[0];
-        if (!lockedShowtime) {
-          throw new BadRequestException('Selected showtime does not belong to this event');
+          lockedShowtime = showtimes[0];
+          if (!lockedShowtime) {
+            throw new BadRequestException('Selected showtime does not belong to this event');
+          }
         }
-      }
 
-      const eventHasSpot =
-        lockedEvent.capacity === null || lockedEvent.rsvpCount < lockedEvent.capacity;
-      const showtimeHasSpot =
-        !lockedShowtime ||
-        lockedShowtime.capacity === null ||
-        lockedShowtime.rsvpCount < lockedShowtime.capacity;
+        const eventHasSpot =
+          lockedEvent.capacity === null || lockedEvent.rsvpCount < lockedEvent.capacity;
+        const showtimeHasSpot =
+          !lockedShowtime ||
+          lockedShowtime.capacity === null ||
+          lockedShowtime.rsvpCount < lockedShowtime.capacity;
 
-      let status: 'CONFIRMED' | 'WAITLISTED';
-      if (eventHasSpot && showtimeHasSpot) {
-        status = 'CONFIRMED';
-      } else if (lockedEvent.waitlistEnabled) {
-        status = 'WAITLISTED';
-      } else {
-        throw new ConflictException('Event has reached capacity');
-      }
+        let status: 'CONFIRMED' | 'WAITLISTED';
+        if (eventHasSpot && showtimeHasSpot) {
+          status = 'CONFIRMED';
+        } else if (lockedEvent.waitlistEnabled) {
+          status = 'WAITLISTED';
+        } else {
+          throw new ConflictException('Event has reached capacity');
+        }
 
-      let ambassadorLinkId: string | null = null;
-      if (body.ambassadorCode) {
-        const link = await tx.ambassadorLink.findUnique({
-          where: { code: body.ambassadorCode },
+        let ambassadorLinkId: string | null = null;
+        if (body.ambassadorCode) {
+          const link = await tx.ambassadorLink.findUnique({
+            where: { code: body.ambassadorCode },
+          });
+          if (link && link.eventId === body.eventId) {
+            ambassadorLinkId = link.id;
+            await tx.ambassadorLink.update({
+              where: { id: link.id },
+              data: { rsvpCount: { increment: 1 } },
+            });
+          }
+        }
+
+        let inviteId: string | null = null;
+        if (body.inviteCode) {
+          const invite = await tx.eventInvite.findUnique({
+            where: { inviteCode: body.inviteCode },
+          });
+          if (invite && invite.eventId === body.eventId) {
+            inviteId = invite.id;
+            await tx.eventInvite.update({
+              where: { id: invite.id },
+              data: {
+                acceptedCount: { increment: 1 },
+                ...(invite.acceptedByUserId ? {} : { acceptedByUserId: userId }),
+              },
+            });
+          }
+        }
+
+        const rsvpId = existing?.id ?? randomUUID();
+        const qrToken = this.qrTokens.sign({
+          rsvpId,
+          eventId: body.eventId,
+          ...(body.showtimeId ? { showtimeId: body.showtimeId } : {}),
+          issuedAt: Date.now(),
         });
-        if (link && link.eventId === body.eventId) {
-          ambassadorLinkId = link.id;
-          await tx.ambassadorLink.update({
-            where: { id: link.id },
+        const hideFromFriends =
+          body.hideFromFriends ?? (user.hideFromFriends || user.rsvpVisibility === 'PRIVATE');
+
+        const saved = existing
+          ? await tx.rsvp.update({
+              where: { id: existing.id },
+              data: {
+                status,
+                showtimeId: body.showtimeId ?? null,
+                ambassadorLinkId,
+                inviteId,
+                hideFromFriends,
+                qrToken,
+              },
+            })
+          : await tx.rsvp.create({
+              data: {
+                id: rsvpId,
+                eventId: body.eventId,
+                userId,
+                status,
+                showtimeId: body.showtimeId ?? null,
+                ambassadorLinkId,
+                inviteId,
+                hideFromFriends,
+                qrToken,
+              },
+            });
+
+        if (status === 'CONFIRMED') {
+          await tx.event.update({
+            where: { id: body.eventId },
             data: { rsvpCount: { increment: 1 } },
           });
+          if (lockedShowtime) {
+            await tx.eventShowtime.update({
+              where: { id: lockedShowtime.id },
+              data: { rsvpCount: { increment: 1 } },
+            });
+          }
         }
-      }
 
-      let inviteId: string | null = null;
-      if (body.inviteCode) {
-        const invite = await tx.eventInvite.findUnique({
-          where: { inviteCode: body.inviteCode },
-        });
-        if (invite && invite.eventId === body.eventId) {
-          inviteId = invite.id;
-          await tx.eventInvite.update({
-            where: { id: invite.id },
-            data: {
-              acceptedCount: { increment: 1 },
-              ...(invite.acceptedByUserId ? {} : { acceptedByUserId: userId }),
-            },
-          });
-        }
-      }
-
-      const rsvpId = existing?.id ?? randomUUID();
-      const qrToken = this.qrTokens.sign({
-        rsvpId,
-        eventId: body.eventId,
-        ...(body.showtimeId ? { showtimeId: body.showtimeId } : {}),
-        issuedAt: Date.now(),
-      });
-      const hideFromFriends =
-        body.hideFromFriends ?? (user.hideFromFriends || user.rsvpVisibility === 'PRIVATE');
-
-      const saved = existing
-        ? await tx.rsvp.update({
-            where: { id: existing.id },
-            data: {
-              status,
-              showtimeId: body.showtimeId ?? null,
-              ambassadorLinkId,
-              inviteId,
-              hideFromFriends,
-              qrToken,
-            },
-          })
-        : await tx.rsvp.create({
-            data: {
-              id: rsvpId,
-              eventId: body.eventId,
-              userId,
-              status,
-              showtimeId: body.showtimeId ?? null,
-              ambassadorLinkId,
-              inviteId,
-              hideFromFriends,
-              qrToken,
-            },
-          });
-
-      if (status === 'CONFIRMED') {
-        await tx.event.update({
-          where: { id: body.eventId },
-          data: { rsvpCount: { increment: 1 } },
-        });
-        if (lockedShowtime) {
-          await tx.eventShowtime.update({
-            where: { id: lockedShowtime.id },
-            data: { rsvpCount: { increment: 1 } },
-          });
-        }
-      }
-
-      return { rsvp: saved, isNew: true };
-    });
+        return { rsvp: saved, isNew: true };
+      },
+      { maxWait: 15_000, timeout: 15_000 },
+    );
 
     if (outcome.isNew) {
       const payload: RsvpLifecyclePayload = {
@@ -339,92 +342,95 @@ export class AttendanceService {
         userId: outcome.rsvp.userId,
         status: outcome.rsvp.status,
       };
-      this.eventsEmitter.emit(DOMAIN_EVENTS.RSVP_CREATED, payload);
+      await this.eventsEmitter.emitAsync(DOMAIN_EVENTS.RSVP_CREATED, payload);
     }
 
     return toRsvpContract(outcome.rsvp);
   }
 
   async cancelRsvp(userId: string, eventId: string): Promise<CancelRsvpResponse> {
-    const result = await this.prisma.$transaction(async (tx) => {
-      const lockedEvents = await tx.$queryRaw<Array<{ id: string }>>`
+    const result = await this.prisma.$transaction(
+      async (tx) => {
+        const lockedEvents = await tx.$queryRaw<Array<{ id: string }>>`
         SELECT id FROM "Event" WHERE id = ${eventId}::uuid FOR UPDATE
       `;
-      if (lockedEvents.length === 0) {
-        throw new NotFoundException('Event not found');
-      }
-
-      const existing = await tx.rsvp.findUnique({
-        where: {
-          eventId_userId: { eventId, userId },
-        },
-      });
-      if (!existing) {
-        throw new NotFoundException('RSVP not found');
-      }
-      if (existing.status === 'CANCELLED') {
-        return { cancelledRsvp: null, promotedRsvp: null };
-      }
-
-      const wasConfirmed = existing.status === 'CONFIRMED';
-      const cancelledShowtimeId = existing.showtimeId;
-
-      const cancelledRsvp = await tx.rsvp.update({
-        where: { id: existing.id },
-        data: { status: 'CANCELLED' },
-      });
-
-      let promotedRsvp: typeof cancelledRsvp | null = null;
-
-      if (wasConfirmed) {
-        await tx.event.update({
-          where: { id: eventId },
-          data: { rsvpCount: { decrement: 1 } },
-        });
-        if (cancelledShowtimeId) {
-          await tx.eventShowtime.update({
-            where: { id: cancelledShowtimeId },
-            data: { rsvpCount: { decrement: 1 } },
-          });
+        if (lockedEvents.length === 0) {
+          throw new NotFoundException('Event not found');
         }
 
-        const waitlisted = await tx.rsvp.findMany({
+        const existing = await tx.rsvp.findUnique({
           where: {
-            eventId,
-            status: 'WAITLISTED',
+            eventId_userId: { eventId, userId },
           },
-          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-          include: { showtime: true },
-          take: 25,
+        });
+        if (!existing) {
+          throw new NotFoundException('RSVP not found');
+        }
+        if (existing.status === 'CANCELLED') {
+          return { cancelledRsvp: null, promotedRsvp: null };
+        }
+
+        const wasConfirmed = existing.status === 'CONFIRMED';
+        const cancelledShowtimeId = existing.showtimeId;
+
+        const cancelledRsvp = await tx.rsvp.update({
+          where: { id: existing.id },
+          data: { status: 'CANCELLED' },
         });
 
-        const eligible = waitlisted.find(
-          (candidate) =>
-            !candidate.showtime ||
-            candidate.showtime.capacity === null ||
-            candidate.showtime.rsvpCount < candidate.showtime.capacity,
-        );
+        let promotedRsvp: typeof cancelledRsvp | null = null;
 
-        if (eligible) {
-          promotedRsvp = await tx.rsvp.update({
-            where: { id: eligible.id },
-            data: { status: 'CONFIRMED' },
-          });
+        if (wasConfirmed) {
           await tx.event.update({
             where: { id: eventId },
-            data: { rsvpCount: { increment: 1 } },
+            data: { rsvpCount: { decrement: 1 } },
           });
-          if (eligible.showtimeId) {
+          if (cancelledShowtimeId) {
             await tx.eventShowtime.update({
-              where: { id: eligible.showtimeId },
-              data: { rsvpCount: { increment: 1 } },
+              where: { id: cancelledShowtimeId },
+              data: { rsvpCount: { decrement: 1 } },
             });
           }
-        }
-      }
 
-      return { cancelledRsvp, promotedRsvp };
-    });
+          const waitlisted = await tx.rsvp.findMany({
+            where: {
+              eventId,
+              status: 'WAITLISTED',
+            },
+            orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+            include: { showtime: true },
+            take: 25,
+          });
+
+          const eligible = waitlisted.find(
+            (candidate) =>
+              !candidate.showtime ||
+              candidate.showtime.capacity === null ||
+              candidate.showtime.rsvpCount < candidate.showtime.capacity,
+          );
+
+          if (eligible) {
+            promotedRsvp = await tx.rsvp.update({
+              where: { id: eligible.id },
+              data: { status: 'CONFIRMED' },
+            });
+            await tx.event.update({
+              where: { id: eventId },
+              data: { rsvpCount: { increment: 1 } },
+            });
+            if (eligible.showtimeId) {
+              await tx.eventShowtime.update({
+                where: { id: eligible.showtimeId },
+                data: { rsvpCount: { increment: 1 } },
+              });
+            }
+          }
+        }
+
+        return { cancelledRsvp, promotedRsvp };
+      },
+      { maxWait: 15_000, timeout: 15_000 },
+    );
 
     if (result.cancelledRsvp) {
       const cancelPayload: RsvpLifecyclePayload = {
@@ -433,7 +439,7 @@ export class AttendanceService {
         userId: result.cancelledRsvp.userId,
         status: 'CANCELLED',
       };
-      this.eventsEmitter.emit(DOMAIN_EVENTS.RSVP_CANCELLED, cancelPayload);
+      await this.eventsEmitter.emitAsync(DOMAIN_EVENTS.RSVP_CANCELLED, cancelPayload);
     }
 
     if (result.promotedRsvp) {
@@ -443,7 +449,7 @@ export class AttendanceService {
         userId: result.promotedRsvp.userId,
         status: 'CONFIRMED',
       };
-      this.eventsEmitter.emit(DOMAIN_EVENTS.RSVP_PROMOTED, promotePayload);
+      await this.eventsEmitter.emitAsync(DOMAIN_EVENTS.RSVP_PROMOTED, promotePayload);
     }
 
     return {
@@ -514,7 +520,7 @@ export class AttendanceService {
     });
 
     const payload: InterestLifecyclePayload = { eventId, userId };
-    this.eventsEmitter.emit(DOMAIN_EVENTS.INTEREST_ADDED, payload);
+    await this.eventsEmitter.emitAsync(DOMAIN_EVENTS.INTEREST_ADDED, payload);
 
     return { eventId, interested: true };
   }

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { EventPublic, OrganizerPublic, Rsvp, UserPublic } from '../domain/entities';
+import { NotificationCategory } from '../domain/enums';
 import { Id, IsoDateTime, StudentEmail } from '../domain/primitives';
 
 /** S4 attendee interfaces; controller integration follows in S1–S3. */
@@ -100,6 +101,20 @@ export const PushSubscriptionBody = z.object({
   endpoint: z.url({ protocol: /^https$/ }).max(2048),
   keys: z.object({ p256dh: z.string().min(1).max(256), auth: z.string().min(1).max(64) }),
 });
+export const PushSubscribeResponse = z.object({
+  id: Id,
+  endpoint: z.url({ protocol: /^https$/ }).max(2048),
+  createdAt: IsoDateTime,
+});
+export const ReadAllNotificationsResponse = z.object({
+  updatedCount: z.number().int().nonnegative(),
+});
+export const UpdateNotificationPreferencesBody = z.object({
+  mutedCategories: z.array(NotificationCategory).max(20),
+});
+export const NotificationPreferencesResponse = z.object({
+  mutedCategories: z.array(NotificationCategory),
+});
 export const SubmitReportBody = z.object({
   eventId: Id,
   reason: z.string().trim().min(1).max(1000),
@@ -133,4 +148,8 @@ export type StudentUploadBody = z.infer<typeof StudentUploadBody>;
 export type StudentUploadResponse = z.infer<typeof StudentUploadResponse>;
 export type StudentIdRequestBody = z.infer<typeof StudentIdRequestBody>;
 export type PushSubscriptionBody = z.infer<typeof PushSubscriptionBody>;
+export type PushSubscribeResponse = z.infer<typeof PushSubscribeResponse>;
+export type ReadAllNotificationsResponse = z.infer<typeof ReadAllNotificationsResponse>;
+export type UpdateNotificationPreferencesBody = z.infer<typeof UpdateNotificationPreferencesBody>;
+export type NotificationPreferencesResponse = z.infer<typeof NotificationPreferencesResponse>;
 export type SubmitReportBody = z.infer<typeof SubmitReportBody>;

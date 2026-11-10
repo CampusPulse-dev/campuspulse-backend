@@ -502,7 +502,7 @@ export class EventsService {
       endsAt: updated.endsAt.toISOString(),
       venueName: updated.venueName,
     };
-    this.eventsEmitter.emit(DOMAIN_EVENTS.EVENT_UPDATED, payload);
+    await this.eventsEmitter.emitAsync(DOMAIN_EVENTS.EVENT_UPDATED, payload);
 
     return toEventPublic(updated);
   }
@@ -559,7 +559,7 @@ export class EventsService {
       title: cancelled.title,
       reason: body.reason,
     };
-    this.eventsEmitter.emit(DOMAIN_EVENTS.EVENT_CANCELLED, payload);
+    await this.eventsEmitter.emitAsync(DOMAIN_EVENTS.EVENT_CANCELLED, payload);
 
     return toEventPublic(cancelled);
   }

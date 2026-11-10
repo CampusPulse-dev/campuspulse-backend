@@ -8,6 +8,7 @@ import { PrismaModule } from './common/prisma.module';
 import { EventsModule } from './modules/events/events.module';
 import { IdentityModule } from './modules/identity/identity.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { HealthModule } from './health/health.module';
 
@@ -43,6 +44,7 @@ import { HealthModule } from './health/health.module';
     EventsModule,
     IdentityModule,
     AttendanceModule,
+    NotificationsModule,
     AdminModule,
   ],
 })

@@ -1257,6 +1257,136 @@
           "moderation"
         ]
       }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User notifications.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List in-app notifications for the signed-in user (newest first)",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/read-all": {
+      "post": {
+        "operationId": "NotificationsController_markAllRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Count of notifications marked read.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadAllNotificationsResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Mark all unread notifications as read for the signed-in user",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/{id}/read": {
+      "post": {
+        "operationId": "NotificationsController_markRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Updated notification with readAt populated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendeeNotification"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Mark a single notification as read",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/push-subscribe": {
+      "post": {
+        "operationId": "NotificationsController_subscribePush",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushSubscriptionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Saved Web Push subscription.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushSubscribeResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Register an HTTPS Web Push VAPID subscription for this device",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/preferences": {
+      "patch": {
+        "operationId": "NotificationsController_updatePreferences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationPreferencesBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved notification mute preferences.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationPreferencesResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update notification category mute preferences",
+        "tags": [
+          "notifications"
+        ]
+      }
     }
   },
   "info": {
@@ -7652,6 +7782,29 @@
         ],
         "additionalProperties": false
       },
+      "NotificationPreferencesResponse": {
+        "type": "object",
+        "properties": {
+          "mutedCategories": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "REMINDER",
+                "EVENT_CRITICAL",
+                "FOLLOWED_POST",
+                "SOCIAL_FRIEND",
+                "RECOMMENDATION",
+                "SYSTEM_VERIFICATION"
+              ]
+            }
+          }
+        },
+        "required": [
+          "mutedCategories"
+        ],
+        "additionalProperties": false
+      },
       "NotificationsResponse": {
         "type": "object",
         "properties": {
@@ -7705,6 +7858,32 @@
         ],
         "additionalProperties": false
       },
+      "PushSubscribeResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "endpoint": {
+            "type": "string",
+            "maxLength": 2048,
+            "format": "uri"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          }
+        },
+        "required": [
+          "id",
+          "endpoint",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
       "PushSubscriptionBody": {
         "type": "object",
         "properties": {
@@ -7737,6 +7916,20 @@
         "required": [
           "endpoint",
           "keys"
+        ],
+        "additionalProperties": false
+      },
+      "ReadAllNotificationsResponse": {
+        "type": "object",
+        "properties": {
+          "updatedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "updatedCount"
         ],
         "additionalProperties": false
       },
@@ -7872,6 +8065,30 @@
         "required": [
           "eventId",
           "reason"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateNotificationPreferencesBody": {
+        "type": "object",
+        "properties": {
+          "mutedCategories": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "REMINDER",
+                "EVENT_CRITICAL",
+                "FOLLOWED_POST",
+                "SOCIAL_FRIEND",
+                "RECOMMENDATION",
+                "SYSTEM_VERIFICATION"
+              ]
+            }
+          }
+        },
+        "required": [
+          "mutedCategories"
         ],
         "additionalProperties": false
       },

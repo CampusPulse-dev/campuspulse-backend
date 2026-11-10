@@ -52,6 +52,9 @@ export const EnvSchema = z
       .enum(['true', 'false'])
       .default('true')
       .transform((v) => v === 'true'),
+    VAPID_PUBLIC_KEY: z.string().min(1).optional(),
+    VAPID_PRIVATE_KEY: z.string().min(1).optional(),
+    VAPID_SUBJECT: z.string().min(1).default('mailto:alerts@campuspulse.ng'),
   })
   .refine((env) => !(env.NODE_ENV === 'production' && env.DEV_AUTH_ENABLED), {
     message: 'DEV_AUTH_ENABLED must not be true when NODE_ENV is production',

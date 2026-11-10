@@ -3,14 +3,17 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import {
   DOMAIN_EVENTS,
+  type EventUpdatedPayload,
   type InterestLifecyclePayload,
   type RsvpLifecyclePayload,
 } from '../../common/domain-events';
@@ -23,6 +26,7 @@ import type {
   CancelRsvpResponse,
   CheckIn,
   CheckInBatchBody,
+  CheckInBatchRejection,
   CheckInBatchResponse,
   CheckInBody,
   CheckInResponse,
@@ -301,6 +305,8 @@ export class AttendanceService {
                 inviteId,
                 hideFromFriends,
                 qrToken,
+                // A re-RSVP is a new place in line: waitlist promotion orders by createdAt.
+                createdAt: new Date(),
               },
             })
           : await tx.rsvp.create({
@@ -378,6 +384,20 @@ export class AttendanceService {
           data: { status: 'CANCELLED' },
         });
 
+        // Attribution follows the live RSVP, so a cancel gives the credit back.
+        if (existing.ambassadorLinkId) {
+          await tx.ambassadorLink.updateMany({
+            where: { id: existing.ambassadorLinkId, rsvpCount: { gt: 0 } },
+            data: { rsvpCount: { decrement: 1 } },
+          });
+        }
+        if (existing.inviteId) {
+          await tx.eventInvite.updateMany({
+            where: { id: existing.inviteId, acceptedCount: { gt: 0 } },
+            data: { acceptedCount: { decrement: 1 } },
+          });
+        }
+
         let promotedRsvp: typeof cancelledRsvp | null = null;
 
         if (wasConfirmed) {
@@ -392,39 +412,8 @@ export class AttendanceService {
             });
           }
 
-          const waitlisted = await tx.rsvp.findMany({
-            where: {
-              eventId,
-              status: 'WAITLISTED',
-            },
-            orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-            include: { showtime: true },
-            take: 25,
-          });
-
-          const eligible = waitlisted.find(
-            (candidate) =>
-              !candidate.showtime ||
-              candidate.showtime.capacity === null ||
-              candidate.showtime.rsvpCount < candidate.showtime.capacity,
-          );
-
-          if (eligible) {
-            promotedRsvp = await tx.rsvp.update({
-              where: { id: eligible.id },
-              data: { status: 'CONFIRMED' },
-            });
-            await tx.event.update({
-              where: { id: eventId },
-              data: { rsvpCount: { increment: 1 } },
-            });
-            if (eligible.showtimeId) {
-              await tx.eventShowtime.update({
-                where: { id: eligible.showtimeId },
-                data: { rsvpCount: { increment: 1 } },
-              });
-            }
-          }
+          const promoted = await this.promoteWaitlistedInTx(tx, eventId);
+          promotedRsvp = promoted[0] ?? null;
         }
 
         return { cancelledRsvp, promotedRsvp };
@@ -786,12 +775,112 @@ export class AttendanceService {
       }))
       .sort((a, b) => a.scannedMs - b.scannedMs || a.index - b.index);
 
-    const results = new Array<CheckInResponse>(body.checkIns.length);
+    // One refused scan (cancelled RSVP, forged QR) must not hold the rest of an
+    // offline outbox hostage: record it and keep going.
+    const results = new Array<CheckInResponse | null>(body.checkIns.length).fill(null);
+    const rejected: CheckInBatchRejection[] = [];
     for (const entry of ordered) {
-      results[entry.index] = await this.processSingleCheckIn(actorUserId, entry.item);
+      try {
+        results[entry.index] = await this.processSingleCheckIn(actorUserId, entry.item);
+      } catch (error: unknown) {
+        if (!(error instanceof HttpException) || error.getStatus() >= 500) {
+          throw error;
+        }
+        rejected.push({
+          index: entry.index,
+          statusCode: error.getStatus(),
+          message: error.message,
+        });
+      }
+    }
+    rejected.sort((a, b) => a.index - b.index);
+
+    return { results, rejected };
+  }
+
+  /** Re-checks the waitlist when an edit may have opened spots (capacity raised). */
+  @OnEvent(DOMAIN_EVENTS.EVENT_UPDATED)
+  async handleEventUpdated(payload: EventUpdatedPayload): Promise<void> {
+    if (!payload.capacityChanged) return;
+
+    const promoted = await this.prisma.$transaction(
+      async (tx) => {
+        const locked = await tx.$queryRaw<Array<{ status: string }>>`
+          SELECT status FROM "Event" WHERE id = ${payload.eventId}::uuid FOR UPDATE
+        `;
+        if (locked[0]?.status !== 'PUBLISHED') return [];
+        return this.promoteWaitlistedInTx(tx, payload.eventId);
+      },
+      { maxWait: 15_000, timeout: 15_000 },
+    );
+
+    for (const rsvp of promoted) {
+      const promotePayload: RsvpLifecyclePayload = {
+        rsvpId: rsvp.id,
+        eventId: rsvp.eventId,
+        userId: rsvp.userId,
+        status: 'CONFIRMED',
+      };
+      await this.eventsEmitter.emitAsync(DOMAIN_EVENTS.RSVP_PROMOTED, promotePayload);
+    }
+  }
+
+  /**
+   * Confirms waitlisted RSVPs, oldest first, into every open spot. The caller
+   * must already hold the `FOR UPDATE` lock on the event row.
+   */
+  private async promoteWaitlistedInTx(tx: Prisma.TransactionClient, eventId: string) {
+    const event = await tx.event.findUnique({
+      where: { id: eventId },
+      select: { capacity: true, rsvpCount: true },
+    });
+    if (!event) return [];
+
+    let eventSpots = event.capacity === null ? Infinity : event.capacity - event.rsvpCount;
+    if (eventSpots <= 0) return [];
+
+    const waitlisted = await tx.rsvp.findMany({
+      where: { eventId, status: 'WAITLISTED' },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      include: { showtime: true },
+    });
+
+    const showtimeSpots = new Map<string, number>();
+    const promoted: Array<(typeof waitlisted)[number]> = [];
+
+    for (const candidate of waitlisted) {
+      if (eventSpots <= 0) break;
+
+      if (candidate.showtime) {
+        const left =
+          showtimeSpots.get(candidate.showtime.id) ??
+          (candidate.showtime.capacity === null
+            ? Infinity
+            : candidate.showtime.capacity - candidate.showtime.rsvpCount);
+        if (left <= 0) continue;
+        showtimeSpots.set(candidate.showtime.id, left - 1);
+        await tx.eventShowtime.update({
+          where: { id: candidate.showtime.id },
+          data: { rsvpCount: { increment: 1 } },
+        });
+      }
+
+      await tx.rsvp.update({
+        where: { id: candidate.id },
+        data: { status: 'CONFIRMED' },
+      });
+      promoted.push(candidate);
+      eventSpots -= 1;
     }
 
-    return { results };
+    if (promoted.length > 0) {
+      await tx.event.update({
+        where: { id: eventId },
+        data: { rsvpCount: { increment: promoted.length } },
+      });
+    }
+
+    return promoted;
   }
 
   async getEventStats(userId: string, eventId: string): Promise<EventStatsResponse> {

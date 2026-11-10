@@ -73,8 +73,19 @@ export const CheckInBatchBody = z.object({
 });
 export type CheckInBatchBody = z.infer<typeof CheckInBatchBody>;
 
+/** A scan the server refused. The scanner must drop it from its outbox, not retry it. */
+export const CheckInBatchRejection = z.object({
+  /** Position of the refused scan in the submitted `checkIns` array. */
+  index: z.number().int().nonnegative(),
+  statusCode: z.number().int(),
+  message: z.string(),
+});
+export type CheckInBatchRejection = z.infer<typeof CheckInBatchRejection>;
+
 export const CheckInBatchResponse = z.object({
-  results: z.array(CheckInResponse),
+  /** Same order as the submitted `checkIns`; `null` where the scan was refused. */
+  results: z.array(CheckInResponse.nullable()),
+  rejected: z.array(CheckInBatchRejection),
 });
 export type CheckInBatchResponse = z.infer<typeof CheckInBatchResponse>;
 

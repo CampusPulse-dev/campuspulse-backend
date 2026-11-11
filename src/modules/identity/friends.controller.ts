@@ -16,7 +16,7 @@ import {
 } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { FriendActionBody, FriendRequestBody } from '../../contract';
-import { AuthGuard } from './dev-auth';
+import { AuthGuard } from './auth';
 import { FriendsService } from './friends.service';
 
 @ApiTags('friends')

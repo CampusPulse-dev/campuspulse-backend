@@ -26,7 +26,6 @@ import { HealthModule } from './health/health.module';
             ? { target: 'pino-pretty', options: { singleLine: true } }
             : undefined,
         // Student emails are NDPA personal data — never log a request body or dev-auth header.
-        // TODO(S1-02): replace with JWT and remove x-dev-user redaction when DevAuthGuard is retired.
         redact: [
           'req.headers.authorization',
           'req.headers.cookie',

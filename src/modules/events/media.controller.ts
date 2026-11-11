@@ -7,7 +7,7 @@ import {
 import { StorageService } from '../../common/storage/storage.service';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { MediaUploadUrlBody, type MediaUploadUrlResponse } from '../../contract';
-import { AuthGuard } from '../identity/dev-auth';
+import { AuthGuard } from '../identity/auth';
 
 @ApiTags('media')
 @Controller('media')

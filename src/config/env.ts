@@ -24,7 +24,13 @@ export const EnvSchema = z
     DATABASE_URL: z.url(),
     REDIS_URL: z.url(),
     JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
-    JWT_EXPIRES_IN: z.string().default('7d'),
+    /** Access-token lifetime (`900`, `15m`, `1h`). Short: the refresh cookie carries the session. */
+    JWT_EXPIRES_IN: z
+      .string()
+      .regex(/^\d+\s*[smhd]?$/, 'JWT_EXPIRES_IN must look like 900, 15m, 1h or 7d')
+      .default('15m'),
+    /** Refresh-cookie lifetime; each refresh rotates the token and restarts this window. */
+    JWT_REFRESH_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
     /** Legacy dev/CI seed fallback when QR_SIGNING_PRIVATE_KEY is omitted outside production. */
     QR_SIGNING_SECRET: z.string().min(32).optional(),
     /** PKCS#8 DER base64 Ed25519 private key; public key is derived for offline scanners. */
@@ -37,7 +43,7 @@ export const EnvSchema = z
       .optional(),
     WEB_ORIGIN: z.url(),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
-    // TODO(S1-02): replace with JWT and remove DEV_AUTH_ENABLED.
+    /** Enables the X-Dev-User fallback for local development and e2e suites only. */
     DEV_AUTH_ENABLED: z
       .enum(['true', 'false'])
       .default('false')

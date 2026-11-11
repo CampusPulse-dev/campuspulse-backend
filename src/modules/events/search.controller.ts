@@ -6,7 +6,7 @@ import {
 } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { SearchQuery } from '../../contract';
-import { OptionalAuthGuard } from '../identity/dev-auth';
+import { OptionalAuthGuard } from '../identity/auth';
 import { EventsService } from './events.service';
 
 @ApiTags('search')

@@ -26,7 +26,7 @@ import {
   UpdateEventBody,
   UpdateFixtureBody,
 } from '../../contract';
-import { AuthGuard, OptionalAuthGuard } from '../identity/dev-auth';
+import { AuthGuard, OptionalAuthGuard } from '../identity/auth';
 import { EventsService } from './events.service';
 
 @ApiTags('events')

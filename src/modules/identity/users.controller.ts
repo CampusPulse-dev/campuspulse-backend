@@ -16,7 +16,7 @@ import {
   type AttendeePreferences,
   type UserPublic,
 } from '../../contract';
-import { AuthGuard } from './dev-auth';
+import { AuthGuard } from './auth';
 
 const VALID_NOTIFICATION_CATEGORIES = new Set<string>(NotificationCategory.options);
 

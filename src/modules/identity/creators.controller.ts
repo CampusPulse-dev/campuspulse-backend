@@ -14,7 +14,7 @@ import {
   CurrentUser,
   type AuthenticatedUser,
 } from '../../common/decorators/current-user.decorator';
-import { AuthGuard } from './dev-auth';
+import { AuthGuard } from './auth';
 import { OrganizersService } from './organizers.service';
 
 @ApiTags('creators')

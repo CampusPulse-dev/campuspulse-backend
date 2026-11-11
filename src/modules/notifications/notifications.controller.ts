@@ -17,7 +17,7 @@ import {
 } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { PushSubscriptionBody, UpdateNotificationPreferencesBody } from '../../contract';
-import { AuthGuard } from '../identity/dev-auth';
+import { AuthGuard } from '../identity/auth';
 import { NotificationsService } from './notifications.service';
 
 @ApiTags('notifications')

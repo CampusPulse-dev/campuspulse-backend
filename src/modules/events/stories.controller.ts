@@ -24,7 +24,7 @@ import {
 } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { CreateStoryBody } from '../../contract';
-import { AuthGuard, OptionalAuthGuard } from '../identity/dev-auth';
+import { AuthGuard, OptionalAuthGuard } from '../identity/auth';
 import { StoriesService } from './stories.service';
 
 @ApiTags('stories')

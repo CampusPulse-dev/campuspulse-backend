@@ -7,7 +7,10 @@ import type { Env } from '../../../config/env';
 
 const DevEmailSchema = z.email();
 
-// TODO(S1-02): replace with JWT authentication service and remove DevAuthService.
+/**
+ * X-Dev-User header auth for local development and e2e suites. Only reachable
+ * through the JWT guards' fallback, and only when DEV_AUTH_ENABLED=true.
+ */
 @Injectable()
 export class DevAuthService {
   constructor(

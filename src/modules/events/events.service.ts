@@ -664,7 +664,7 @@ export class EventsService {
     });
 
     if (!targetUser) {
-      // TODO(S1-02): require registered user or send invitation email once real auth lands.
+      // Door staff must already have an account; only dev auth auto-creates one.
       if (!this.devAuth.isEnabled()) {
         throw new NotFoundException('User with this email was not found');
       }

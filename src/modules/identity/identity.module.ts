@@ -1,6 +1,17 @@
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import type { Env } from '../../config/env';
+import {
+  AuthService,
+  JwtAuthGuard,
+  OptionalJwtAuthGuard,
+  OrganizerAccessGuard,
+  PasswordService,
+} from './auth';
+import { AuthController } from './auth/auth.controller';
 import { CreatorsController } from './creators.controller';
-import { DevAuthGuard, DevAuthService, OptionalDevAuthGuard } from './dev-auth';
+import { DevAuthService } from './dev-auth';
 import { FriendsGoingService } from './friends-going.service';
 import { FriendsController } from './friends.controller';
 import { FriendsService } from './friends.service';
@@ -14,24 +25,47 @@ import { UsersController } from './users.controller';
  * public club/creator profiles, and user preferences.
  * Owner: Victor.
  *
- * TODO(S1-02): replace DevAuthService / DevAuthGuard with real JWT strategy
- * and add verification submission controllers.
+ * Sessions are a short-lived access JWT plus a rotating httpOnly refresh
+ * cookie (`./auth`). `./dev-auth` is the X-Dev-User fallback for local
+ * development and e2e suites only.
  */
 @Module({
-  controllers: [UsersController, OrganizersController, CreatorsController, FriendsController],
+  imports: [
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<Env, true>) => ({
+        secret: config.get('JWT_SECRET', { infer: true }),
+        signOptions: { algorithm: 'HS256' },
+        verifyOptions: { algorithms: ['HS256'] },
+      }),
+    }),
+  ],
+  controllers: [
+    AuthController,
+    UsersController,
+    OrganizersController,
+    CreatorsController,
+    FriendsController,
+  ],
   providers: [
+    AuthService,
+    PasswordService,
+    JwtAuthGuard,
+    OptionalJwtAuthGuard,
+    OrganizerAccessGuard,
     DevAuthService,
-    DevAuthGuard,
-    OptionalDevAuthGuard,
     OrganizerAccessService,
     OrganizersService,
     FriendsService,
     FriendsGoingService,
   ],
   exports: [
+    AuthService,
+    PasswordService,
+    JwtAuthGuard,
+    OptionalJwtAuthGuard,
+    OrganizerAccessGuard,
     DevAuthService,
-    DevAuthGuard,
-    OptionalDevAuthGuard,
     OrganizerAccessService,
     OrganizersService,
     FriendsService,

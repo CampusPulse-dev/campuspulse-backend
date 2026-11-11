@@ -6,7 +6,7 @@ import {
 } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { SubmitReportBody } from '../../contract';
-import { AuthGuard } from '../identity/dev-auth';
+import { AuthGuard } from '../identity/auth';
 import { AttendanceService } from './attendance.service';
 
 @ApiTags('moderation')

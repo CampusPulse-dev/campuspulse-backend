@@ -110,7 +110,7 @@ export function anon(app: INestApplication) {
   };
 }
 
-// TODO(S1-02): replace with JWT helper once real auth lands.
+/** X-Dev-User shortcut (DEV_AUTH_ENABLED=true). Use `withToken` to exercise real JWT auth. */
 export function asUser(app: INestApplication, email: string) {
   const server = app.getHttpServer() as App;
   return {
@@ -119,5 +119,17 @@ export function asUser(app: INestApplication, email: string) {
     patch: (path: string) => request(server).patch(withPrefix(path)).set('X-Dev-User', email),
     put: (path: string) => request(server).put(withPrefix(path)).set('X-Dev-User', email),
     delete: (path: string) => request(server).delete(withPrefix(path)).set('X-Dev-User', email),
+  };
+}
+
+export function withToken(app: INestApplication, accessToken: string) {
+  const server = app.getHttpServer() as App;
+  const bearer = `Bearer ${accessToken}`;
+  return {
+    get: (path: string) => request(server).get(withPrefix(path)).set('Authorization', bearer),
+    post: (path: string) => request(server).post(withPrefix(path)).set('Authorization', bearer),
+    patch: (path: string) => request(server).patch(withPrefix(path)).set('Authorization', bearer),
+    put: (path: string) => request(server).put(withPrefix(path)).set('Authorization', bearer),
+    delete: (path: string) => request(server).delete(withPrefix(path)).set('Authorization', bearer),
   };
 }

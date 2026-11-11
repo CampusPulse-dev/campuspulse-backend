@@ -331,6 +331,7 @@ describe('Check-In, Scanner Pack, Roster CSV, Door Staff & Stats (e2e) [S3-02]',
       conversionRate: 1,
       duplicateScanCount: 1,
       manualCheckInCount: 1,
+      ambassadors: [{ creatorName: 'Bisola', rsvps: 1, checkIns: 1 }],
     });
 
     const updatedLink = await ctx.prisma.ambassadorLink.findUniqueOrThrow({

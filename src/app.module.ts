@@ -12,6 +12,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AdminModule } from './modules/admin/admin.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { HealthModule } from './health/health.module';
+import { privateLogOptions } from './common/http-logger';
 
 @Module({
   imports: [
@@ -21,18 +22,13 @@ import { HealthModule } from './health/health.module';
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        ...privateLogOptions,
         level: process.env.LOG_LEVEL ?? 'info',
         transport:
           process.env.NODE_ENV === 'development'
             ? { target: 'pino-pretty', options: { singleLine: true } }
             : undefined,
         // Student emails are NDPA personal data — never log a request body or dev-auth header.
-        redact: [
-          'req.headers.authorization',
-          'req.headers.cookie',
-          'req.headers["x-dev-user"]',
-          'req.body',
-        ],
       },
     }),
     EventEmitterModule.forRoot(),

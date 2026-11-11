@@ -34,7 +34,7 @@ async function resolveUser(
   if (token) return auth.authenticateAccessToken(token);
 
   const devHeader = req.headers['x-dev-user'];
-  if (devHeader && devAuth.isEnabled()) return devAuth.resolveHeader(devHeader);
+  if (devAuth.isEnabled()) return devAuth.resolveOptionalHeader(devHeader);
 
   return null;
 }

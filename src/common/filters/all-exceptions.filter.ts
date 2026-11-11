@@ -53,11 +53,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return;
     }
 
-    // Unknown failures are logged with a stack but never leak one to the client.
-    this.logger.error(
-      `Unhandled exception on ${request.method} ${request.url}`,
-      exception instanceof Error ? exception.stack : String(exception),
-    );
+    // ORM/provider stacks may embed input values. Correlate by request ID instead.
+    this.logger.error({
+      msg: 'Unhandled request exception',
+      method: request.method,
+      path: request.path,
+      errorType: exception instanceof Error ? exception.name : 'UnknownError',
+    });
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       code: 'INTERNAL_ERROR',

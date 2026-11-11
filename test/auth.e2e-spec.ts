@@ -20,19 +20,17 @@ function refreshCookie(res: { headers: Record<string, unknown> }): string {
 describe('Auth lifecycle & RBAC (S1-02)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let close: () => Promise<void>;
-
-  beforeAll(async () => {
-    // Real JWT only: prove nothing in here leans on the X-Dev-User fallback.
-    ({ app, prisma, close } = await createTestApp({ devAuthEnabled: false }));
-  });
+  let close: (() => Promise<void>) | undefined;
 
   beforeEach(async () => {
+    await close?.();
+    // Real JWT only: prove nothing in here leans on the X-Dev-User fallback.
+    ({ app, prisma, close } = await createTestApp({ devAuthEnabled: false }));
     await truncateDatabase(prisma);
   });
 
   afterAll(async () => {
-    await close();
+    await close?.();
   });
 
   it('sign-up, /users/me, refresh rotation, sign-out', async () => {

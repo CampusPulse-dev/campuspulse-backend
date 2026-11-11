@@ -22,6 +22,13 @@ export class DevAuthService {
     return this.config.get('DEV_AUTH_ENABLED', { infer: true });
   }
 
+  async resolveOptionalHeader(
+    rawHeader: string | string[] | undefined,
+  ): Promise<AuthenticatedUser | null> {
+    if (!rawHeader) return null;
+    return this.resolveHeader(rawHeader);
+  }
+
   async resolveHeader(rawHeader: string | string[] | undefined): Promise<AuthenticatedUser> {
     if (!this.isEnabled()) {
       throw new UnauthorizedException('Development header auth is disabled');

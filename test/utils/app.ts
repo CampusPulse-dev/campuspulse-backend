@@ -64,6 +64,9 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<Boots
   app.useGlobalFilters(new AllExceptionsFilter());
 
   await app.init();
+  // Keep one listener alive across concurrent Supertest requests. Otherwise the
+  // first completed request can close their shared ephemeral HTTP server.
+  await app.listen(0, '127.0.0.1');
 
   const prisma = app.get(PrismaService);
 

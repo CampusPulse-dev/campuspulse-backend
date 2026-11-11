@@ -14,6 +14,7 @@ import { ZodValidationPipe } from '../../../common/zod-validation.pipe';
 import type { Env } from '../../../config/env';
 import { SignInBody, SignUpBody, type SessionResponse } from '../../../contract';
 import { AuthService, type IssuedSession } from './auth.service';
+import { sealRefreshCookie, openRefreshCookie } from './refresh-cookie';
 
 export const REFRESH_COOKIE = 'cp_refresh';
 /** Scoped to the auth routes so the refresh token is not sent with every API call. */
@@ -90,7 +91,12 @@ export class AuthController {
     try {
       return this.deliver(
         res,
-        await this.auth.refresh(readCookie(req.headers.cookie, REFRESH_COOKIE)),
+        await this.auth.refresh(
+          openRefreshCookie(
+            readCookie(req.headers.cookie, REFRESH_COOKIE),
+            this.config.get('JWT_SECRET', { infer: true }),
+          ),
+        ),
       );
     } catch (err) {
       res.clearCookie(REFRESH_COOKIE, this.cookieOptions());
@@ -103,15 +109,24 @@ export class AuthController {
   @ApiOperation({ summary: 'End the session and clear the refresh cookie' })
   @ApiNoContentResponse({ description: 'Signed out.' })
   async signOut(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
-    await this.auth.signOut(readCookie(req.headers.cookie, REFRESH_COOKIE));
+    await this.auth.signOut(
+      openRefreshCookie(
+        readCookie(req.headers.cookie, REFRESH_COOKIE),
+        this.config.get('JWT_SECRET', { infer: true }),
+      ),
+    );
     res.clearCookie(REFRESH_COOKIE, this.cookieOptions());
   }
 
   private deliver(res: Response, issued: IssuedSession): SessionResponse {
-    res.cookie(REFRESH_COOKIE, issued.refreshToken, {
-      ...this.cookieOptions(),
-      maxAge: issued.refreshMaxAgeMs,
-    });
+    res.cookie(
+      REFRESH_COOKIE,
+      sealRefreshCookie(issued.refreshToken, this.config.get('JWT_SECRET', { infer: true })),
+      {
+        ...this.cookieOptions(),
+        maxAge: issued.refreshMaxAgeMs,
+      },
+    );
     return issued.session;
   }
 

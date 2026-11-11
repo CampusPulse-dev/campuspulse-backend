@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { prepareTestBuckets } from './test-buckets';
 
 // Deliberately separate from .env, development volumes and shared staging databases.
 const env = {
@@ -44,7 +45,10 @@ if (action === 'up') {
     'redis',
     'minio',
   ]);
-  run('docker', ['compose', '-f', 'compose.test.yml', 'run', '--rm', 'buckets']);
+  void prepareTestBuckets().catch(() => {
+    process.stderr.write('Test bucket setup failed\n');
+    process.exitCode = 1;
+  });
 } else if (action === 'migrate') {
   run('npx', ['prisma', 'migrate', 'deploy']);
   run('npx', ['prisma', 'migrate', 'status']);

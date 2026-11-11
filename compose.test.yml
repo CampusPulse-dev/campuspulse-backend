@@ -21,23 +21,12 @@ services:
       timeout: 3s
       retries: 30
   minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
-    command: ['server', '/data', '--console-address', ':9001']
+    build:
+      context: .
+      dockerfile: docker/minio.test.Dockerfile
+    command: ['server', '/tmp/data', '--console-address', ':9001']
     environment:
       MINIO_ROOT_USER: campuspulse-test
       MINIO_ROOT_PASSWORD: campuspulse-test-only
+      MINIO_API_CORS_ALLOW_ORIGIN: http://localhost:3104,http://127.0.0.1:3104,http://localhost:3000
     ports: ['127.0.0.1:59000:9000']
-  buckets:
-    image: minio/mc:RELEASE.2025-04-16T18-13-26Z
-    depends_on:
-      minio: { condition: service_started }
-    entrypoint: /bin/sh
-    command:
-      - -ec
-      - |
-        until mc alias set test http://minio:9000 campuspulse-test campuspulse-test-only; do sleep 2; done
-        mc mb --ignore-existing test/campuspulse-test-media
-        mc mb --ignore-existing test/campuspulse-test-private
-        mc anonymous set download test/campuspulse-test-media
-        mc anonymous set none test/campuspulse-test-private
-        mc ready test

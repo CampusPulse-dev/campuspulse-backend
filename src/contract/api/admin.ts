@@ -90,10 +90,8 @@ export type AdminUser = z.infer<typeof AdminUser>;
 export const AdminUsersQuery = Pagination.extend({
   /** Matches display name, or an exact email address. Sent in the body-less GET query. */
   search: z.string().trim().max(120).optional(),
-  staffOnly: z
-    .enum(['true', 'false'])
-    .default('false')
-    .transform((v) => v === 'true'),
+  /** Query-string flag. Kept as a string enum: transforms cannot be published to OpenAPI. */
+  staffOnly: z.enum(['true', 'false']).default('false'),
 });
 export type AdminUsersQuery = z.infer<typeof AdminUsersQuery>;
 

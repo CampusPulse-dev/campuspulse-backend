@@ -47,7 +47,7 @@ export class AdminPlatformService {
   async listUsers(query: AdminUsersQuery): Promise<AdminUsersResponse> {
     const search = query.search?.trim();
     const where: Prisma.UserWhereInput = {
-      ...(query.staffOnly ? { role: { in: STAFF_ROLES } } : {}),
+      ...(query.staffOnly === 'true' ? { role: { in: STAFF_ROLES } } : {}),
       ...(search
         ? {
             // Emails match exactly only: no partial-email enumeration of students.

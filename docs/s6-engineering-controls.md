@@ -25,6 +25,8 @@ Record runner CPU/RAM, Node/k6 versions, exact source SHA, service image/source 
 
 ## Open security finding
 
+Gitleaks' exact fingerprint for the `S3_SECRET_ACCESS_KEY` Render declaration is allowlisted: that entry contains only the variable name and `sync: false`, with no credential value. Full-history scanning remains enabled; no file/path rule is excluded.
+
 CodeQL on PR35 flags the optional JWT/development fallback in `jwt-auth.guard.ts` as a user-controlled bypass. Protected routes subsequently reject a null user, and the development resolver is gated by validated server configuration (forbidden in production). Real JWT E2E passes and the live suite explicitly rejects a development header. The finding remains open for security review; it has not been blanket-suppressed or dismissed to obtain a green check.
 
 Resend uses the documented `Idempotency-Key` send header, retained by the provider for 24 hours: https://resend.com/docs/dashboard/emails/idempotency-keys. Queue retries are bounded well inside that window. Human NDPA sign-off must also address lawful basis, notices, retention policy, processors, incident response and data-subject request handling; automated engineering tests cannot approve these organizational responsibilities.

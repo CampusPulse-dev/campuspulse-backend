@@ -44,6 +44,14 @@ export class CreatorsController {
     return this.team.applyAsCreator(user.id, body);
   }
 
+  @Get('me/ambassador-links')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Own creator links and attributed attendance counts' })
+  @ApiOkResponse({ schema: { $ref: '#/components/schemas/CreatorAmbassadorLinksResponse' } })
+  links(@CurrentUser() user: AuthenticatedUser) {
+    return this.organizers.creatorLinks(user.id);
+  }
+
   @Get(':handle')
   @ApiOperation({ summary: 'Public campus creator profile and featured events' })
   @ApiOkResponse({

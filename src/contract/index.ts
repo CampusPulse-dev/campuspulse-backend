@@ -7,3 +7,4 @@ export * from './api/identity';
 export * from './api/errors';
 export * from './api/attendee';
 export * from './api/admin';
+export * from './api/management';

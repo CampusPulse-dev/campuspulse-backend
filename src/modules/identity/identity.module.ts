@@ -62,6 +62,7 @@ import { UsersController } from './users.controller';
     FriendsGoingService,
   ],
   exports: [
+    OrganizerTeamService,
     AuthService,
     PasswordService,
     JwtAuthGuard,

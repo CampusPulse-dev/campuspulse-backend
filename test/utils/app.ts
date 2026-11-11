@@ -77,6 +77,12 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<Boots
 }
 
 export async function truncateDatabase(prisma: PrismaService): Promise<void> {
+  const target = new URL(process.env.DATABASE_URL ?? '');
+  if (!['campuspulse_test', 'campuspulse_e2e'].includes(target.pathname.slice(1))) {
+    throw new Error(
+      'Refusing test cleanup outside a dedicated campuspulse_test/campuspulse_e2e database',
+    );
+  }
   const rows = await prisma.$queryRaw<Array<{ tablename: string }>>`
     SELECT tablename
     FROM pg_tables

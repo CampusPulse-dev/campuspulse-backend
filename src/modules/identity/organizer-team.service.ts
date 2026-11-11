@@ -128,10 +128,28 @@ export class OrganizerTeamService {
     });
     const self = members.find((m) => m.userId === userId);
     if (!self) throw new NotFoundException('Club not found');
+    const grants = await this.prisma.doorStaffGrant.findMany({
+      where: { event: { organizerId }, expiresAt: { gt: new Date() } },
+      include: {
+        event: { select: { title: true } },
+        user: { select: { displayName: true, email: true } },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
 
     return {
       organizerId,
       role: self.role,
+      doorStaff: grants.map((g) => ({
+        id: g.id,
+        eventId: g.eventId,
+        eventTitle: g.event.title,
+        userId: g.userId,
+        displayName: g.user.displayName,
+        emailHint: maskEmail(g.user.email),
+        expiresAt: g.expiresAt.toISOString(),
+        createdAt: g.createdAt.toISOString(),
+      })),
       members: members.map((m) => ({
         userId: m.userId,
         displayName: m.user.displayName,

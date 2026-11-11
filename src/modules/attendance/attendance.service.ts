@@ -908,12 +908,16 @@ export class AttendanceService {
 
     await this.organizerAccess.assertRole(userId, event.organizerId, ['OWNER', 'MANAGER']);
 
-    const [duplicateScanCount, manualCheckInCount] = await Promise.all([
+    const [duplicateScanCount, manualCheckInCount, links] = await Promise.all([
       this.prisma.checkIn.count({
         where: { eventId, isDuplicate: true },
       }),
       this.prisma.checkIn.count({
         where: { eventId, method: 'MANUAL', isDuplicate: false },
+      }),
+      this.prisma.ambassadorLink.findMany({
+        where: { eventId },
+        include: { creator: { select: { displayName: true } } },
       }),
     ]);
 
@@ -929,6 +933,11 @@ export class AttendanceService {
       conversionRate,
       duplicateScanCount,
       manualCheckInCount,
+      ambassadors: links.map((link) => ({
+        creatorName: link.creator.displayName,
+        rsvps: link.rsvpCount,
+        checkIns: link.checkInCount,
+      })),
     };
   }
 

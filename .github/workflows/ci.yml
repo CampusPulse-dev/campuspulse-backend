@@ -75,11 +75,13 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - name: Apply migrations
-        run: npx prisma migrate deploy
+        run: |
+          npx tsx scripts/test-stack.ts up
+          npx tsx scripts/test-stack.ts migrate
       - name: Unit tests
         run: npm run test -- --passWithNoTests --coverage
       - name: E2E tests
-        run: npm run test:e2e -- --passWithNoTests
+        run: npx tsx scripts/test-stack.ts test
 
   build:
     name: Build

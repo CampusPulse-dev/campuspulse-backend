@@ -146,5 +146,12 @@ export const EventStatsResponse = z.object({
   conversionRate: z.number().min(0).max(1),
   duplicateScanCount: z.number().int().nonnegative(),
   manualCheckInCount: z.number().int().nonnegative(),
+  ambassadors: z.array(
+    z.object({
+      creatorName: z.string(),
+      rsvps: z.number().int().nonnegative(),
+      checkIns: z.number().int().nonnegative(),
+    }),
+  ),
 });
 export type EventStatsResponse = z.infer<typeof EventStatsResponse>;

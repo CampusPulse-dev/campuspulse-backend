@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { UserPublic, OrganizerPublic, VerificationRequest } from '../domain/entities';
 import { OrganizerTeamRole, VerificationStatus, VerificationSubject } from '../domain/enums';
 import { Id, Pagination, Slug, StudentEmail, page } from '../domain/primitives';
+import { DoorStaffGrantResponse } from './events';
 
 export const SignUpBody = z.object({
   email: z.email(),
@@ -120,6 +121,7 @@ export const TeamResponse = z.object({
   /** The caller's own role; only OWNER may change the team. */
   role: OrganizerTeamRole,
   members: z.array(TeamMember),
+  doorStaff: z.array(DoorStaffGrantResponse),
 });
 export type TeamResponse = z.infer<typeof TeamResponse>;
 

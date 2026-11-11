@@ -7,6 +7,7 @@ import * as identity from './api/identity';
 import * as errors from './api/errors';
 import * as attendee from './api/attendee';
 import * as admin from './api/admin';
+import * as management from './api/management';
 
 /**
  * Every schema published in the OpenAPI document, by name.
@@ -25,6 +26,7 @@ export const schemaRegistry: Record<string, ZodTypeAny> = Object.fromEntries(
     ...errors,
     ...attendee,
     ...admin,
+    ...management,
     // `page` is a helper that builds schemas; it is not one itself.
   }).filter(([name, value]) => name !== 'page' && isZodSchema(value)),
 ) as Record<string, ZodTypeAny>;

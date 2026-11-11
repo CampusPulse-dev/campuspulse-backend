@@ -8,6 +8,7 @@ import {
 import { PrismaService } from '../../common/prisma.service';
 import type {
   CreatorPublic,
+  CreatorAmbassadorLinksResponse,
   FeedResponse,
   FollowCreatorResponse,
   FollowOrganizerResponse,
@@ -17,6 +18,37 @@ import type {
 @Injectable()
 export class OrganizersService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async creatorLinks(userId: string): Promise<CreatorAmbassadorLinksResponse> {
+    const creator = await this.prisma.creatorProfile.findUnique({
+      where: { userId },
+      select: { id: true, handle: true, isVerified: true },
+    });
+    if (!creator) throw new NotFoundException('Creator profile not found');
+    const links = await this.prisma.ambassadorLink.findMany({
+      where: { creatorId: creator.id },
+      orderBy: { createdAt: 'desc' },
+      include: { event: { include: EVENT_PUBLIC_INCLUDE } },
+    });
+    return {
+      creator,
+      items: links.map((link) => ({
+        id: link.id,
+        creatorId: link.creatorId,
+        eventId: link.eventId,
+        code: link.code,
+        shareUrl: new URL(
+          `/e/${link.event.slug}?ref=${encodeURIComponent(link.code)}`,
+          process.env.WEB_ORIGIN ?? 'http://localhost:3000',
+        ).toString(),
+        clickCount: link.clickCount,
+        rsvpCount: link.rsvpCount,
+        checkInCount: link.checkInCount,
+        createdAt: link.createdAt.toISOString(),
+        event: toEventPublic(link.event),
+      })),
+    };
+  }
 
   async getBySlug(slug: string): Promise<OrganizerPublic> {
     const organizer = await this.prisma.organizer.findUnique({

@@ -149,6 +149,7 @@ describe('Check-In, Scanner Pack, Roster CSV, Door Staff & Stats (e2e) [S3-02]',
 
     expect(pack.eventId).toBe(event.id);
     expect(pack.publicKey.length).toBeGreaterThanOrEqual(40);
+    expect(pack.eventTitle).toBe(event.title);
     expect(pack.roster).toHaveLength(1);
     expect(pack.roster[0]).toEqual({
       rsvpId: rsvp.id,

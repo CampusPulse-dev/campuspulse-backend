@@ -100,6 +100,8 @@ export type ScannerPackRosterItem = z.infer<typeof ScannerPackRosterItem>;
 
 export const ScannerPackResponse = z.object({
   eventId: Id,
+  /** Shown on the door console, which must render with no network. */
+  eventTitle: z.string(),
   publicKey: z.string(),
   syncedAt: IsoDateTime,
   roster: z.array(ScannerPackRosterItem),

@@ -604,6 +604,14 @@ export class AttendanceService {
   async getScannerPack(userId: string, eventId: string): Promise<ScannerPackResponse> {
     await this.organizerAccess.assertDoorAccess(userId, eventId);
 
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      select: { title: true },
+    });
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
     const rsvps = await this.prisma.rsvp.findMany({
       where: {
         eventId,
@@ -633,6 +641,7 @@ export class AttendanceService {
 
     return {
       eventId,
+      eventTitle: event.title,
       publicKey: this.qrTokens.getPublicKey(),
       syncedAt: new Date().toISOString(),
       roster: rsvps.map((rsvp) => ({

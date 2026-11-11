@@ -96,6 +96,8 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - run: npm run build
+      - name: Verify runtime entry point
+        run: node -e "require('node:fs').accessSync('dist/main.js')"
 
   migrations:
     name: Migration drift check

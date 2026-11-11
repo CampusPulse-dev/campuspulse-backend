@@ -50,6 +50,7 @@ export const options = {
   },
 };
 function reserve(eventId) {
+  errors.add(0);
   const token = data.tokens[exec.scenario.iterationInTest];
   const response = http.post(`${origin}/api/v1/attendance/rsvps`, JSON.stringify({ eventId }), {
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },

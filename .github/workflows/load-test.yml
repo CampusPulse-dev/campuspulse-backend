@@ -1,0 +1,37 @@
+name: S6 load test
+on:
+  pull_request:
+    branches: ['feat/S5-01-management-contracts']
+  workflow_dispatch:
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: '22', cache: npm }
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run build
+      - run: npx tsx scripts/test-stack.ts up
+      - run: npx tsx scripts/test-stack.ts migrate
+      - run: npx tsx scripts/test-stack.ts load-fixtures
+      - name: Start real API with development auth disabled
+        run: |
+          npx tsx scripts/test-stack.ts serve-live > test-results/api.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://localhost:3001/api/v1/health/live; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - uses: grafana/setup-k6-action@v1
+      - name: Measure arrival rate, capacity race and feed traffic
+        env:
+          API_BASE_URL: http://localhost:3001
+        run: LOAD_FIXTURE="$PWD/test-results/load-fixture.json" k6 run --summary-export test-results/k6-summary.json load/rsvp.js
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: s6-load-evidence
+          path: test-results/k6-summary.json

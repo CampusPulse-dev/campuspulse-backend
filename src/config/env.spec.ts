@@ -52,8 +52,21 @@ describe('validateEnv (S2-01 & S3-01)', () => {
       ...baseEnv,
       NODE_ENV: 'production',
       QR_SIGNING_PRIVATE_KEY: runtimeEd25519Key,
+      EMAIL_TRANSPORT: 'resend',
+      RESEND_API_KEY: 'test-only-key',
+      EMAIL_FROM: 'test@example.com',
     });
     expect(prod.DEV_AUTH_ENABLED).toBe(false);
     expect(prod.QR_SIGNING_PRIVATE_KEY).toBe(runtimeEd25519Key);
+  });
+  it('refuses a production memory transport and incomplete Resend credentials', () => {
+    expect(() =>
+      validateEnv({
+        ...baseEnv,
+        NODE_ENV: 'production',
+        QR_SIGNING_PRIVATE_KEY: runtimeEd25519Key,
+      }),
+    ).toThrow(/EMAIL_TRANSPORT/);
+    expect(() => validateEnv({ ...baseEnv, EMAIL_TRANSPORT: 'resend' })).toThrow(/RESEND_API_KEY/);
   });
 });

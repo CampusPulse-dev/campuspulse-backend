@@ -78,6 +78,7 @@ jobs:
         run: |
           npx tsx scripts/test-stack.ts up
           npx tsx scripts/test-stack.ts migrate
+          npx tsx scripts/test-stack.ts migration-check
       - name: Unit tests
         run: npm run test -- --passWithNoTests --coverage
       - name: E2E tests

@@ -115,6 +115,7 @@ export class StudentVerificationService {
       subject: 'Your CampusPulse verification code',
       text: `Your CampusPulse student verification code is ${code}. It expires in 10 minutes.`,
       template: 'student-otp',
+      idempotencyKey: `otp/${userId}/${randomUUID()}`,
     });
 
     return { expiresIn: OTP_TTL_SECONDS, resendAfter: OTP_RESEND_SECONDS };

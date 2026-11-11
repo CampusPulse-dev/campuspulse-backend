@@ -63,6 +63,15 @@ if (action === 'up') {
   ]);
 } else if (action === 'seed') {
   run('npx', ['tsx', 'prisma/seed.ts']);
+} else if (action === 'load-fixtures') {
+  run('npx', ['tsx', 'scripts/prepare-load.ts']);
+} else if (action === 'serve-live') {
+  env.DEV_AUTH_ENABLED = 'false';
+  run('node', ['dist/main.js']);
+} else if (action === 'migration-check') {
+  run('npx', ['tsx', 'scripts/check-migrations.ts']);
+} else if (action === 'browser-fixtures') {
+  run('npx', ['tsx', 'scripts/browser-fixtures.ts']);
 } else {
   throw new Error('Expected up, migrate, test or seed');
 }

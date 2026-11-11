@@ -63,6 +63,17 @@ export const EnvSchema = z
     VAPID_PUBLIC_KEY: z.string().min(1).optional(),
     VAPID_PRIVATE_KEY: z.string().min(1).optional(),
     VAPID_SUBJECT: z.string().min(1).default('mailto:alerts@campuspulse.ng'),
+    EMAIL_TRANSPORT: z.enum(['memory', 'resend']).default('memory'),
+    RESEND_API_KEY: z.string().min(1).optional(),
+    EMAIL_FROM: z
+      .string()
+      .refine(
+        (value) =>
+          !/[\r\n]/.test(value) &&
+          z.email().safeParse(value.match(/<([^<>]+)>$/)?.[1] ?? value).success,
+        'EMAIL_FROM must contain a valid sender email',
+      )
+      .optional(),
   })
   .refine((env) => !(env.NODE_ENV === 'production' && env.DEV_AUTH_ENABLED), {
     message: 'DEV_AUTH_ENABLED must not be true when NODE_ENV is production',
@@ -71,6 +82,14 @@ export const EnvSchema = z
   .refine((env) => !(env.NODE_ENV === 'production' && !env.QR_SIGNING_PRIVATE_KEY), {
     message: 'QR_SIGNING_PRIVATE_KEY is required when NODE_ENV is production',
     path: ['QR_SIGNING_PRIVATE_KEY'],
+  })
+  .refine((env) => !(env.NODE_ENV === 'production' && env.EMAIL_TRANSPORT !== 'resend'), {
+    message: 'Production requires EMAIL_TRANSPORT=resend',
+    path: ['EMAIL_TRANSPORT'],
+  })
+  .refine((env) => env.EMAIL_TRANSPORT !== 'resend' || (!!env.RESEND_API_KEY && !!env.EMAIL_FROM), {
+    message: 'Resend requires RESEND_API_KEY and EMAIL_FROM',
+    path: ['RESEND_API_KEY'],
   });
 
 export type Env = z.infer<typeof EnvSchema>;

@@ -146,6 +146,8 @@ export class NotificationsQueueService implements OnModuleInit, OnModuleDestroy 
   async enqueueDispatch(data: DispatchNotificationJobData, delayMs = 0): Promise<void> {
     if (!this.dispatchQueue) return;
     await this.dispatchQueue.add('dispatch', data, {
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 1000 },
       ...(delayMs > 0 ? { delay: delayMs } : {}),
       removeOnComplete: 100,
       removeOnFail: 100,
@@ -271,7 +273,10 @@ export class NotificationsQueueService implements OnModuleInit, OnModuleDestroy 
     const data = job.data;
 
     if (data.email && !data.pushOnlyRetry) {
-      await this.emailAdapter.send(data.email);
+      await this.emailAdapter.send({
+        ...data.email,
+        idempotencyKey: `notification/${data.notificationId}`,
+      });
     }
 
     if (!this.capRedis) return;

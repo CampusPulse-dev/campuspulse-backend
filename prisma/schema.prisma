@@ -114,24 +114,26 @@ enum NotificationCategory {
 }
 
 model User {
-  id                String   @id @default(uuid()) @db.Uuid
-  email             String   @unique
+  id                String    @id @default(uuid()) @db.Uuid
+  email             String    @unique
   passwordHash      String
   displayName       String
   avatarUrl         String?
-  role              UserRole @default(ATTENDEE)
-  isVerifiedStudent Boolean  @default(false)
-  studentEmail      String?  @unique
+  role              UserRole  @default(ATTENDEE)
+  isVerifiedStudent Boolean   @default(false)
+  studentEmail      String?   @unique
   phoneHash         String?
   hall              String?
   faculty           String?
   level             String?
-  rsvpVisibility    String   @default("FRIENDS")
-  hideFromFriends   Boolean  @default(false)
-  theme             String   @default("system")
+  rsvpVisibility    String    @default("FRIENDS")
+  hideFromFriends   Boolean   @default(false)
+  theme             String    @default("system")
   refreshTokenHash  String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  // Set by moderation; a suspended account cannot sign in or call the API.
+  suspendedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   personaProfile         PersonaProfile?
   organizer              Organizer?

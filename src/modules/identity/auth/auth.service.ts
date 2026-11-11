@@ -1,5 +1,10 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma, type User } from '@prisma/client';
@@ -94,6 +99,8 @@ export class AuthService {
     if (!(await this.passwords.verify(body.password, user.passwordHash))) {
       throw new UnauthorizedException('Invalid email or password');
     }
+    // Checked only after the password, so suspension is not revealed to strangers.
+    if (user.suspendedAt) throw new ForbiddenException('This account is suspended');
     return this.issueSession(user);
   }
 
@@ -102,7 +109,9 @@ export class AuthService {
     if (!parsed) throw new UnauthorizedException('Session expired');
 
     const user = await this.prisma.user.findUnique({ where: { id: parsed.userId } });
-    if (!user?.refreshTokenHash) throw new UnauthorizedException('Session expired');
+    if (!user?.refreshTokenHash || user.suspendedAt) {
+      throw new UnauthorizedException('Session expired');
+    }
 
     const presentedHash = hashRefreshSecret(parsed.secret);
     if (!safeEqualHex(presentedHash, user.refreshTokenHash)) {
@@ -141,10 +150,11 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, email: true, role: true },
+      select: { id: true, email: true, role: true, suspendedAt: true },
     });
     if (!user) throw new UnauthorizedException('Invalid or expired access token');
-    return user;
+    if (user.suspendedAt) throw new ForbiddenException('This account is suspended');
+    return { id: user.id, email: user.email, role: user.role };
   }
 
   refreshMaxAgeMs(): number {

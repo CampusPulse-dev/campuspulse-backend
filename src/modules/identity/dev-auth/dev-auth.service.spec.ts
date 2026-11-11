@@ -58,7 +58,7 @@ describe('DevAuthService (S2-01)', () => {
     const user = await service.resolveHeader('  Tobi@Stu.UI.edu.ng ');
     expect(findUnique).toHaveBeenCalledWith({
       where: { email: 'tobi@stu.ui.edu.ng' },
-      select: { id: true, email: true, role: true },
+      select: { id: true, email: true, role: true, suspendedAt: true },
     });
     expect(upsert).not.toHaveBeenCalled();
     expect(user).toEqual(existing);

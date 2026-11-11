@@ -1,4 +1,10 @@
-import { createHash, createPrivateKey, sign as cryptoSign } from 'node:crypto';
+import {
+  createHash,
+  createPrivateKey,
+  randomBytes,
+  scryptSync,
+  sign as cryptoSign,
+} from 'node:crypto';
 import { PrismaClient } from '@prisma/client';
 
 export const UI_HALLS = [
@@ -27,7 +33,26 @@ export const UI_FACULTIES = [
   'Pharmacy',
 ] as const;
 
-const SEED_PASSWORD_HASH = 'dev-seed-placeholder-hash';
+/**
+ * Seed accounts can only sign in when SEED_USER_PASSWORD is set (local dev).
+ * Without it they keep an unusable placeholder hash and are reachable only
+ * through DEV_AUTH_ENABLED header auth. Same format as PasswordService.
+ */
+function seedPasswordHash(): string {
+  const password = process.env.SEED_USER_PASSWORD;
+  if (!password || password.length < 10) return 'dev-seed-placeholder-hash';
+  const cost = 2 ** 15;
+  const salt = randomBytes(16);
+  const key = scryptSync(password.normalize('NFKC'), salt, 64, {
+    N: cost,
+    r: 8,
+    p: 1,
+    maxmem: 128 * cost * 8 * 2,
+  });
+  return ['scrypt', cost, 8, 1, salt.toString('base64'), key.toString('base64')].join('$');
+}
+
+const SEED_PASSWORD_HASH = seedPasswordHash();
 const ED25519_PKCS8_PREFIX = Buffer.from('302e020100300506032b657004220420', 'hex');
 
 function signSeedQrToken(input: { rsvpId: string; eventId: string; showtimeId?: string }): string {
@@ -107,6 +132,33 @@ export async function seedDatabase(prisma: PrismaClient): Promise<void> {
           afterPartiesEnabled: true,
           forYouRankingEnabled: true,
         },
+      },
+    ],
+  });
+
+  // 1b. Platform staff for the admin portal (S1-04)
+  await prisma.user.createMany({
+    data: [
+      {
+        id: '90000000-0000-4000-8000-000000000001',
+        email: 'super.admin@campuspulse.ng',
+        passwordHash: SEED_PASSWORD_HASH,
+        displayName: 'Platform Super Admin',
+        role: 'SUPER_ADMIN',
+      },
+      {
+        id: '90000000-0000-4000-8000-000000000002',
+        email: 'verifier@campuspulse.ng',
+        passwordHash: SEED_PASSWORD_HASH,
+        displayName: 'Club Verifier',
+        role: 'VERIFIER',
+      },
+      {
+        id: '90000000-0000-4000-8000-000000000003',
+        email: 'moderator@campuspulse.ng',
+        passwordHash: SEED_PASSWORD_HASH,
+        displayName: 'Content Moderator',
+        role: 'MODERATOR',
       },
     ],
   });

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { z } from 'zod';
 import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator';
@@ -40,10 +40,11 @@ export class DevAuthService {
     const email = parsed.data;
     const existing = await this.prisma.user.findUnique({
       where: { email },
-      select: { id: true, email: true, role: true },
+      select: { id: true, email: true, role: true, suspendedAt: true },
     });
     if (existing) {
-      return existing;
+      if (existing.suspendedAt) throw new ForbiddenException('This account is suspended');
+      return { id: existing.id, email: existing.email, role: existing.role };
     }
 
     const localPart = email.split('@')[0]?.slice(0, 80) || 'Attendee';

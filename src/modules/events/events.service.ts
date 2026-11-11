@@ -33,18 +33,13 @@ import type {
   UpdateEventBody,
   UpdateFixtureBody,
 } from '../../contract';
+import { maskEmail } from '../../common/mask-email';
 import { DevAuthService } from '../identity/dev-auth';
 import { FriendsGoingService } from '../identity/friends-going.service';
 import { OrganizerAccessService } from '../identity/organizer-access.service';
 
 const MOOD_WINDOW_MS = 6 * 60 * 60 * 1000;
 const DOOR_STAFF_GRACE_MS = 4 * 60 * 60 * 1000;
-
-function maskEmail(email: string): string {
-  const [local = '', domain = ''] = email.split('@');
-  const first = local[0] ?? '*';
-  return `${first}***@${domain}`;
-}
 
 @Injectable()
 export class EventsService {

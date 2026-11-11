@@ -1,5 +1,12 @@
 import { randomUUID } from 'node:crypto';
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import type { Readable } from 'node:stream';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { BadRequestException, Injectable, type OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -42,14 +49,25 @@ const EXT_BY_MIME: Record<MediaUploadUrlBody['contentType'], string> = {
 
 const PRESIGN_EXPIRES_SECONDS = 300;
 
+const PRIVATE_EXT_BY_MIME = { 'image/jpeg': 'jpg', 'image/png': 'png' } as const;
+export type PrivateDocumentMime = keyof typeof PRIVATE_EXT_BY_MIME;
+
+export interface PrivateObject {
+  stream: Readable;
+  contentType: string;
+  contentLength: number | undefined;
+}
+
 @Injectable()
 export class StorageService implements StorageDriver, OnModuleDestroy {
   private readonly s3: S3Client;
   private readonly bucket: string;
+  private readonly privateBucket: string;
   private readonly publicBaseUrl: string;
 
   constructor(config: ConfigService<Env, true>) {
     this.bucket = config.get('S3_BUCKET', { infer: true });
+    this.privateBucket = config.get('S3_PRIVATE_BUCKET', { infer: true });
     this.publicBaseUrl = config.get('S3_PUBLIC_BASE_URL', { infer: true }).replace(/\/+$/, '');
     this.s3 = new S3Client({
       endpoint: config.get('S3_ENDPOINT', { infer: true }),
@@ -97,6 +115,56 @@ export class StorageService implements StorageDriver, OnModuleDestroy {
         Key: key,
       }),
     );
+  }
+
+  /**
+   * NDPA: student ID images go to the private bucket only. There is no public
+   * URL for these keys; they are read back solely through `getPrivateObject`.
+   */
+  async createPrivateDocumentUpload(input: {
+    userId: string;
+    contentType: PrivateDocumentMime;
+    size: number;
+  }): Promise<{ uploadUrl: string; key: string; expiresIn: number }> {
+    const ext = PRIVATE_EXT_BY_MIME[input.contentType];
+    const key = `student-ids/${input.userId}/${randomUUID()}.${ext}`;
+    const uploadUrl = await getSignedUrl(
+      this.s3,
+      new PutObjectCommand({
+        Bucket: this.privateBucket,
+        Key: key,
+        ContentType: input.contentType,
+        ContentLength: input.size,
+      }),
+      { expiresIn: PRESIGN_EXPIRES_SECONDS },
+    );
+    return { uploadUrl, key, expiresIn: PRESIGN_EXPIRES_SECONDS };
+  }
+
+  async privateObjectExists(key: string): Promise<boolean> {
+    try {
+      await this.s3.send(new HeadObjectCommand({ Bucket: this.privateBucket, Key: key }));
+      return true;
+    } catch (err) {
+      const meta = (err as { $metadata?: { httpStatusCode?: number } }).$metadata;
+      if (meta?.httpStatusCode === 404 || (err as { name?: string }).name === 'NotFound') {
+        return false;
+      }
+      throw err;
+    }
+  }
+
+  async getPrivateObject(key: string): Promise<PrivateObject> {
+    const res = await this.s3.send(new GetObjectCommand({ Bucket: this.privateBucket, Key: key }));
+    return {
+      stream: res.Body as Readable,
+      contentType: res.ContentType ?? 'application/octet-stream',
+      contentLength: res.ContentLength,
+    };
+  }
+
+  async deletePrivateObject(key: string): Promise<void> {
+    await this.s3.send(new DeleteObjectCommand({ Bucket: this.privateBucket, Key: key }));
   }
 
   onModuleDestroy(): void {

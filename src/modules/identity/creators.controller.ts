@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -9,18 +10,39 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CurrentUser,
   type AuthenticatedUser,
 } from '../../common/decorators/current-user.decorator';
+import { ZodValidationPipe } from '../../common/zod-validation.pipe';
+import { CreatorApplyBody } from '../../contract';
 import { AuthGuard } from './auth';
+import { OrganizerTeamService } from './organizer-team.service';
 import { OrganizersService } from './organizers.service';
 
 @ApiTags('creators')
 @Controller('creators')
 export class CreatorsController {
-  constructor(private readonly organizers: OrganizersService) {}
+  constructor(
+    private readonly organizers: OrganizersService,
+    private readonly team: OrganizerTeamService,
+  ) {}
+
+  @Post('apply')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Apply for a campus creator profile (pending verification)' })
+  @ApiBody({ schema: { $ref: '#/components/schemas/CreatorApplyBody' } })
+  @ApiCreatedResponse({
+    description: 'The pending creator verification request.',
+    schema: { $ref: '#/components/schemas/VerificationSubmittedResponse' },
+  })
+  apply(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(CreatorApplyBody)) body: CreatorApplyBody,
+  ) {
+    return this.team.applyAsCreator(user.id, body);
+  }
 
   @Get(':handle')
   @ApiOperation({ summary: 'Public campus creator profile and featured events' })

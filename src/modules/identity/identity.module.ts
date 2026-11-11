@@ -16,6 +16,7 @@ import { FriendsGoingService } from './friends-going.service';
 import { FriendsController } from './friends.controller';
 import { FriendsService } from './friends.service';
 import { OrganizerAccessService } from './organizer-access.service';
+import { OrganizerTeamService } from './organizer-team.service';
 import { OrganizersController } from './organizers.controller';
 import { OrganizersService } from './organizers.service';
 import { UsersController } from './users.controller';
@@ -55,6 +56,7 @@ import { UsersController } from './users.controller';
     OrganizerAccessGuard,
     DevAuthService,
     OrganizerAccessService,
+    OrganizerTeamService,
     OrganizersService,
     FriendsService,
     FriendsGoingService,

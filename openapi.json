@@ -811,6 +811,60 @@
         ]
       }
     },
+    "/organizers/mine": {
+      "get": {
+        "operationId": "OrganizersController_listMine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Memberships with role and club verification state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyOrganizersResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Clubs the signed-in user owns or manages",
+        "tags": [
+          "organizers"
+        ]
+      }
+    },
+    "/organizers": {
+      "post": {
+        "operationId": "OrganizersController_apply",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitOrganizerVerificationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new, not-yet-verified club with the caller as OWNER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizerMembership"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Apply to register a club (creates a pending verification)",
+        "tags": [
+          "organizers"
+        ]
+      }
+    },
     "/organizers/{slug}": {
       "get": {
         "operationId": "OrganizersController_getBySlug",
@@ -894,6 +948,112 @@
         "summary": "Unfollow an organizer club (idempotent)",
         "tags": [
           "organizers"
+        ]
+      }
+    },
+    "/organizers/{id}/team": {
+      "get": {
+        "operationId": "OrganizersController_getTeam",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Team members and the caller role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Club team with masked email hints (team members only)",
+        "tags": [
+          "organizers"
+        ]
+      },
+      "post": {
+        "operationId": "OrganizersController_addManager",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTeamMemberBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated team.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Add a registered user as MANAGER (Club OWNER only)",
+        "tags": [
+          "organizers"
+        ]
+      }
+    },
+    "/organizers/{id}/team/{userId}": {
+      "delete": {
+        "operationId": "OrganizersController_removeMember",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Updated team.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Remove a manager from the team (Club OWNER only)",
+        "tags": [
+          "organizers"
+        ]
+      }
+    },
+    "/creators/apply": {
+      "post": {
+        "operationId": "CreatorsController_apply",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatorApplyBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The pending creator verification request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationSubmittedResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Apply for a campus creator profile (pending verification)",
+        "tags": [
+          "creators"
         ]
       }
     },
@@ -1486,6 +1646,156 @@
         "summary": "Update notification category mute preferences",
         "tags": [
           "notifications"
+        ]
+      }
+    },
+    "/verification/student": {
+      "get": {
+        "operationId": "StudentVerificationController_getState",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Verification state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentVerificationState"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Current student verification state for the signed-in user",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/verification/student/email-otp": {
+      "post": {
+        "operationId": "StudentVerificationController_requestOtp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentOtpBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code accepted for delivery.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentOtpSentResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Send a 6-digit code to a *.ui.edu.ng address (10 min TTL)",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/verification/student/confirm-otp": {
+      "post": {
+        "operationId": "StudentVerificationController_confirmOtp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmStudentOtpBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The now-verified user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Confirm the emailed code (5 attempts, then a 15 min lock)",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/verification/student/upload-url": {
+      "post": {
+        "operationId": "StudentVerificationController_createUpload",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentUploadBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload URL plus an opaque handle. No public URL exists for the image.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentUploadResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Presigned PUT to the private bucket for a student ID image",
+        "tags": [
+          "verification"
+        ]
+      }
+    },
+    "/verification/student/id-request": {
+      "post": {
+        "operationId": "StudentVerificationController_submitIdRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentIdRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification state after submission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentVerificationState"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Submit the uploaded student ID for Super Admin review",
+        "tags": [
+          "verification"
         ]
       }
     }
@@ -5134,6 +5444,62 @@
         ],
         "additionalProperties": false
       },
+      "AddTeamMemberBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "additionalProperties": false
+      },
+      "CreatorApplyBody": {
+        "type": "object",
+        "properties": {
+          "handle": {
+            "type": "string",
+            "pattern": "^[a-z0-9_.]{3,30}$"
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "bio": {
+            "default": "",
+            "type": "string",
+            "maxLength": 300
+          },
+          "instagramUrl": {
+            "default": null,
+            "nullable": true,
+            "type": "string",
+            "maxLength": 300,
+            "format": "uri"
+          },
+          "tiktokUrl": {
+            "default": null,
+            "nullable": true,
+            "type": "string",
+            "maxLength": 300,
+            "format": "uri"
+          }
+        },
+        "required": [
+          "handle",
+          "displayName",
+          "bio",
+          "instagramUrl",
+          "tiktokUrl"
+        ],
+        "additionalProperties": false
+      },
       "DecideVerificationBody": {
         "type": "object",
         "properties": {
@@ -5206,6 +5572,101 @@
         ],
         "additionalProperties": false
       },
+      "MyOrganizersResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "bio": {
+                      "nullable": true,
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    "logoUrl": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "isVerified": {
+                      "type": "boolean"
+                    },
+                    "followerCount": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "bio",
+                    "logoUrl",
+                    "isVerified",
+                    "followerCount"
+                  ],
+                  "additionalProperties": false
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "OWNER",
+                    "MANAGER"
+                  ]
+                },
+                "verificationStatus": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING",
+                    "IN_REVIEW",
+                    "APPROVED",
+                    "REJECTED",
+                    "INFO_REQUESTED"
+                  ]
+                },
+                "reviewerNote": {
+                  "nullable": true,
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "organizer",
+                "role",
+                "verificationStatus",
+                "reviewerNote"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
       "OrganizerListResponse": {
         "type": "object",
         "properties": {
@@ -5269,6 +5730,89 @@
         "required": [
           "items",
           "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "OrganizerMembership": {
+        "type": "object",
+        "properties": {
+          "organizer": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "bio": {
+                "nullable": true,
+                "type": "string",
+                "maxLength": 500
+              },
+              "logoUrl": {
+                "nullable": true,
+                "type": "string",
+                "format": "uri"
+              },
+              "isVerified": {
+                "type": "boolean"
+              },
+              "followerCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "name",
+              "bio",
+              "logoUrl",
+              "isVerified",
+              "followerCount"
+            ],
+            "additionalProperties": false
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "OWNER",
+              "MANAGER"
+            ]
+          },
+          "verificationStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_REVIEW",
+              "APPROVED",
+              "REJECTED",
+              "INFO_REQUESTED"
+            ]
+          },
+          "reviewerNote": {
+            "nullable": true,
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "organizer",
+          "role",
+          "verificationStatus",
+          "reviewerNote"
         ],
         "additionalProperties": false
       },
@@ -5379,6 +5923,27 @@
         ],
         "additionalProperties": false
       },
+      "StudentOtpSentResponse": {
+        "type": "object",
+        "properties": {
+          "expiresIn": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 9007199254740991
+          },
+          "resendAfter": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "expiresIn",
+          "resendAfter"
+        ],
+        "additionalProperties": false
+      },
       "SubmitOrganizerVerificationBody": {
         "type": "object",
         "properties": {
@@ -5428,6 +5993,94 @@
         "required": [
           "studentEmail",
           "documentUploadId"
+        ],
+        "additionalProperties": false
+      },
+      "TeamMember": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "emailHint": {
+            "nullable": true,
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "OWNER",
+              "MANAGER"
+            ]
+          }
+        },
+        "required": [
+          "userId",
+          "displayName",
+          "emailHint",
+          "role"
+        ],
+        "additionalProperties": false
+      },
+      "TeamResponse": {
+        "type": "object",
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "OWNER",
+              "MANAGER"
+            ]
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "displayName": {
+                  "type": "string"
+                },
+                "emailHint": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "OWNER",
+                    "MANAGER"
+                  ]
+                }
+              },
+              "required": [
+                "userId",
+                "displayName",
+                "emailHint",
+                "role"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "organizerId",
+          "role",
+          "members"
         ],
         "additionalProperties": false
       },
@@ -5630,6 +6283,41 @@
         "required": [
           "items",
           "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "VerificationSubmittedResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "subject": {
+            "type": "string",
+            "enum": [
+              "ORGANIZER_CLUB",
+              "STUDENT_ID",
+              "CREATOR_PROFILE",
+              "VENDOR_CLAIM"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_REVIEW",
+              "APPROVED",
+              "REJECTED",
+              "INFO_REQUESTED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "subject",
+          "status"
         ],
         "additionalProperties": false
       },

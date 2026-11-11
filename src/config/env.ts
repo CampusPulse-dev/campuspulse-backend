@@ -53,6 +53,8 @@ export const EnvSchema = z
     S3_BUCKET: z.string().min(1).default('campuspulse-media'),
     S3_ACCESS_KEY_ID: z.string().min(1).default('minioadmin'),
     S3_SECRET_ACCESS_KEY: z.string().min(8).default('minioadminpassword'),
+    /** Never public-read. Holds student ID images until a verification decision deletes them. */
+    S3_PRIVATE_BUCKET: z.string().min(1).default('campuspulse-private'),
     S3_PUBLIC_BASE_URL: z.url().default('http://localhost:9000/campuspulse-media'),
     S3_FORCE_PATH_STYLE: z
       .enum(['true', 'false'])

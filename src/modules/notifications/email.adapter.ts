@@ -6,7 +6,7 @@ export interface TransactionalEmailInput {
   subject: string;
   text: string;
   eventId?: string;
-  template: 'event-cancelled' | 'event-updated';
+  template: 'event-cancelled' | 'event-updated' | 'student-otp';
 }
 
 export interface SentEmailRecord extends TransactionalEmailInput {

@@ -14,6 +14,11 @@ const env = {
   WEB_ORIGIN: 'http://localhost:3104',
   LOG_LEVEL: 'error',
   DEV_AUTH_ENABLED: 'true',
+  EMAIL_TRANSPORT: 'memory',
+  RESEND_API_KEY: undefined,
+  EMAIL_FROM: undefined,
+  VAPID_PUBLIC_KEY: undefined,
+  VAPID_PRIVATE_KEY: undefined,
   S3_ENDPOINT: 'http://127.0.0.1:59000',
   S3_REGION: 'us-east-1',
   S3_BUCKET: 'campuspulse-test-media',
@@ -71,7 +76,9 @@ if (action === 'up') {
 } else if (action === 'migration-check') {
   run('npx', ['tsx', 'scripts/check-migrations.ts']);
 } else if (action === 'browser-fixtures') {
-  run('npx', ['tsx', 'scripts/browser-fixtures.ts']);
+  // Nest injection needs TypeScript's decorator metadata; esbuild/tsx omits it.
+  run('npx', ['tsc', '--project', 'tsconfig.fixtures.json']);
+  run('node', ['.test-dist/scripts/browser-fixtures.js']);
 } else {
   throw new Error('Expected up, migrate, test or seed');
 }

@@ -34,6 +34,71 @@ describe('Private organizer management reads [S5-01]', () => {
     return withToken(ctx.app, token);
   }
   const organizerId = '11111111-1111-4111-8111-111111111101';
+  it('updates parent relationships, requires renewed cross-organizer approval, and can unlink drafts', async () => {
+    const owner = await caller('sigma.owner@stu.ui.edu.ng');
+    const ownParent = await ctx.prisma.event.findFirstOrThrow({
+      where: { organizerId, status: 'PUBLISHED' },
+    });
+    const foreignParent = await ctx.prisma.event.findFirstOrThrow({
+      where: { organizerId: { not: organizerId }, status: 'PUBLISHED' },
+    });
+    const created = await owner
+      .post('/events')
+      .send({
+        organizerId,
+        title: 'Editable relationship',
+        description: 'Synthetic draft relationship acceptance',
+        category: 'SOCIAL_PARTY',
+        startsAt: '2030-11-20T18:00:00.000Z',
+        endsAt: '2030-11-20T22:00:00.000Z',
+        venueName: 'Synthetic SUB',
+        coverImageUrl: 'https://example.test/cover.png',
+      })
+      .expect(201);
+    const child = created.body as { id: string };
+    const read = () => ctx.prisma.event.findUniqueOrThrow({ where: { id: child.id } });
+    await owner
+      .patch(`/events/${child.id}`)
+      .send({ parentEventId: ownParent.id, linkType: 'AFTER_PARTY' })
+      .expect(200);
+    expect(await read()).toMatchObject({
+      parentEventId: ownParent.id,
+      linkType: 'AFTER_PARTY',
+      parentLinkApproved: true,
+    });
+    await owner
+      .patch(`/events/${child.id}`)
+      .send({ parentEventId: foreignParent.id, linkType: 'AFTER_PARTY' })
+      .expect(200);
+    expect(await read()).toMatchObject({
+      parentEventId: foreignParent.id,
+      parentLinkApproved: false,
+    });
+    await owner.patch(`/events/${child.id}`).send({ title: 'Unrelated title edit' }).expect(200);
+    expect((await read()).parentLinkApproved).toBe(false);
+    await owner
+      .patch(`/events/${child.id}`)
+      .send({ parentEventId: ownParent.id, linkType: 'SERIES_CHILD' })
+      .expect(200);
+    expect(await read()).toMatchObject({
+      parentEventId: ownParent.id,
+      linkType: 'SERIES_CHILD',
+      parentLinkApproved: true,
+    });
+    await owner
+      .patch(`/events/${child.id}`)
+      .send({ parentEventId: null, linkType: null })
+      .expect(200);
+    expect(await read()).toMatchObject({
+      parentEventId: null,
+      linkType: null,
+      parentLinkApproved: true,
+    });
+    await owner
+      .patch(`/events/${child.id}`)
+      .send({ parentEventId: child.id, linkType: 'AFTER_PARTY' })
+      .expect(400);
+  });
   it('lists private drafts and preserves editable block fields without publishing them', async () => {
     const owner = await caller('sigma.owner@stu.ui.edu.ng');
     const draft = await ctx.prisma.event.create({

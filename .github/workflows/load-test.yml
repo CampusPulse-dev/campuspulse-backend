@@ -26,6 +26,8 @@ jobs:
           done
           exit 1
       - uses: grafana/setup-k6-action@v1
+      - name: Record source, runtime and machine specifications
+        run: npx tsx scripts/test-stack.ts evidence
       - name: Measure arrival rate, capacity race and feed traffic
         env:
           API_BASE_URL: http://localhost:3001
@@ -34,4 +36,6 @@ jobs:
         if: always()
         with:
           name: s6-load-evidence
-          path: test-results/k6-summary.json
+          path: |
+            test-results/k6-summary.json
+            test-results/runtime-evidence.json

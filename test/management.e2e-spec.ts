@@ -76,6 +76,12 @@ describe('Private organizer management reads [S5-01]', () => {
     });
     await owner.patch(`/events/${child.id}`).send({ title: 'Unrelated title edit' }).expect(200);
     expect((await read()).parentLinkApproved).toBe(false);
+    await ctx.prisma.event.update({ where: { id: child.id }, data: { parentLinkApproved: true } });
+    await owner
+      .patch(`/events/${child.id}`)
+      .send({ parentEventId: foreignParent.id, linkType: 'AFTER_PARTY' })
+      .expect(200);
+    expect((await read()).parentLinkApproved).toBe(true);
     await owner
       .patch(`/events/${child.id}`)
       .send({ parentEventId: ownParent.id, linkType: 'SERIES_CHILD' })
@@ -97,6 +103,14 @@ describe('Private organizer management reads [S5-01]', () => {
     await owner
       .patch(`/events/${child.id}`)
       .send({ parentEventId: child.id, linkType: 'AFTER_PARTY' })
+      .expect(400);
+    await owner
+      .patch(`/events/${child.id}`)
+      .send({ parentEventId: ownParent.id, linkType: 'SERIES_CHILD' })
+      .expect(200);
+    await owner
+      .patch(`/events/${ownParent.id}`)
+      .send({ parentEventId: child.id, linkType: 'SERIES_CHILD' })
       .expect(400);
   });
   it('lists private drafts and preserves editable block fields without publishing them', async () => {

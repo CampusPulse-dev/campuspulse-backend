@@ -410,86 +410,137 @@ export class EventsService {
       );
     }
 
-    const updated = await this.prisma.$transaction(async (tx) => {
-      if (body.showtimes !== undefined) {
-        await this.syncShowtimes(tx, eventId, body.showtimes);
-      }
+    const updated = await this.prisma
+      .$transaction(
+        async (tx) => {
+          let relationship:
+            Pick<typeof existing, 'parentEventId' | 'linkType' | 'parentLinkApproved'> | undefined;
+          if (body.parentEventId !== undefined || body.linkType !== undefined) {
+            const current = await tx.event.findUniqueOrThrow({
+              where: { id: eventId },
+              select: { parentEventId: true, linkType: true },
+            });
+            const parentEventId =
+              body.parentEventId === undefined ? current.parentEventId : body.parentEventId;
+            const linkType = parentEventId
+              ? (body.linkType ?? current.linkType ?? 'AFTER_PARTY')
+              : null;
+            if (parentEventId !== current.parentEventId || linkType !== current.linkType) {
+              const seen = new Set([eventId]);
+              let ancestor = parentEventId;
+              let parentOrganizerId: string | null = null;
+              while (ancestor) {
+                if (seen.has(ancestor))
+                  throw new BadRequestException('Event links cannot form a cycle');
+                seen.add(ancestor);
+                const parent = await tx.event.findUnique({
+                  where: { id: ancestor },
+                  select: { organizerId: true, parentEventId: true },
+                });
+                if (!parent) throw new NotFoundException('Parent event not found');
+                parentOrganizerId ??= parent.organizerId;
+                ancestor = parent.parentEventId;
+              }
+              relationship = {
+                parentEventId,
+                linkType,
+                parentLinkApproved: !parentEventId || parentOrganizerId === existing.organizerId,
+              };
+            }
+          }
+          if (body.showtimes !== undefined) {
+            await this.syncShowtimes(tx, eventId, body.showtimes);
+          }
 
-      if (body.lineup !== undefined || body.castAndCrew !== undefined) {
-        const nextLineup =
-          body.lineup ??
-          existing.lineupItems
-            .filter((i) => i.roleType !== 'CAST_CREW')
-            .map((i) => ({
-              performerName: i.displayName,
-              role: i.roleLabel,
-              setTime: i.setTime ?? '',
-              creatorId: i.creatorId,
-            }));
-        const nextCast =
-          body.castAndCrew ??
-          existing.lineupItems.filter((i) => i.roleType === 'CAST_CREW').map((i) => i.displayName);
+          if (body.lineup !== undefined || body.castAndCrew !== undefined) {
+            const nextLineup =
+              body.lineup ??
+              existing.lineupItems
+                .filter((i) => i.roleType !== 'CAST_CREW')
+                .map((i) => ({
+                  performerName: i.displayName,
+                  role: i.roleLabel,
+                  setTime: i.setTime ?? '',
+                  creatorId: i.creatorId,
+                }));
+            const nextCast =
+              body.castAndCrew ??
+              existing.lineupItems
+                .filter((i) => i.roleType === 'CAST_CREW')
+                .map((i) => i.displayName);
 
-        await tx.eventLineupItem.deleteMany({ where: { eventId } });
-        const lineupCreates = this.buildLineupCreates(nextLineup, nextCast);
-        if (lineupCreates.length > 0) {
-          await tx.eventLineupItem.createMany({
-            data: lineupCreates.map((item) => ({ ...item, eventId })),
+            await tx.eventLineupItem.deleteMany({ where: { eventId } });
+            const lineupCreates = this.buildLineupCreates(nextLineup, nextCast);
+            if (lineupCreates.length > 0) {
+              await tx.eventLineupItem.createMany({
+                data: lineupCreates.map((item) => ({ ...item, eventId })),
+              });
+            }
+          }
+
+          if (body.fixture !== undefined) {
+            await tx.eventFixture.upsert({
+              where: { eventId },
+              create: {
+                eventId,
+                homeTeamName: body.fixture.homeTeam,
+                awayTeamName: body.fixture.awayTeam,
+                homeScore: body.fixture.homeScore,
+                awayScore: body.fixture.awayScore,
+                isLive: body.fixture.isLive,
+                statusLabel: body.fixture.periodLabel,
+              },
+              update: {
+                homeTeamName: body.fixture.homeTeam,
+                awayTeamName: body.fixture.awayTeam,
+                homeScore: body.fixture.homeScore,
+                awayScore: body.fixture.awayScore,
+                isLive: body.fixture.isLive,
+                statusLabel: body.fixture.periodLabel,
+              },
+            });
+          }
+
+          return tx.event.update({
+            where: { id: eventId },
+            data: {
+              ...relationship,
+              ...(body.title !== undefined ? { title: body.title } : {}),
+              ...(body.description !== undefined ? { description: body.description } : {}),
+              ...(body.category !== undefined ? { category: body.category } : {}),
+              ...(body.template !== undefined ? { template: body.template } : {}),
+              ...(body.tonightMood !== undefined ? { tonightMood: body.tonightMood } : {}),
+              ...(body.startsAt !== undefined ? { startsAt: nextStartsAt } : {}),
+              ...(body.endsAt !== undefined ? { endsAt: nextEndsAt } : {}),
+              ...(body.venueName !== undefined ? { venueName: body.venueName } : {}),
+              ...(body.venueDetail !== undefined ? { venueDetail: body.venueDetail } : {}),
+              ...(body.coverImageUrl !== undefined ? { coverImageUrl: body.coverImageUrl } : {}),
+              ...(body.capacity !== undefined ? { capacity: body.capacity } : {}),
+              ...(body.studentsOnly !== undefined ? { studentsOnly: body.studentsOnly } : {}),
+              ...(body.waitlistEnabled !== undefined
+                ? { waitlistEnabled: body.waitlistEnabled }
+                : {}),
+              ...(body.dressCode !== undefined ? { dressCode: body.dressCode } : {}),
+              ...(body.doorPolicy !== undefined ? { doorPolicy: body.doorPolicy } : {}),
+              ...(body.whatsappGroupUrl !== undefined
+                ? { whatsappGroupUrl: body.whatsappGroupUrl }
+                : {}),
+              ...(body.afterPartyAccess !== undefined
+                ? { afterPartyAccess: body.afterPartyAccess }
+                : {}),
+            },
+            include: EVENT_PUBLIC_INCLUDE,
           });
-        }
-      }
-
-      if (body.fixture !== undefined) {
-        await tx.eventFixture.upsert({
-          where: { eventId },
-          create: {
-            eventId,
-            homeTeamName: body.fixture.homeTeam,
-            awayTeamName: body.fixture.awayTeam,
-            homeScore: body.fixture.homeScore,
-            awayScore: body.fixture.awayScore,
-            isLive: body.fixture.isLive,
-            statusLabel: body.fixture.periodLabel,
-          },
-          update: {
-            homeTeamName: body.fixture.homeTeam,
-            awayTeamName: body.fixture.awayTeam,
-            homeScore: body.fixture.homeScore,
-            awayScore: body.fixture.awayScore,
-            isLive: body.fixture.isLive,
-            statusLabel: body.fixture.periodLabel,
-          },
-        });
-      }
-
-      return tx.event.update({
-        where: { id: eventId },
-        data: {
-          ...(body.title !== undefined ? { title: body.title } : {}),
-          ...(body.description !== undefined ? { description: body.description } : {}),
-          ...(body.category !== undefined ? { category: body.category } : {}),
-          ...(body.template !== undefined ? { template: body.template } : {}),
-          ...(body.tonightMood !== undefined ? { tonightMood: body.tonightMood } : {}),
-          ...(body.startsAt !== undefined ? { startsAt: nextStartsAt } : {}),
-          ...(body.endsAt !== undefined ? { endsAt: nextEndsAt } : {}),
-          ...(body.venueName !== undefined ? { venueName: body.venueName } : {}),
-          ...(body.venueDetail !== undefined ? { venueDetail: body.venueDetail } : {}),
-          ...(body.coverImageUrl !== undefined ? { coverImageUrl: body.coverImageUrl } : {}),
-          ...(body.capacity !== undefined ? { capacity: body.capacity } : {}),
-          ...(body.studentsOnly !== undefined ? { studentsOnly: body.studentsOnly } : {}),
-          ...(body.waitlistEnabled !== undefined ? { waitlistEnabled: body.waitlistEnabled } : {}),
-          ...(body.dressCode !== undefined ? { dressCode: body.dressCode } : {}),
-          ...(body.doorPolicy !== undefined ? { doorPolicy: body.doorPolicy } : {}),
-          ...(body.whatsappGroupUrl !== undefined
-            ? { whatsappGroupUrl: body.whatsappGroupUrl }
-            : {}),
-          ...(body.afterPartyAccess !== undefined
-            ? { afterPartyAccess: body.afterPartyAccess }
-            : {}),
         },
-        include: EVENT_PUBLIC_INCLUDE,
+        body.parentEventId !== undefined || body.linkType !== undefined
+          ? { isolationLevel: 'Serializable' }
+          : undefined,
+      )
+      .catch((error: unknown) => {
+        if (error instanceof Error && 'code' in error && error.code === 'P2034')
+          throw new ConflictException('Event changed concurrently. Retry your update.');
+        throw error;
       });
-    });
 
     const payload: EventUpdatedPayload = {
       eventId: updated.id,

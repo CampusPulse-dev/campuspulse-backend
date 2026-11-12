@@ -5,6 +5,7 @@ import { prepareTestBuckets } from './test-buckets';
 const env = {
   ...process.env,
   NODE_ENV: 'test',
+  PORT: '3001',
   DATABASE_URL:
     'postgresql://campuspulse:campuspulse-test-only@127.0.0.1:55432/campuspulse_test?schema=public',
   REDIS_URL: 'redis://127.0.0.1:56379',
@@ -79,6 +80,8 @@ if (action === 'up') {
   // Nest injection needs TypeScript's decorator metadata; esbuild/tsx omits it.
   run('npx', ['tsc', '--project', 'tsconfig.fixtures.json']);
   run('node', ['.test-dist/scripts/browser-fixtures.js']);
+} else if (action === 'evidence') {
+  run('npx', ['tsx', 'scripts/runtime-evidence.ts']);
 } else {
   throw new Error('Expected up, migrate, test or seed');
 }

@@ -21,7 +21,7 @@ const roles = [
   'CREATOR',
 ] as const;
 const mainRoles: number[] = [
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 3, 3, 7, 4, 5, 6, 4, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 3, 3, 7, 4, 5, 6, 4, 0, 0, 1,
 ];
 async function main() {
   const target = new URL(process.env.DATABASE_URL ?? '');
@@ -42,7 +42,7 @@ async function main() {
     const passwordHash = await ctx.app.get(PasswordService).hash(PASSWORD);
     for (const project of ['chromium', 'mobile-safari']) {
       const cases = [];
-      for (let index = 0; index < 30; index += 1) {
+      for (let index = 0; index < 31; index += 1) {
         const runId = randomUUID();
         const users = [];
         for (const [i, role] of roles.entries())

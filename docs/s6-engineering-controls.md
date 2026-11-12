@@ -23,10 +23,12 @@ Load: build the API, run `load-fixtures`, start `serve-live`, then `LOAD_FIXTURE
 
 Record runner CPU/RAM, Node/k6 versions, exact source SHA, service image/source versions and runtime flags with the raw summary. A fresh CI runner is the cache/reset boundary. Local Docker is unavailable; the user requested continuing through CI. Staging origins, Resend sender and key are currently unavailable; no staging delivery or performance pass is claimed.
 
-## Open security finding
+## Security review dispositions
 
 Gitleaks' exact fingerprint for the `S3_SECRET_ACCESS_KEY` Render declaration is allowlisted: that entry contains only the variable name and `sync: false`, with no credential value. Full-history scanning remains enabled; no file/path rule is excluded.
 
-CodeQL on PR35 flags the optional JWT/development fallback in `jwt-auth.guard.ts` as a user-controlled bypass. Protected routes subsequently reject a null user, and the development resolver is gated by validated server configuration (forbidden in production). Real JWT E2E passes and the live suite explicitly rejects a development header. The finding remains open for security review; it has not been blanket-suppressed or dismissed to obtain a green check.
+Independent final review classified CodeQL alert 2 (`js/user-controlled-bypass`, PR35, `jwt-auth.guard.ts`) as a false positive. Protected guards reject a null user; supplied JWTs undergo signature verification and a live-account lookup. Development-header resolution requires validated server configuration and is forbidden in production. Authentication/configuration E2E cover a valid development email being denied when disabled. The individual alert is dismissed with that rationale recorded in GitHub; the project-wide query remains enabled. PR35 security checks are rerun after this disposition.
+
+Final-review regressions cover cross-tab scanner/outbox preservation, hidden ID fetch/decode invalidation, draft showtime/series round trips, publication retry IDs and editable parent-link approval/cycle behavior. The backend parent-link test first failed against real PostgreSQL at329ab32 (52 passed/1 failed), then the implementation was corrected. Latest real-service results are recorded in the PR and generated release evidence.
 
 Resend uses the documented `Idempotency-Key` send header, retained by the provider for 24 hours: https://resend.com/docs/dashboard/emails/idempotency-keys. Queue retries are bounded well inside that window. Human NDPA sign-off must also address lawful basis, notices, retention policy, processors, incident response and data-subject request handling; automated engineering tests cannot approve these organizational responsibilities.

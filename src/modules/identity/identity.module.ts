@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { KeyValueStore, RedisKeyValueStore } from '../../common/kv/key-value-store';
 import type { Env } from '../../config/env';
 import {
   AuthService,
@@ -9,6 +10,7 @@ import {
   OrganizerAccessGuard,
   PasswordService,
 } from './auth';
+import { AuthThrottlerGuard } from './auth/auth-throttler.guard';
 import { AuthController } from './auth/auth.controller';
 import { CreatorsController } from './creators.controller';
 import { DevAuthService } from './dev-auth';
@@ -50,6 +52,9 @@ import { UsersController } from './users.controller';
   ],
   providers: [
     AuthService,
+    AuthThrottlerGuard,
+    // Refresh-token grace window. Same Redis as the OTP store; its own client.
+    { provide: KeyValueStore, useClass: RedisKeyValueStore },
     PasswordService,
     JwtAuthGuard,
     OptionalJwtAuthGuard,

@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { KeyValueStore } from '../../../common/kv/key-value-store';
 import { Prisma, type User } from '@prisma/client';
 import type { AuthenticatedUser } from '../../../common/decorators/current-user.decorator';
 import { toUserPublic } from '../../../common/mappers/entity.mappers';
@@ -58,6 +59,10 @@ function safeEqualHex(a: string, b: string): boolean {
  * (`User.refreshTokenHash`). Every refresh rotates it. Presenting a token
  * that is no longer current means it was replayed, so the session is revoked.
  */
+/** How long a just-replaced refresh token still works, once, after a lost response. */
+export const REFRESH_GRACE_SECONDS = 30;
+const REFRESH_GRACE_PREFIX = 'auth:refresh-grace:';
+
 @Injectable()
 export class AuthService {
   // Burned on unknown emails so sign-in timing does not reveal which accounts exist.
@@ -68,6 +73,7 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly config: ConfigService<Env, true>,
     private readonly passwords: PasswordService,
+    private readonly store: KeyValueStore,
   ) {}
 
   async signUp(body: SignUpBody): Promise<IssuedSession> {
@@ -115,6 +121,14 @@ export class AuthService {
 
     const presentedHash = hashRefreshSecret(parsed.secret);
     if (!safeEqualHex(presentedHash, user.refreshTokenHash)) {
+      // The token we replaced a moment ago: the browser sent the refresh but never stored
+      // the answer (the page navigated away mid-request). Rotate again instead of ending
+      // the session. Single use, and only inside the grace window.
+      const graceKey = REFRESH_GRACE_PREFIX + presentedHash;
+      if ((await this.readGrace(graceKey)) === user.id) {
+        await this.store.del(graceKey).catch(() => undefined);
+        return this.issueSession(user, user.refreshTokenHash);
+      }
       // A rotated-out token is being replayed: kill the live session too.
       await this.prisma.user.update({
         where: { id: user.id },
@@ -123,7 +137,20 @@ export class AuthService {
       throw new UnauthorizedException('Session expired');
     }
 
-    return this.issueSession(user, user.refreshTokenHash);
+    const issued = await this.issueSession(user, user.refreshTokenHash);
+    // Best effort: without the store a lost response still means signing in again.
+    await this.store
+      .set(REFRESH_GRACE_PREFIX + presentedHash, user.id, REFRESH_GRACE_SECONDS)
+      .catch(() => undefined);
+    return issued;
+  }
+
+  private async readGrace(key: string): Promise<string | null> {
+    try {
+      return await this.store.get(key);
+    } catch {
+      return null;
+    }
   }
 
   /** Idempotent: an unknown or stale cookie still results in a cleared session. */

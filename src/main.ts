@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import helmet from 'helmet';
@@ -11,7 +12,12 @@ import { buildOpenApiDocument } from './openapi';
 import { allowsOrigin } from './common/cors-origin';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
+
+  // Every request reaches us through the hosting proxy. Trust exactly one hop so req.ip
+  // (and the auth throttler's fallback key) is the client, not the proxy, while a
+  // client-supplied X-Forwarded-For chain still cannot spoof it.
+  app.set('trust proxy', 1);
 
   app.useLogger(app.get(Logger));
   app.use(helmet());

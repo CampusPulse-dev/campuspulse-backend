@@ -8,11 +8,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import type { CookieOptions, Request, Response } from 'express';
 import { ZodValidationPipe } from '../../../common/zod-validation.pipe';
 import type { Env } from '../../../config/env';
 import { SignInBody, SignUpBody, type SessionResponse } from '../../../contract';
+import { AuthThrottlerGuard } from './auth-throttler.guard';
 import { AuthService, type IssuedSession } from './auth.service';
 import { sealRefreshCookie, openRefreshCookie } from './refresh-cookie';
 
@@ -37,8 +38,8 @@ export function readCookie(header: string | undefined, name: string): string | u
 
 @ApiTags('auth')
 @Controller('auth')
-@UseGuards(ThrottlerGuard)
-// Credential endpoints: far stricter than the 120/min API baseline.
+@UseGuards(AuthThrottlerGuard)
+// Credential endpoints: far stricter than the 120/min API baseline. Keyed per account, see AuthThrottlerGuard.
 @Throttle({ default: { limit: 10, ttl: 60_000 } })
 export class AuthController {
   constructor(

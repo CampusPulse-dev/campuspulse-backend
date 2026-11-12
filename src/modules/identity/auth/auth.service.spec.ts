@@ -1,10 +1,11 @@
+import { InMemoryKeyValueStore } from '../../../common/kv/key-value-store';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import type { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import type { PrismaService } from '../../../common/prisma.service';
 import type { Env } from '../../../config/env';
-import { AuthService, parseDurationSeconds } from './auth.service';
+import { AuthService, REFRESH_GRACE_SECONDS, parseDurationSeconds } from './auth.service';
 import { PasswordService } from './password.service';
 
 type Row = {
@@ -79,6 +80,7 @@ function buildService() {
   const config = {
     get: (key: keyof Env) => env[key],
   } as unknown as ConfigService<Env, true>;
+  const store = new InMemoryKeyValueStore();
   const jwt = new JwtService({ secret: 'unit-test-secret-value-at-least-32-chars' });
 
   const service = new AuthService(
@@ -86,8 +88,9 @@ function buildService() {
     jwt,
     config,
     new PasswordService(),
+    store,
   );
-  return { service, rows, jwt };
+  return { service, rows, jwt, store };
 }
 
 const SIGN_UP = { email: 'Tobi@Stu.UI.edu.ng', password: 'a-long-password', displayName: 'Tobi' };
@@ -146,17 +149,51 @@ describe('AuthService (S1-02)', () => {
   });
 
   it('rotates the refresh token and revokes the session when an old one is replayed', async () => {
-    const { service, rows } = buildService();
+    const { service, rows, store } = buildService();
     const first = await service.signUp(SIGN_UP);
     const second = await service.refresh(first.refreshToken);
     expect(second.refreshToken).not.toEqual(first.refreshToken);
 
-    // Replay of the rotated-out token: rejected, and the live session dies with it.
+    // Past the grace window, a replay of the rotated-out token is rejected and the live
+    // session dies with it.
+    store.advance(REFRESH_GRACE_SECONDS + 1);
     await expect(service.refresh(first.refreshToken)).rejects.toBeInstanceOf(UnauthorizedException);
     expect(rows.get(USER_ID)?.refreshTokenHash).toBeNull();
     await expect(service.refresh(second.refreshToken)).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
+  });
+
+  it('keeps the session when a refresh answer was lost, once, inside the grace window', async () => {
+    const { service, rows } = buildService();
+    const first = await service.signUp(SIGN_UP);
+    // The browser sent the refresh but navigated away before storing the answer.
+    const lost = await service.refresh(first.refreshToken);
+
+    const recovered = await service.refresh(first.refreshToken);
+    expect(recovered.refreshToken).not.toEqual(lost.refreshToken);
+    // The answer that never arrived is dead; the recovered one is the live session.
+    await expect(service.refresh(recovered.refreshToken)).resolves.toBeDefined();
+    expect(rows.get(USER_ID)?.refreshTokenHash).not.toBeNull();
+  });
+
+  it('allows the grace token only once, then treats it as a replay', async () => {
+    const { service, rows } = buildService();
+    const first = await service.signUp(SIGN_UP);
+    await service.refresh(first.refreshToken);
+    await service.refresh(first.refreshToken);
+
+    await expect(service.refresh(first.refreshToken)).rejects.toBeInstanceOf(UnauthorizedException);
+    expect(rows.get(USER_ID)?.refreshTokenHash).toBeNull();
+  });
+
+  it('gives no grace after sign-out', async () => {
+    const { service } = buildService();
+    const first = await service.signUp(SIGN_UP);
+    const second = await service.refresh(first.refreshToken);
+    await service.signOut(second.refreshToken);
+
+    await expect(service.refresh(first.refreshToken)).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
   it('rejects missing and malformed refresh tokens', async () => {

@@ -54,8 +54,13 @@ describe('Auth lifecycle & RBAC (S1-02)', () => {
       .get('/users/me')
       .expect(200);
 
-    // Replaying the rotated-out cookie is refused and revokes the live session.
+    // Inside the grace window the rotated-out cookie works once more (the browser may have
+    // lost the answer to a refresh it sent while navigating away)...
+    const recovered = await anon(app).post('/auth/refresh').set('Cookie', cookie).expect(200);
+    const recoveredCookie = refreshCookie(recovered);
+    // ...but only once: replaying it again is refused and revokes the live session.
     await anon(app).post('/auth/refresh').set('Cookie', cookie).expect(401);
+    await anon(app).post('/auth/refresh').set('Cookie', recoveredCookie).expect(401);
     await anon(app).post('/auth/refresh').set('Cookie', nextCookie).expect(401);
 
     const signIn = await anon(app)

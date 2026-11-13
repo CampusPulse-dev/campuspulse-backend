@@ -113,7 +113,7 @@ describe('Phase 1 schema and contract parity (S1-01)', () => {
 });
 
 describe('PushSubscriptionBody', () => {
-  const keys = { p256dh: 'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA', auth: 'tBHItJI5svbpez7KI4CCXg' };
+  const keys = { p256dh: 'test-p256dh', auth: 'test-auth' };
   const accepts = (endpoint: string) => PushSubscriptionBody.safeParse({ endpoint, keys }).success;
 
   it('accepts the browser push services', () => {

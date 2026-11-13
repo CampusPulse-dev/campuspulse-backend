@@ -6,6 +6,7 @@ export default tseslint.config(
   {
     ignores: [
       'dist/**',
+      '.test-dist/**',
       'node_modules/**',
       'coverage/**',
       '**/*.config.mjs',
@@ -32,6 +33,11 @@ export default tseslint.config(
   {
     files: ['**/*.spec.ts', '**/*.test.ts', 'test/**/*.ts'],
     rules: { '@typescript-eslint/no-unsafe-assignment': 'off' },
+  },
+  {
+    ...tseslint.configs.disableTypeChecked,
+    files: ['load/**/*.js'],
+    languageOptions: { sourceType: 'module', parserOptions: { projectService: false } },
   },
   prettier,
 );

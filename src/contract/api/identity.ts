@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { UserPublic, OrganizerPublic, VerificationRequest } from '../domain/entities';
-import { VerificationStatus, VerificationSubject } from '../domain/enums';
+import { OrganizerTeamRole, VerificationStatus, VerificationSubject } from '../domain/enums';
 import { Id, Pagination, Slug, StudentEmail, page } from '../domain/primitives';
+import { DoorStaffGrantResponse } from './events';
 
 export const SignUpBody = z.object({
   email: z.email(),
@@ -69,5 +70,74 @@ export const FollowOrganizerResponse = z.object({
 });
 export type FollowOrganizerResponse = z.infer<typeof FollowOrganizerResponse>;
 
+export const FollowCreatorResponse = z.object({
+  creatorId: Id,
+  following: z.boolean(),
+  followerCount: z.number().int().nonnegative(),
+});
+export type FollowCreatorResponse = z.infer<typeof FollowCreatorResponse>;
+
 export const OrganizerListResponse = page(OrganizerPublic);
 export type OrganizerListResponse = z.infer<typeof OrganizerListResponse>;
+
+/** OTP was accepted for delivery. Deliberately says nothing about the address. */
+export const StudentOtpSentResponse = z.object({
+  expiresIn: z.number().int().positive(),
+  resendAfter: z.number().int().nonnegative(),
+});
+export type StudentOtpSentResponse = z.infer<typeof StudentOtpSentResponse>;
+
+export const VerificationSubmittedResponse = z.object({
+  id: Id,
+  subject: VerificationSubject,
+  status: VerificationStatus,
+});
+export type VerificationSubmittedResponse = z.infer<typeof VerificationSubmittedResponse>;
+
+/** A club the signed-in user belongs to, with their role on it. */
+export const OrganizerMembership = z.object({
+  organizer: OrganizerPublic,
+  role: OrganizerTeamRole,
+  /** Latest club verification state; `APPROVED` once `organizer.isVerified`. */
+  verificationStatus: VerificationStatus,
+  reviewerNote: z.string().max(1000).nullable(),
+});
+export type OrganizerMembership = z.infer<typeof OrganizerMembership>;
+
+export const MyOrganizersResponse = z.object({ items: z.array(OrganizerMembership) });
+export type MyOrganizersResponse = z.infer<typeof MyOrganizersResponse>;
+
+export const TeamMember = z.object({
+  userId: Id,
+  displayName: z.string(),
+  /** Masked, e.g. `a***@stu.ui.edu.ng`. Null on the caller's own row. */
+  emailHint: z.string().nullable(),
+  role: OrganizerTeamRole,
+});
+export type TeamMember = z.infer<typeof TeamMember>;
+
+export const TeamResponse = z.object({
+  organizerId: Id,
+  /** The caller's own role; only OWNER may change the team. */
+  role: OrganizerTeamRole,
+  members: z.array(TeamMember),
+  doorStaff: z.array(DoorStaffGrantResponse),
+});
+export type TeamResponse = z.infer<typeof TeamResponse>;
+
+/** Owners add managers. Ownership is not transferable through this route. */
+export const AddTeamMemberBody = z.object({ email: z.email().max(254) });
+export type AddTeamMemberBody = z.infer<typeof AddTeamMemberBody>;
+
+export const CreatorApplyBody = z.object({
+  handle: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z0-9_.]{3,30}$/, 'handle must be 3-30 letters, numbers, dots or underscores'),
+  displayName: z.string().trim().min(1).max(80),
+  bio: z.string().trim().max(300).default(''),
+  instagramUrl: z.url().max(300).nullable().default(null),
+  tiktokUrl: z.url().max(300).nullable().default(null),
+});
+export type CreatorApplyBody = z.infer<typeof CreatorApplyBody>;

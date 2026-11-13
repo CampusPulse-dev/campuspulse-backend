@@ -1,6 +1,7 @@
 node_modules/
 dist/
 coverage/
+test-results/
 *.log
 .DS_Store
 
@@ -17,3 +18,4 @@ prisma/generated/
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+.test-dist/

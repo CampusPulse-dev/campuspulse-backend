@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 # Catches what lint-staged cannot: cross-file type breakage and failing tests.
 npm run typecheck
-npm run test -- --passWithNoTests
+npm run test -- --runInBand --passWithNoTests

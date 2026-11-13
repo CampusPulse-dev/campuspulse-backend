@@ -65,6 +65,7 @@ jobs:
       JWT_SECRET: ci-secret-value-that-is-long-enough-for-validation
       QR_SIGNING_SECRET: ci-qr-secret-value-that-is-long-enough-here
       WEB_ORIGIN: http://localhost:3000
+      DEV_AUTH_ENABLED: 'true'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -74,11 +75,14 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - name: Apply migrations
-        run: npx prisma migrate deploy
+        run: |
+          npx tsx scripts/test-stack.ts up
+          npx tsx scripts/test-stack.ts migrate
+          npx tsx scripts/test-stack.ts migration-check
       - name: Unit tests
         run: npm run test -- --passWithNoTests --coverage
       - name: E2E tests
-        run: npm run test:e2e -- --passWithNoTests
+        run: npx tsx scripts/test-stack.ts test
 
   build:
     name: Build
@@ -92,6 +96,8 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - run: npm run build
+      - name: Verify runtime entry point
+        run: node -e "require('node:fs').accessSync('dist/main.js')"
 
   migrations:
     name: Migration drift check

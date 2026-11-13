@@ -20,8 +20,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:e2e": "jest --config test/jest-e2e.json --runInBand",
-    "db:up": "docker compose up -d postgres redis",
+    "test:e2e": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --config test/jest-e2e.json --runInBand",
+    "db:up": "docker compose up -d postgres redis minio",
     "db:down": "docker compose down",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
@@ -36,9 +36,12 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1165.0",
+    "@aws-sdk/s3-request-presigner": "^3.1165.0",
     "@nestjs/common": "^11.2.8",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.2.8",
+    "@nestjs/event-emitter": "^3.1.0",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.8",
@@ -58,6 +61,7 @@
     "prisma": "^6.19.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "web-push": "^3.6.7",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -72,6 +76,7 @@
     "@types/node": "^22.20.5",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
+    "@types/web-push": "^3.6.4",
     "audit-ci": "^7.1.0",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",

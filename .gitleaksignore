@@ -1,0 +1,9 @@
+# Reviewed synthetic test fixtures only. Full history scanning remains enabled.
+# Web-push test subscription secret (not a real subscription).
+99bd24e90d867aaaa5a8ff96c05ce38ad7d80f41:test/notifications.e2e-spec.ts:generic-api-key:168
+# Historical literal development validation placeholders; not signing keys used by a deployment.
+260bcf396a05ffd01a93772dcf437cad34f46836:src/config/env.spec.ts:generic-api-key:8
+260bcf396a05ffd01a93772dcf437cad34f46836:src/config/env.spec.ts:generic-api-key:9
+3a786b4004daadd10729696fe642e6afd20d65fe:render.yaml:generic-api-key:46
+# Push-subscription contract test used a sample key; replaced with obviously fake values in the next commit.
+a2f188cb8d9051d229fc8debebe79689b66c8d64:src/contract/contract-rules.spec.ts:generic-api-key:116

@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "rootDir": ".", "outDir": ".test-dist", "incremental": false },
+  "include": ["scripts/browser-fixtures.ts"],
+  "exclude": ["node_modules", "dist", ".test-dist"]
+}

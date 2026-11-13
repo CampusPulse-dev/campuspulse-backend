@@ -1,6 +1,10 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { DecideVerificationBody } from './api/identity';
 import { StudentEmail } from './domain/primitives';
 import { CreateEventBody } from './api/events';
+import { PushSubscriptionBody } from './api/attendee';
+import * as domainEnums from './domain/enums';
 
 describe('DecideVerificationBody', () => {
   it('accepts an approval with no note', () => {
@@ -47,5 +51,82 @@ describe('CreateEventBody', () => {
       coverImageUrl: 'https://example.com/a.jpg',
     });
     expect(r.success).toBe(false);
+  });
+});
+
+describe('Phase 1 schema and contract parity (S1-01)', () => {
+  const prismaSchema = readFileSync(
+    resolve(__dirname, '..', '..', 'prisma', 'schema.prisma'),
+    'utf8',
+  );
+
+  it('mirrors every Prisma enum value in src/contract/domain/enums.ts', () => {
+    const enumBlocks = [...prismaSchema.matchAll(/enum\s+(\w+)\s*\{([^}]+)\}/g)];
+    expect(enumBlocks.length).toBeGreaterThanOrEqual(13);
+
+    for (const match of enumBlocks) {
+      const enumName = match[1]!;
+      const rawValues = match[2]!;
+      const prismaValues = rawValues
+        .split('\n')
+        .map((line) => line.replace(/\/\/.*$/, '').trim())
+        .filter(Boolean);
+      const zodEnum = (domainEnums as Record<string, { options?: readonly string[] }>)[enumName];
+      expect(zodEnum?.options).toEqual(prismaValues);
+    }
+  });
+
+  it('defines all required Phase 1A + 1B models in prisma/schema.prisma', () => {
+    const requiredModels = [
+      'User',
+      'PersonaProfile',
+      'Organizer',
+      'OrganizerMember',
+      'DoorStaffGrant',
+      'CreatorProfile',
+      'CreatorFollow',
+      'Event',
+      'EventShowtime',
+      'EventLineupItem',
+      'EventFixture',
+      'Story',
+      'Rsvp',
+      'EventInterest',
+      'CheckIn',
+      'Follow',
+      'Friendship',
+      'EventInvite',
+      'AmbassadorLink',
+      'VerificationRequest',
+      'ModerationReport',
+      'PlatformSetting',
+      'AuditLog',
+      'Notification',
+      'PushSubscription',
+      'NotificationPreference',
+    ];
+
+    for (const modelName of requiredModels) {
+      expect(prismaSchema).toMatch(new RegExp(`model\\s+${modelName}\\s*\\{`));
+    }
+  });
+});
+
+describe('PushSubscriptionBody', () => {
+  const keys = { p256dh: 'test-p256dh', auth: 'test-auth' };
+  const accepts = (endpoint: string) => PushSubscriptionBody.safeParse({ endpoint, keys }).success;
+
+  it('accepts the browser push services', () => {
+    expect(accepts('https://fcm.googleapis.com/fcm/send/abc')).toBe(true);
+    expect(accepts('https://updates.push.services.mozilla.com/wpush/v2/abc')).toBe(true);
+    expect(accepts('https://wns2-par02p.notify.windows.com/w/?token=abc')).toBe(true);
+    expect(accepts('https://web.push.apple.com/abc')).toBe(true);
+  });
+
+  it('rejects other hosts, so the server never POSTs somewhere a client chose', () => {
+    expect(accepts('https://internal.example.com/hook')).toBe(false);
+    expect(accepts('https://fcm.googleapis.com.evil.test/fcm/send/abc')).toBe(false);
+    expect(accepts('https://169.254.169.254/latest/meta-data')).toBe(false);
+    expect(accepts('http://fcm.googleapis.com/fcm/send/abc')).toBe(false);
   });
 });

@@ -1,4 +1,4 @@
-// CampusPulse data model.
+// CampusPulse data model (Phase 1A + 1B).
 // Mirrors @campuspulse/contract — when an enum changes here, change it there.
 
 generator client {
@@ -21,7 +21,15 @@ enum EventCategory {
 enum UserRole {
   ATTENDEE
   ORGANIZER
+  CREATOR
+  VERIFIER
+  MODERATOR
   SUPER_ADMIN
+}
+
+enum OrganizerTeamRole {
+  OWNER
+  MANAGER
 }
 
 enum EventStatus {
@@ -29,6 +37,33 @@ enum EventStatus {
   PUBLISHED
   CANCELLED
   COMPLETED
+}
+
+enum EventTemplate {
+  GENERIC
+  CONCERT_PARTY
+  PLAY_CULTURAL
+  MATCH_TOURNAMENT
+  DINNER_GALA
+  TALK_WORKSHOP
+}
+
+enum TonightMood {
+  CHILL
+  TURN_UP
+  LEARN
+  WATCH_GAME
+}
+
+enum EventLinkType {
+  AFTER_PARTY
+  SERIES_CHILD
+}
+
+enum AfterPartyAccessRule {
+  OPEN
+  PRIORITY_CHECKED_IN
+  CHECKED_IN_ONLY
 }
 
 enum RsvpStatus {
@@ -42,6 +77,18 @@ enum CheckInMethod {
   MANUAL
 }
 
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+enum FollowTargetType {
+  ORGANIZER
+  CREATOR
+  VENDOR
+}
+
 enum VerificationStatus {
   PENDING
   IN_REVIEW
@@ -53,30 +100,80 @@ enum VerificationStatus {
 enum VerificationSubject {
   ORGANIZER_CLUB
   STUDENT_ID
+  CREATOR_PROFILE
+  VENDOR_CLAIM
+}
+
+enum NotificationCategory {
+  REMINDER
+  EVENT_CRITICAL
+  FOLLOWED_POST
+  SOCIAL_FRIEND
+  RECOMMENDATION
+  SYSTEM_VERIFICATION
 }
 
 model User {
-  id                String   @id @default(uuid()) @db.Uuid
-  email             String   @unique
+  id                String    @id @default(uuid()) @db.Uuid
+  email             String    @unique
   passwordHash      String
   displayName       String
   avatarUrl         String?
-  role              UserRole @default(ATTENDEE)
-  isVerifiedStudent Boolean  @default(false)
-  studentEmail      String?  @unique
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  role              UserRole  @default(ATTENDEE)
+  isVerifiedStudent Boolean   @default(false)
+  studentEmail      String?   @unique
+  phoneHash         String?
+  hall              String?
+  faculty           String?
+  level             String?
+  rsvpVisibility    String    @default("FRIENDS")
+  hideFromFriends   Boolean   @default(false)
+  theme             String    @default("system")
+  refreshTokenHash  String?
+  // Set by moderation; a suspended account cannot sign in or call the API.
+  suspendedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
+  personaProfile         PersonaProfile?
   organizer              Organizer?
+  organizerMemberships   OrganizerMember[]
+  doorStaffGrants        DoorStaffGrant[]        @relation("DoorStaffUser")
+  grantedDoorStaff       DoorStaffGrant[]        @relation("DoorStaffGrantedBy")
+  creatorProfile         CreatorProfile?
+  creatorFollows         CreatorFollow[]
   rsvps                  Rsvp[]
+  eventInterests         EventInterest[]
   follows                Follow[]
-  submittedVerifications VerificationRequest[] @relation("SubmittedBy")
-  claimedVerifications   VerificationRequest[] @relation("ClaimedBy")
+  sentFriendRequests     Friendship[]            @relation("SentFriendRequests")
+  receivedFriendRequests Friendship[]            @relation("ReceivedFriendRequests")
+  sentInvites            EventInvite[]           @relation("SentInvites")
+  acceptedInvites        EventInvite[]           @relation("AcceptedInvites")
+  submittedVerifications VerificationRequest[]   @relation("SubmittedBy")
+  claimedVerifications   VerificationRequest[]   @relation("ClaimedBy")
+  submittedReports       ModerationReport[]      @relation("SubmittedReports")
+  resolvedReports        ModerationReport[]      @relation("ResolvedReports")
+  updatedSettings        PlatformSetting[]       @relation("UpdatedSettings")
   auditEntries           AuditLog[]
-  checkInsPerformed      CheckIn[]             @relation("CheckedInBy")
+  checkInsPerformed      CheckIn[]               @relation("CheckedInBy")
   notifications          Notification[]
+  pushSubscriptions      PushSubscription[]
+  notificationPreference NotificationPreference?
 
   @@index([role])
+  @@index([hall, faculty])
+}
+
+model PersonaProfile {
+  userId         String    @id @db.Uuid
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interestTags   String[]  @default([])
+  goingOutRhythm String    @default("BOTH")
+  freeOnly       Boolean   @default(true)
+  personaLabel   String    @default("")
+  skippedAt      DateTime?
+  completedAt    DateTime?
+  updatedAt      DateTime  @updatedAt
 }
 
 model Organizer {
@@ -95,38 +192,161 @@ model Organizer {
   events  Event[]
   stories Story[]
   follows Follow[]
+  members OrganizerMember[]
 
   @@index([isVerified])
 }
 
-model Event {
-  id            String        @id @default(uuid()) @db.Uuid
-  slug          String        @unique
-  title         String
-  description   String
-  category      EventCategory
-  status        EventStatus   @default(DRAFT)
-  startsAt      DateTime
-  endsAt        DateTime
-  venueName     String
-  venueDetail   String?
-  coverImageUrl String?
-  capacity      Int?
-  // Denormalised so the feed does not aggregate on every read.
-  rsvpCount     Int           @default(0)
-  cancelReason  String?
-  organizerId   String        @db.Uuid
-  organizer     Organizer     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+model OrganizerMember {
+  organizerId String            @db.Uuid
+  organizer   Organizer         @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  userId      String            @db.Uuid
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        OrganizerTeamRole
+  createdAt   DateTime          @default(now())
 
-  rsvps    Rsvp[]
-  checkIns CheckIn[]
-  stories  Story[]
+  @@id([organizerId, userId])
+  @@index([userId])
+}
+
+model DoorStaffGrant {
+  id          String   @id @default(uuid()) @db.Uuid
+  eventId     String   @db.Uuid
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId      String   @db.Uuid
+  user        User     @relation("DoorStaffUser", fields: [userId], references: [id], onDelete: Cascade)
+  grantedById String   @db.Uuid
+  grantedBy   User     @relation("DoorStaffGrantedBy", fields: [grantedById], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@unique([eventId, userId])
+  @@index([userId, expiresAt])
+}
+
+model CreatorProfile {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @unique @db.Uuid
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  handle        String   @unique
+  displayName   String
+  bio           String   @default("")
+  instagramUrl  String?
+  tiktokUrl     String?
+  isVerified    Boolean  @default(false)
+  followerCount Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  ambassadorLinks AmbassadorLink[]
+  followers       CreatorFollow[]
+  lineupCredits   EventLineupItem[]
+}
+
+model CreatorFollow {
+  userId    String         @db.Uuid
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creatorId String         @db.Uuid
+  creator   CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  @@id([userId, creatorId])
+  @@index([creatorId])
+}
+
+model Event {
+  id                 String               @id @default(uuid()) @db.Uuid
+  slug               String               @unique
+  title              String
+  description        String
+  category           EventCategory
+  status             EventStatus          @default(DRAFT)
+  template           EventTemplate        @default(GENERIC)
+  tonightMood        TonightMood?
+  startsAt           DateTime
+  endsAt             DateTime
+  venueName          String
+  venueDetail        String?
+  coverImageUrl      String?
+  capacity           Int?
+  // Denormalised so the feed does not aggregate on every read.
+  rsvpCount          Int                  @default(0)
+  checkInCount       Int                  @default(0)
+  studentsOnly       Boolean              @default(false)
+  waitlistEnabled    Boolean              @default(true)
+  dressCode          String?
+  doorPolicy         String?
+  whatsappGroupUrl   String?
+  parentEventId      String?              @db.Uuid
+  parentEvent        Event?               @relation("EventHierarchy", fields: [parentEventId], references: [id], onDelete: SetNull)
+  childEvents        Event[]              @relation("EventHierarchy")
+  linkType           EventLinkType?
+  parentLinkApproved Boolean              @default(true)
+  afterPartyAccess   AfterPartyAccessRule @default(OPEN)
+  cancelReason       String?
+  organizerId        String               @db.Uuid
+  organizer          Organizer            @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  showtimes       EventShowtime[]
+  lineupItems     EventLineupItem[]
+  fixture         EventFixture?
+  doorStaffGrants DoorStaffGrant[]
+  rsvps           Rsvp[]
+  interests       EventInterest[]
+  checkIns        CheckIn[]
+  stories         Story[]
+  ambassadorLinks AmbassadorLink[]
+  invites         EventInvite[]
 
   // The feed query: published events, by category, most recent first.
   @@index([status, category, startsAt])
   @@index([organizerId, startsAt])
+  @@index([parentEventId])
+}
+
+model EventShowtime {
+  id        String    @id @default(uuid()) @db.Uuid
+  eventId   String    @db.Uuid
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  label     String
+  startsAt  DateTime
+  endsAt    DateTime?
+  capacity  Int?
+  rsvpCount Int       @default(0)
+
+  rsvps Rsvp[]
+
+  @@index([eventId, startsAt])
+}
+
+model EventLineupItem {
+  id          String          @id @default(uuid()) @db.Uuid
+  eventId     String          @db.Uuid
+  event       Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  roleType    String          @default("LINEUP")
+  displayName String
+  roleLabel   String          @default("")
+  setTime     String?
+  sortOrder   Int             @default(0)
+  creatorId   String?         @db.Uuid
+  creator     CreatorProfile? @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  vendorId    String?         @db.Uuid
+
+  @@index([eventId, sortOrder])
+}
+
+model EventFixture {
+  id           String  @id @default(uuid()) @db.Uuid
+  eventId      String  @unique @db.Uuid
+  event        Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  homeTeamName String
+  awayTeamName String
+  homeScore    Int     @default(0)
+  awayScore    Int     @default(0)
+  isLive       Boolean @default(false)
+  statusLabel  String  @default("Scheduled")
 }
 
 model Story {
@@ -147,20 +367,39 @@ model Story {
 }
 
 model Rsvp {
-  id        String     @id @default(uuid()) @db.Uuid
-  eventId   String     @db.Uuid
-  event     Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  userId    String     @db.Uuid
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status    RsvpStatus @default(CONFIRMED)
+  id               String          @id @default(uuid()) @db.Uuid
+  eventId          String          @db.Uuid
+  event            Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId           String          @db.Uuid
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showtimeId       String?         @db.Uuid
+  showtime         EventShowtime?  @relation(fields: [showtimeId], references: [id], onDelete: SetNull)
+  ambassadorLinkId String?         @db.Uuid
+  ambassadorLink   AmbassadorLink? @relation(fields: [ambassadorLinkId], references: [id], onDelete: SetNull)
+  inviteId         String?         @db.Uuid
+  invite           EventInvite?    @relation(fields: [inviteId], references: [id], onDelete: SetNull)
+  hideFromFriends  Boolean         @default(false)
+  status           RsvpStatus      @default(CONFIRMED)
   // Signed payload handed to the client; validated locally by the scanner first.
-  qrToken   String     @unique
-  createdAt DateTime   @default(now())
+  qrToken          String          @unique
+  createdAt        DateTime        @default(now())
 
   checkIns CheckIn[]
 
   // One RSVP per student per event.
   @@unique([eventId, userId])
+  @@index([userId, createdAt])
+  @@index([eventId, status, createdAt])
+}
+
+model EventInterest {
+  eventId   String   @db.Uuid
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([eventId, userId])
   @@index([userId, createdAt])
 }
 
@@ -194,6 +433,53 @@ model Follow {
   @@index([organizerId])
 }
 
+model Friendship {
+  id          String           @id @default(uuid()) @db.Uuid
+  requesterId String           @db.Uuid
+  requester   User             @relation("SentFriendRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  addresseeId String           @db.Uuid
+  addressee   User             @relation("ReceivedFriendRequests", fields: [addresseeId], references: [id], onDelete: Cascade)
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
+  @@index([requesterId, status])
+}
+
+model EventInvite {
+  id               String   @id @default(uuid()) @db.Uuid
+  eventId          String   @db.Uuid
+  event            Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  inviterId        String   @db.Uuid
+  inviter          User     @relation("SentInvites", fields: [inviterId], references: [id], onDelete: Cascade)
+  inviteCode       String   @unique
+  acceptedByUserId String?  @db.Uuid
+  acceptedByUser   User?    @relation("AcceptedInvites", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+  acceptedCount    Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  rsvps Rsvp[]
+}
+
+model AmbassadorLink {
+  id           String         @id @default(uuid()) @db.Uuid
+  creatorId    String         @db.Uuid
+  creator      CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  eventId      String         @db.Uuid
+  event        Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  code         String         @unique
+  clickCount   Int            @default(0)
+  rsvpCount    Int            @default(0)
+  checkInCount Int            @default(0)
+  createdAt    DateTime       @default(now())
+
+  rsvps Rsvp[]
+
+  @@unique([creatorId, eventId])
+}
+
 model VerificationRequest {
   id            String              @id @default(uuid()) @db.Uuid
   subject       VerificationSubject
@@ -214,6 +500,31 @@ model VerificationRequest {
   @@index([status, subject, submittedAt])
 }
 
+model ModerationReport {
+  id             String   @id @default(uuid()) @db.Uuid
+  reporterId     String   @db.Uuid
+  reporter       User     @relation("SubmittedReports", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType     String
+  targetId       String
+  reasonCategory String   @default("GENERAL")
+  details        String
+  status         String   @default("OPEN")
+  resolvedById   String?  @db.Uuid
+  resolvedBy     User?    @relation("ResolvedReports", fields: [resolvedById], references: [id], onDelete: SetNull)
+  resolutionNote String?
+  createdAt      DateTime @default(now())
+
+  @@index([status, createdAt])
+}
+
+model PlatformSetting {
+  key         String   @id
+  value       Json
+  updatedById String?  @db.Uuid
+  updatedBy   User?    @relation("UpdatedSettings", fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @updatedAt
+}
+
 model AuditLog {
   id         String   @id @default(uuid()) @db.Uuid
   actorId    String   @db.Uuid
@@ -229,14 +540,34 @@ model AuditLog {
 }
 
 model Notification {
-  id        String    @id @default(uuid()) @db.Uuid
-  userId    String    @db.Uuid
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String               @id @default(uuid()) @db.Uuid
+  userId    String               @db.Uuid
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  NotificationCategory @default(REMINDER)
   title     String
   body      String
   linkUrl   String?
   readAt    DateTime?
-  createdAt DateTime  @default(now())
+  createdAt DateTime             @default(now())
 
   @@index([userId, createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model NotificationPreference {
+  userId          String                 @id @db.Uuid
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mutedCategories NotificationCategory[] @default([])
+  updatedAt       DateTime               @updatedAt
 }

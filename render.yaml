@@ -29,6 +29,32 @@ services:
         generateValue: true
       - key: QR_SIGNING_SECRET
         generateValue: true
+      - key: QR_SIGNING_PRIVATE_KEY
+        sync: false
+      - key: DEV_AUTH_ENABLED
+        value: 'false'
+      - key: EMAIL_TRANSPORT
+        value: resend
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_PRIVATE_BUCKET
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_PUBLIC_BASE_URL
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
       - key: WEB_ORIGIN
         sync: false # set to the Vercel production domain
       - key: LOG_LEVEL

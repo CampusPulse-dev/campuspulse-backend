@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { EventPublic, OrganizerPublic, Rsvp, UserPublic } from '../domain/entities';
+import { NotificationCategory } from '../domain/enums';
 import { Id, IsoDateTime, StudentEmail } from '../domain/primitives';
 
 /** S4 attendee interfaces; controller integration follows in S1–S3. */
@@ -36,7 +37,10 @@ export const FriendsResponse = z.object({ items: z.array(FriendEntry) });
 export const FriendActionBody = z.object({
   action: z.enum(['REQUEST', 'ACCEPT', 'DECLINE', 'BLOCK']),
 });
-export const FriendRequestBody = z.object({ userId: Id });
+export const FriendRequestBody = z.object({
+  userId: Id,
+  action: z.literal('REQUEST').optional(),
+});
 export const AttendeeNotification = z.object({
   id: Id,
   title: z.string(),
@@ -65,7 +69,14 @@ export const AttendeeSearchResponse = z.object({
   organizers: z.array(OrganizerPublic),
 });
 export const AttendeeTicket = z.object({ rsvp: Rsvp, event: EventPublic });
-export const AttendeeTicketsResponse = z.object({ items: z.array(AttendeeTicket) });
+export const YourNightGroup = z.object({
+  key: z.string(),
+  eventIds: z.array(Id),
+});
+export const AttendeeTicketsResponse = z.object({
+  items: z.array(AttendeeTicket),
+  yourNightGroups: z.array(YourNightGroup).optional(),
+});
 export const StudentOtpBody = z.object({ email: StudentEmail });
 export const ConfirmStudentOtpBody = StudentOtpBody.extend({ code: z.string().regex(/^\d{6}$/) });
 export const StudentVerificationState = z.object({
@@ -85,17 +96,44 @@ export const StudentUploadResponse = z.object({
   uploadId: z.string(),
 });
 export const StudentIdRequestBody = z.object({ documentUploadId: z.string().min(1) });
+/**
+ * Browser push services. The server POSTs to a subscription's endpoint, so only
+ * these hosts are accepted; anything else would let a client aim our outbound
+ * requests at an arbitrary (possibly internal) https host.
+ */
+const PUSH_SERVICE_HOST =
+  /^(?:fcm\.googleapis\.com|updates\.push\.services\.mozilla\.com|[a-z0-9-]+\.notify\.windows\.com|(?:[a-z0-9-]+\.)*push\.apple\.com)$/;
 export const PushSubscriptionBody = z.object({
-  /** The server POSTs to this URL, so only https push services are accepted. */
-  endpoint: z.url({ protocol: /^https$/ }).max(2048),
+  endpoint: z.url({ protocol: /^https$/, hostname: PUSH_SERVICE_HOST }).max(2048),
   keys: z.object({ p256dh: z.string().min(1).max(256), auth: z.string().min(1).max(64) }),
+});
+export const PushSubscribeResponse = z.object({
+  id: Id,
+  endpoint: z.url({ protocol: /^https$/ }).max(2048),
+  createdAt: IsoDateTime,
+});
+export const ReadAllNotificationsResponse = z.object({
+  updatedCount: z.number().int().nonnegative(),
+});
+export const UpdateNotificationPreferencesBody = z.object({
+  mutedCategories: z.array(NotificationCategory).max(20),
+});
+export const NotificationPreferencesResponse = z.object({
+  mutedCategories: z.array(NotificationCategory),
 });
 export const SubmitReportBody = z.object({
   eventId: Id,
   reason: z.string().trim().min(1).max(1000),
 });
+export const ReportSubmittedResponse = z.object({
+  id: Id,
+  status: z.string(),
+  createdAt: IsoDateTime,
+});
 
 export type AttendeePersona = z.infer<typeof AttendeePersona>;
+export type YourNightGroup = z.infer<typeof YourNightGroup>;
+export type ReportSubmittedResponse = z.infer<typeof ReportSubmittedResponse>;
 export type AttendeePrivacy = z.infer<typeof AttendeePrivacy>;
 export type AttendeePreferences = z.infer<typeof AttendeePreferences>;
 export type UpdateProfileBody = z.infer<typeof UpdateProfileBody>;
@@ -116,4 +154,8 @@ export type StudentUploadBody = z.infer<typeof StudentUploadBody>;
 export type StudentUploadResponse = z.infer<typeof StudentUploadResponse>;
 export type StudentIdRequestBody = z.infer<typeof StudentIdRequestBody>;
 export type PushSubscriptionBody = z.infer<typeof PushSubscriptionBody>;
+export type PushSubscribeResponse = z.infer<typeof PushSubscribeResponse>;
+export type ReadAllNotificationsResponse = z.infer<typeof ReadAllNotificationsResponse>;
+export type UpdateNotificationPreferencesBody = z.infer<typeof UpdateNotificationPreferencesBody>;
+export type NotificationPreferencesResponse = z.infer<typeof NotificationPreferencesResponse>;
 export type SubmitReportBody = z.infer<typeof SubmitReportBody>;

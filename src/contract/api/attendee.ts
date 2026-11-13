@@ -96,9 +96,15 @@ export const StudentUploadResponse = z.object({
   uploadId: z.string(),
 });
 export const StudentIdRequestBody = z.object({ documentUploadId: z.string().min(1) });
+/**
+ * Browser push services. The server POSTs to a subscription's endpoint, so only
+ * these hosts are accepted; anything else would let a client aim our outbound
+ * requests at an arbitrary (possibly internal) https host.
+ */
+const PUSH_SERVICE_HOST =
+  /^(?:fcm\.googleapis\.com|updates\.push\.services\.mozilla\.com|[a-z0-9-]+\.notify\.windows\.com|(?:[a-z0-9-]+\.)*push\.apple\.com)$/;
 export const PushSubscriptionBody = z.object({
-  /** The server POSTs to this URL, so only https push services are accepted. */
-  endpoint: z.url({ protocol: /^https$/ }).max(2048),
+  endpoint: z.url({ protocol: /^https$/, hostname: PUSH_SERVICE_HOST }).max(2048),
   keys: z.object({ p256dh: z.string().min(1).max(256), auth: z.string().min(1).max(64) }),
 });
 export const PushSubscribeResponse = z.object({

@@ -44,9 +44,9 @@ describe('AuthThrottlerGuard', () => {
       headers: {},
       body: { email: ' Tobi@Stu.UI.edu.ng ' },
     });
-    expect(tracker).toMatch(
-      new RegExp(`^credential:${campus.replace(/\./g, '\\.')}:[0-9a-f]{32}$`),
-    );
+    const prefix = `credential:${campus}:`;
+    expect(tracker.startsWith(prefix)).toBe(true);
+    expect(tracker.slice(prefix.length)).toMatch(/^[0-9a-f]{32}$/);
     expect(tracker).not.toContain('tobi');
     const other = await guard().track({
       ip: campus,
